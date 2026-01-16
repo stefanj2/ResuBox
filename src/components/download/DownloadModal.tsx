@@ -289,7 +289,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                 )}
                 {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
               </span>
-              <span className="text-xs font-normal opacity-80">betaalverplichting</span>
+              <span className="text-[10px] font-normal opacity-40">betaalverplichting</span>
             </button>
 
             {/* Trust badges */}
