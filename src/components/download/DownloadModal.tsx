@@ -161,9 +161,12 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       // Log download
       console.log('📥 CV gedownload voor:', cvData.personal.email);
 
-      // Track conversion in Google Analytics
+      // Track conversion in Google Analytics & Google Ads
       if (typeof window !== 'undefined' && 'gtag' in window) {
-        (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'purchase', {
+        const gtag = (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag;
+
+        // Google Analytics 4 purchase event
+        gtag('event', 'purchase', {
           transaction_id: cvData.id,
           value: 42.00,
           currency: 'EUR',
@@ -173,6 +176,13 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             price: 42.00,
             quantity: 1,
           }],
+        });
+
+        // Google Ads conversion event
+        gtag('event', 'manual_event_PURCHASE', {
+          value: 42.00,
+          currency: 'EUR',
+          transaction_id: cvData.id,
         });
       }
 
