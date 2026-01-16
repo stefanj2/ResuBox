@@ -13,11 +13,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
 }
 
-// Type guard to check if icon is a LucideIcon component (ForwardRef)
-function isLucideIcon(icon: LucideIcon | React.ReactElement): icon is LucideIcon {
-  // React elements have a specific $$typeof Symbol, LucideIcon is a ForwardRef component
-  return typeof icon === 'object' && icon !== null && '$$typeof' in icon &&
-    (icon as { $$typeof?: symbol }).$$typeof?.toString() !== 'Symbol(react.element)';
+// Check if icon is already a rendered React element
+function isReactElement(icon: LucideIcon | React.ReactElement): icon is React.ReactElement {
+  return React.isValidElement(icon);
 }
 
 export function Button({
@@ -50,11 +48,11 @@ export function Button({
 
   const renderIcon = () => {
     if (!icon) return null;
-    if (isLucideIcon(icon)) {
-      const IconComponent = icon;
-      return <IconComponent className="w-5 h-5" />;
+    if (isReactElement(icon)) {
+      return icon;
     }
-    return icon;
+    const IconComponent = icon as LucideIcon;
+    return <IconComponent className="w-5 h-5" />;
   };
 
   return (
