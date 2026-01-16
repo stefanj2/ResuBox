@@ -144,3 +144,59 @@
   background: #d1fae5;
   color: #065f46;
 }
+
+/* Safe area padding for iOS */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* Toast slide-in animation */
+@keyframes toastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes toastSlideInDesktop {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-toast-slide-in {
+  animation: toastSlideIn 0.3s ease-out forwards;
+}
+
+@media (min-width: 768px) {
+  .animate-toast-slide-in {
+    animation: toastSlideInDesktop 0.3s ease-out forwards;
+  }
+}
+
+/* CTA pulse animation */
+@keyframes ctaPulse {
+  0%, 100% {
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -4px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4), 0 8px 10px -6px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.animate-cta-pulse {
+  animation: ctaPulse 2s ease-in-out infinite;
+}

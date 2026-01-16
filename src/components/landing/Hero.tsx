@@ -12,10 +12,10 @@ export function Hero() {
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-emerald-50/30" />
 
-      {/* Decorative gradient orbs */}
+      {/* Decorative gradient orbs - responsive sizes */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-1/4 w-96 h-96 bg-emerald-200/40 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-teal-100/50 rounded-full blur-3xl" />
+        <div className="absolute top-20 left-1/4 w-48 sm:w-64 lg:w-96 h-48 sm:h-64 lg:h-96 bg-emerald-200/40 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-40 sm:w-56 lg:w-80 h-40 sm:h-56 lg:h-80 bg-teal-100/50 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,7 +71,22 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right: CV Preview Showcase */}
+          {/* Mobile: Single Template Preview */}
+          <div className="relative lg:hidden flex justify-center">
+            <div className="relative">
+              <div className="bg-white rounded-xl shadow-xl shadow-slate-900/10 p-2 border border-slate-200/60">
+                <div className="rounded-lg overflow-hidden">
+                  <TemplateThumbnail templateId="modern" scale={0.32} />
+                </div>
+              </div>
+              {/* Mobile template count badge */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-emerald-500 text-white rounded-full px-3 py-1.5 shadow-lg z-10">
+                <span className="text-xs font-semibold">6 gratis templates</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: CV Preview Showcase */}
           <div className="relative hidden lg:block">
             {/* Main CV - Modern template */}
             <div className="relative z-20 mx-auto w-fit">

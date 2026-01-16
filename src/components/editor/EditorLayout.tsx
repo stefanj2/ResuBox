@@ -13,7 +13,7 @@ import { CVPreview } from '@/components/preview';
 import { DownloadModal } from '@/components/download/DownloadModal';
 import { useCVData } from '@/context/CVContext';
 import { Eye, Download, Palette } from 'lucide-react';
-import { Button, Modal } from '@/components/ui';
+import { Button, Modal, StickyMobileCTA, MobileProgressBar, SocialProofToast } from '@/components/ui';
 import { TemplateSelector } from '@/components/templateSelector';
 
 const sections = [
@@ -36,8 +36,8 @@ export function EditorLayout() {
   return (
     <>
       <div className="min-h-screen bg-slate-100">
-        {/* Desktop Layout */}
-        <div className="hidden lg:flex h-screen">
+        {/* Desktop/Tablet Layout */}
+        <div className="hidden md:flex h-screen">
           {/* Left Side - Editor */}
           <div className="w-1/2 flex flex-col overflow-hidden">
             {/* Header */}
@@ -87,12 +87,12 @@ export function EditorLayout() {
           </div>
 
           {/* Right Side - Preview */}
-          <div className="w-1/2 bg-slate-200 overflow-y-auto overflow-x-hidden p-6 flex justify-center">
+          <div className="w-1/2 bg-slate-200 overflow-y-auto overflow-x-hidden p-4 lg:p-6 flex justify-center">
             <div className="sticky top-0 pt-2">
+              {/* Tablet scale: 0.5, Desktop scale: 0.65 */}
               <div
-                className="origin-top shadow-2xl"
+                className="origin-top shadow-2xl scale-[0.5] lg:scale-[0.65]"
                 style={{
-                  transform: 'scale(0.65)',
                   width: '210mm',
                   height: '297mm',
                 }}
@@ -104,7 +104,7 @@ export function EditorLayout() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="lg:hidden flex flex-col min-h-screen">
+        <div className="md:hidden flex flex-col min-h-screen">
           {/* Header */}
           <header className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
             <a href="/" className="flex items-center">
@@ -145,19 +145,25 @@ export function EditorLayout() {
             </div>
           </div>
 
+          {/* Mobile Progress Bar */}
+          <MobileProgressBar />
+
           {/* Content */}
-          <div className="flex-1 p-4 pb-24">
+          <div className="flex-1 p-4 pb-40">
             <CurrentSectionComponent />
           </div>
 
-          {/* Floating Preview Button */}
+          {/* Floating Preview Button - positioned above sticky CTA */}
           <button
             onClick={() => setShowPreview(true)}
-            className="fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-2 hover:bg-emerald-700 transition-colors z-50"
+            className="fixed bottom-24 right-4 bg-white text-emerald-600 px-4 py-3 rounded-full shadow-lg border border-slate-200 flex items-center gap-2 hover:bg-emerald-50 transition-colors z-40"
           >
             <Eye className="w-5 h-5" />
-            <span className="font-medium">Bekijk voorbeeld</span>
+            <span className="font-medium">Voorbeeld</span>
           </button>
+
+          {/* Sticky Mobile CTA */}
+          <StickyMobileCTA onClick={() => setShowDownloadModal(true)} />
 
           {/* Mobile Preview Modal */}
           {showPreview && (
@@ -195,6 +201,9 @@ export function EditorLayout() {
         isOpen={showDownloadModal}
         onClose={() => setShowDownloadModal(false)}
       />
+
+      {/* Social Proof Toast Notifications */}
+      <SocialProofToast />
     </>
   );
 }
