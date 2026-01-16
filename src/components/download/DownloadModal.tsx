@@ -238,8 +238,8 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     className="sr-only"
                   />
                   <div className={`w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
-                    agreed 
-                      ? 'bg-emerald-600 border-emerald-600' 
+                    agreed
+                      ? 'bg-emerald-600 border-emerald-600'
                       : 'border-slate-300 group-hover:border-slate-400'
                   }`}>
                     {agreed && (
@@ -251,14 +251,14 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                 </div>
                 <span className="text-sm text-slate-700 leading-relaxed">
                   <strong>Ja, ik wil mijn CV downloaden</strong>. Ik ga akkoord met de{' '}
-                  <a href="#" className="text-emerald-600 underline hover:text-emerald-700">
+                  <a href="/voorwaarden" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
                     algemene voorwaarden
                   </a>{' '}
                   en het{' '}
-                  <a href="#" className="text-emerald-600 underline hover:text-emerald-700">
+                  <a href="/privacy" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
                     privacybeleid
                   </a>
-                  .
+                  . Ik begrijp dat voor het downloaden van mijn CV een vergoeding van <strong>€42</strong> in rekening wordt gebracht en dat het CV naar mijn e-mailadres wordt gestuurd.
                 </span>
               </label>
             </div>
@@ -271,22 +271,17 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </div>
             )}
 
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={handleClose} className="flex-1">
-                Annuleren
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleDownload}
-                icon={status === 'processing' ? Loader2 : Download}
-                disabled={!agreed || status === 'processing'}
-                loading={status === 'processing'}
-                className="flex-1"
-              >
-                {status === 'processing' ? 'Even geduld...' : 'Gratis downloaden'}
-              </Button>
-            </div>
+            {/* Button */}
+            <Button
+              variant="primary"
+              onClick={handleDownload}
+              icon={status === 'processing' ? Loader2 : Download}
+              disabled={!agreed || status === 'processing'}
+              loading={status === 'processing'}
+              className="w-full"
+            >
+              {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
+            </Button>
 
             {/* Trust badges */}
             <div className="flex items-center justify-center gap-6 mt-6 text-xs text-slate-500">
