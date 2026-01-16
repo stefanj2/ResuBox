@@ -258,7 +258,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                   <a href="/privacy" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
                     privacybeleid
                   </a>
-                  . Ik begrijp dat voor het downloaden van mijn CV een vergoeding van <strong>€42</strong> in rekening wordt gebracht en dat het CV naar mijn e-mailadres wordt gestuurd.
+                  . Ik begrijp dat voor het downloaden van mijn CV een vergoeding van <strong>tweeënveertig euro (€42,-)</strong> in rekening wordt gebracht en dat het CV naar mijn e-mailadres wordt gestuurd.
                 </span>
               </label>
             </div>
