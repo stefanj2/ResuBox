@@ -161,6 +161,21 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       // Log download
       console.log('📥 CV gedownload voor:', cvData.personal.email);
 
+      // Track conversion in Google Analytics
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'purchase', {
+          transaction_id: cvData.id,
+          value: 42.00,
+          currency: 'EUR',
+          items: [{
+            item_name: 'CV Download',
+            item_category: cvData.meta.selectedTemplate,
+            price: 42.00,
+            quantity: 1,
+          }],
+        });
+      }
+
       setStatus('success');
     } catch (error) {
       console.error('Download error:', error);
