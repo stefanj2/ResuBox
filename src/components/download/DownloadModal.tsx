@@ -272,16 +272,25 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             )}
 
             {/* Button */}
-            <Button
-              variant="primary"
+            <button
               onClick={handleDownload}
-              icon={status === 'processing' ? Loader2 : Download}
               disabled={!agreed || status === 'processing'}
-              loading={status === 'processing'}
-              className="w-full"
+              className={`w-full flex flex-col items-center justify-center gap-0.5 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                !agreed || status === 'processing'
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/25'
+              }`}
             >
-              {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
-            </Button>
+              <span className="flex items-center gap-2">
+                {status === 'processing' ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
+                {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
+              </span>
+              <span className="text-xs font-normal opacity-80">betaalverplichting</span>
+            </button>
 
             {/* Trust badges */}
             <div className="flex items-center justify-center gap-6 mt-6 text-xs text-slate-500">
