@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 70" width="280" height="70">
+  <!-- 3D Box - Green -->
+  <g transform="translate(5, 5)">
+    <!-- Box outline -->
+    <path d="M15 20 L30 12 L45 20 L45 40 L30 48 L15 40 Z" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M15 20 L30 28 L30 48" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M30 28 L45 20" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <!-- Document - Dark Blue -->
+    <path d="M22 35 L22 8 L34 8 L40 14 L40 35 Z" fill="#1e3a5f"/>
+    <path d="M34 8 L34 14 L40 14" fill="#152a45"/>
+
+    <!-- Arrow pointing up -->
+    <path d="M31 30 L31 18 M26 23 L31 18 L36 23" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text "ResuBox" -->
+  <text x="65" y="47" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="36" font-weight="700" fill="#1e3a5f">
+    <tspan>Resu</tspan><tspan fill="#1e3a5f">Box</tspan>
+  </text>
+</svg>
