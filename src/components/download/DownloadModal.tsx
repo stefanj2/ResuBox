@@ -8,6 +8,7 @@ import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { createOrder } from '@/lib/orders';
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -138,7 +139,26 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       const fileName = `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}.pdf`;
       pdf.save(fileName);
 
-      // Log download (in productie: stuur naar analytics)
+      // Create order in the system
+      const customerName = `${cvData.personal.firstName || ''} ${cvData.personal.lastName || ''}`.trim() || 'Onbekend';
+      const customerEmail = cvData.personal.email || 'onbekend@email.nl';
+      const customerPhone = cvData.personal.phone;
+
+      try {
+        await createOrder({
+          customer_name: customerName,
+          customer_email: customerEmail,
+          customer_phone: customerPhone,
+          cv_id: cvData.id,
+          template_used: cvData.meta.selectedTemplate,
+        });
+        console.log('📦 Order aangemaakt voor:', customerEmail);
+      } catch (orderError) {
+        // Don't block download if order creation fails
+        console.error('Order creation error:', orderError);
+      }
+
+      // Log download
       console.log('📥 CV gedownload voor:', cvData.personal.email);
 
       setStatus('success');

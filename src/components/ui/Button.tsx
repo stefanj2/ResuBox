@@ -6,17 +6,24 @@ import { LucideIcon } from 'lucide-react';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactElement;
   iconPosition?: 'left' | 'right';
   loading?: boolean;
   fullWidth?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+}
+
+// Type guard to check if icon is a LucideIcon component (ForwardRef)
+function isLucideIcon(icon: LucideIcon | React.ReactElement): icon is LucideIcon {
+  // React elements have a specific $$typeof Symbol, LucideIcon is a ForwardRef component
+  return typeof icon === 'object' && icon !== null && '$$typeof' in icon &&
+    (icon as { $$typeof?: symbol }).$$typeof?.toString() !== 'Symbol(react.element)';
 }
 
 export function Button({
   variant = 'primary',
   size = 'md',
-  icon: Icon,
+  icon,
   iconPosition = 'left',
   loading = false,
   fullWidth = false,
@@ -40,7 +47,16 @@ export function Button({
     md: 'px-5 py-2.5 text-base gap-2',
     lg: 'px-8 py-4 text-lg gap-2.5',
   };
-  
+
+  const renderIcon = () => {
+    if (!icon) return null;
+    if (isLucideIcon(icon)) {
+      const IconComponent = icon;
+      return <IconComponent className="w-5 h-5" />;
+    }
+    return icon;
+  };
+
   return (
     <button
       className={`
@@ -72,9 +88,9 @@ export function Button({
         </svg>
       ) : (
         <>
-          {Icon && iconPosition === 'left' && <Icon className="w-5 h-5" />}
+          {icon && iconPosition === 'left' && renderIcon()}
           {children}
-          {Icon && iconPosition === 'right' && <Icon className="w-5 h-5" />}
+          {icon && iconPosition === 'right' && renderIcon()}
         </>
       )}
     </button>

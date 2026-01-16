@@ -7,13 +7,29 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ReactElement;
   success?: boolean;
   successMessage?: string;
 }
 
+// Type guard to check if icon is a LucideIcon component (ForwardRef)
+function isLucideIcon(icon: LucideIcon | React.ReactElement): icon is LucideIcon {
+  // React elements have a specific $$typeof Symbol, LucideIcon is a ForwardRef component
+  return typeof icon === 'object' && icon !== null && '$$typeof' in icon &&
+    (icon as { $$typeof?: symbol }).$$typeof?.toString() !== 'Symbol(react.element)';
+}
+
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, icon: Icon, success, successMessage, className = '', ...props }, ref) => {
+  ({ label, error, hint, icon, success, successMessage, className = '', ...props }, ref) => {
+    const renderIcon = () => {
+      if (!icon) return null;
+      if (isLucideIcon(icon)) {
+        const IconComponent = icon;
+        return <IconComponent className="h-5 w-5 text-slate-400" />;
+      }
+      return icon;
+    };
+
     return (
       <div className="w-full">
         {label && (
@@ -23,16 +39,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <div className="relative">
-          {Icon && (
+          {icon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Icon className="h-5 w-5 text-slate-400" />
+              {renderIcon()}
             </div>
           )}
           <input
             ref={ref}
             className={`
               block w-full rounded-lg border bg-white
-              ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3
+              ${icon ? 'pl-10' : 'pl-4'} pr-4 py-3
               text-slate-900 placeholder-slate-400
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-offset-0

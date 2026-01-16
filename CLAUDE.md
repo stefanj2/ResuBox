@@ -27,6 +27,7 @@ All CV data is managed through `CVContext` (`src/context/CVContext.tsx`) which p
 
 - `/` - Landing page with Hero, USPSection, FAQ, Footer components
 - `/builder` - Main CV editor wrapped in `CVProvider`
+- `/faq`, `/contact`, `/privacy`, `/voorwaarden` - Static pages
 
 ### Component Organization
 
@@ -37,17 +38,39 @@ src/components/
 │   ├── Sidebar.tsx         # Section navigation with completion indicators
 │   └── sections/           # Individual form sections (Personal, Profile, etc.)
 ├── preview/          # Live A4 CV preview
-│   └── PreviewA4.tsx       # Renders CV in A4 dimensions (210mm × 297mm)
+│   ├── CVPreview.tsx       # Template router based on meta.selectedTemplate
+│   └── templates/          # 6 template components (Modern, Zakelijk, Creatief, etc.)
+├── templateSelector/ # Template and color scheme picker
 ├── download/         # Download flow with payment agreement
-│   └── DownloadModal.tsx   # Invoice-based download (€42 via factuur achteraf)
 ├── landing/          # Marketing page components
 └── ui/               # Reusable components (Button, Input, TextArea, Modal, Card)
 ```
 
+### Template System
+
+Templates are in `src/components/preview/templates/`. Each template:
+- Implements `TemplateProps` interface (`cvData: CVData`, `colorScheme?: ColorScheme`)
+- Renders at A4 dimensions (210mm × 297mm) with inline styles for PDF export
+- Uses color values from `ColorScheme` passed via props
+
+Template IDs: `modern`, `zakelijk`, `creatief`, `minimalist`, `executive`, `tech`
+Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose, amber, slate, teal, orange
+
+### API Routes
+
+`POST /api/optimize-cv` - Vacancy-based CV optimization
+- Accepts vacancy URL/text, fetches and extracts keywords
+- Returns optimized profile/experience/skills with change diffs and match score
+
+### PDF Export
+
+Uses jspdf + html2canvas + html-to-image for generating downloadable PDFs from the preview component.
+
 ### Type Definitions
 
 CV data types are defined in `src/types/cv.ts`:
-- `CVData` - Root type containing all sections plus metadata
+- `CVData` - Root type containing all sections plus metadata (`CVMeta`)
+- `CVMeta` - Stores template selection, color scheme, payment status, magic link tokens
 - Helper functions: `createEmptyCVData()`, `createEmptyExperience()`, `createEmptyEducation()`, `createEmptySkill()`
 
 ### Import Aliases
