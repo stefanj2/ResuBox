@@ -9,11 +9,16 @@ import { EMAIL_FLOW_TIMING, EMAIL_FLOW_TIMING_TEST } from '@/lib/orderStatusConf
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export async function GET(request: NextRequest) {
-  // Verify cron secret
-  const secret = request.nextUrl.searchParams.get('secret');
+  // Verify cron secret via Authorization header (Vercel Cron) or query param (manual)
+  const authHeader = request.headers.get('Authorization');
+  const secretFromQuery = request.nextUrl.searchParams.get('secret');
   const testMode = request.nextUrl.searchParams.get('testMode') === 'true';
 
-  if (secret !== process.env.CRON_SECRET) {
+  const isAuthorized =
+    authHeader === `Bearer ${process.env.CRON_SECRET}` ||
+    secretFromQuery === process.env.CRON_SECRET;
+
+  if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
