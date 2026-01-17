@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Base styles for overscroll background */
+html {
+  background-color: #f8fafc; /* slate-50 */
+}
+
+body {
+  background-color: #f8fafc; /* slate-50 */
+  overscroll-behavior-y: none;
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from {
