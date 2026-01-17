@@ -9,11 +9,11 @@ interface StickyMobileCTAProps {
 
 export function StickyMobileCTA({ onClick }: StickyMobileCTAProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:hidden z-50">
+    <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-slate-100">
       {/* Gradient fade for smoother transition */}
       <div className="h-4 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-      {/* White container for button with safe area padding */}
-      <div className="bg-white border-t border-slate-200 px-4 py-2.5 pb-safe">
+      {/* White container for button */}
+      <div className="bg-white border-t border-slate-200 px-4 py-2.5">
         <button
           onClick={onClick}
           className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold rounded-xl px-6 py-3.5 min-h-[52px] shadow-lg shadow-emerald-500/25 hover:bg-emerald-700 active:scale-[0.98] transition-all duration-200"
@@ -23,6 +23,8 @@ export function StickyMobileCTA({ onClick }: StickyMobileCTAProps) {
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
+      {/* Bottom spacer - Safari uses this color for toolbar */}
+      <div className="h-10 bg-slate-100" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
     </div>
   );
 }
