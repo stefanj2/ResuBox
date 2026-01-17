@@ -114,7 +114,15 @@ export function hasAnyCVData(cvData: CVData): boolean {
   );
 }
 
-// Get merged data - uses user data where available, placeholder where not
+// Check if a section has been "started" (user has entered any data)
+function isPersonalSectionStarted(cvData: CVData): boolean {
+  const p = cvData.personal;
+  return hasUserData(p.firstName) || hasUserData(p.lastName) || hasUserData(p.email) ||
+         hasUserData(p.phone) || hasUserData(p.address) || hasUserData(p.city) ||
+         hasUserData(p.postalCode) || hasUserData(p.houseNumber);
+}
+
+// Get merged data - shows placeholders for untouched sections, hides empty optional fields in started sections
 export function getMergedCVData(cvData: CVData): {
   data: CVData;
   isPlaceholder: {
@@ -133,6 +141,13 @@ export function getMergedCVData(cvData: CVData): {
     skills: boolean;
   };
 } {
+  // Check if sections have been started
+  const personalStarted = isPersonalSectionStarted(cvData);
+  const profileStarted = hasUserData(cvData.profile.summary);
+  const experienceStarted = hasUserArrayData(cvData.experience);
+  const educationStarted = hasUserArrayData(cvData.education);
+  const skillsStarted = hasUserArrayData(cvData.skills);
+
   const isPlaceholder = {
     firstName: !hasUserData(cvData.personal.firstName),
     lastName: !hasUserData(cvData.personal.lastName),
@@ -143,33 +158,42 @@ export function getMergedCVData(cvData: CVData): {
     linkedIn: !hasUserData(cvData.personal.linkedIn),
     website: !hasUserData(cvData.personal.website),
     dateOfBirth: !hasUserData(cvData.personal.dateOfBirth),
-    summary: !hasUserData(cvData.profile.summary),
-    experience: !hasUserArrayData(cvData.experience),
-    education: !hasUserArrayData(cvData.education),
-    skills: !hasUserArrayData(cvData.skills),
+    summary: !profileStarted,
+    experience: !experienceStarted,
+    education: !educationStarted,
+    skills: !skillsStarted,
+  };
+
+  // For personal section: if not started, show all placeholders. If started, only show user data.
+  const getPersonalValue = (userValue: string | undefined | null, placeholderValue: string): string => {
+    if (hasUserData(userValue)) return userValue!;
+    if (!personalStarted) return placeholderValue; // Show placeholder if section not started
+    return ''; // Hide if section started but field empty
   };
 
   const mergedData: CVData = {
     ...cvData,
     personal: {
       ...cvData.personal,
-      firstName: getDisplayValue(cvData.personal.firstName, placeholderData.personal.firstName),
-      lastName: getDisplayValue(cvData.personal.lastName, placeholderData.personal.lastName),
-      email: getDisplayValue(cvData.personal.email, placeholderData.personal.email),
-      phone: getDisplayValue(cvData.personal.phone, placeholderData.personal.phone),
-      address: getDisplayValue(cvData.personal.address, placeholderData.personal.address),
-      city: getDisplayValue(cvData.personal.city, placeholderData.personal.city),
-      linkedIn: getDisplayValue(cvData.personal.linkedIn, placeholderData.personal.linkedIn),
-      website: getDisplayValue(cvData.personal.website, placeholderData.personal.website),
-      dateOfBirth: getDisplayValue(cvData.personal.dateOfBirth, placeholderData.personal.dateOfBirth),
+      firstName: getPersonalValue(cvData.personal.firstName, placeholderData.personal.firstName),
+      lastName: getPersonalValue(cvData.personal.lastName, placeholderData.personal.lastName),
+      email: getPersonalValue(cvData.personal.email, placeholderData.personal.email),
+      phone: getPersonalValue(cvData.personal.phone, placeholderData.personal.phone),
+      address: getPersonalValue(cvData.personal.address, placeholderData.personal.address),
+      city: getPersonalValue(cvData.personal.city, placeholderData.personal.city),
+      linkedIn: getPersonalValue(cvData.personal.linkedIn, placeholderData.personal.linkedIn),
+      website: getPersonalValue(cvData.personal.website, placeholderData.personal.website),
+      dateOfBirth: getPersonalValue(cvData.personal.dateOfBirth, placeholderData.personal.dateOfBirth),
       profilePhoto: cvData.personal.profilePhoto, // Don't use placeholder photo
     },
     profile: {
-      summary: getDisplayValue(cvData.profile.summary, placeholderData.profile.summary),
+      // If profile not started, show placeholder. If started, show user data.
+      summary: profileStarted ? cvData.profile.summary : placeholderData.profile.summary,
     },
-    experience: hasUserArrayData(cvData.experience) ? cvData.experience : placeholderData.experience,
-    education: hasUserArrayData(cvData.education) ? cvData.education : placeholderData.education,
-    skills: hasUserArrayData(cvData.skills) ? cvData.skills : placeholderData.skills,
+    // Experience, education, skills - show placeholders if not started, otherwise show user data
+    experience: experienceStarted ? cvData.experience : placeholderData.experience,
+    education: educationStarted ? cvData.education : placeholderData.education,
+    skills: skillsStarted ? cvData.skills : placeholderData.skills,
   };
 
   return { data: mergedData, isPlaceholder };

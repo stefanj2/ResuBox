@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, CheckCircle, Camera, X } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, CheckCircle, Camera, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 
@@ -9,7 +9,67 @@ export function PersonalSection() {
   const { cvData, updatePersonal, triggerMagicLink, magicLinkSent } = useCVData();
   const [emailTouched, setEmailTouched] = useState(false);
   const [sendingMagicLink, setSendingMagicLink] = useState(false);
+  const [lookingUpAddress, setLookingUpAddress] = useState(false);
+  const [addressError, setAddressError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-lookup address based on postcode and house number
+  const lookupAddress = useCallback(async (postcode: string, houseNumber: string) => {
+    // Clean postcode (remove spaces)
+    const cleanPostcode = postcode.replace(/\s/g, '').toUpperCase();
+
+    // Validate: need at least 6 chars for postcode and a house number
+    if (cleanPostcode.length < 6 || !houseNumber.trim()) {
+      return;
+    }
+
+    // Validate postcode format
+    const postcodeRegex = /^[1-9][0-9]{3}[A-Z]{2}$/;
+    if (!postcodeRegex.test(cleanPostcode)) {
+      return;
+    }
+
+    setLookingUpAddress(true);
+    setAddressError('');
+
+    try {
+      const response = await fetch(
+        `/api/postcode/lookup?postcode=${encodeURIComponent(cleanPostcode)}&huisnummer=${encodeURIComponent(houseNumber.trim())}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.straat) {
+          updatePersonal('address', data.straat);
+        }
+        if (data.woonplaats) {
+          updatePersonal('city', data.woonplaats);
+        }
+      } else if (response.status === 404) {
+        setAddressError('Adres niet gevonden');
+      }
+    } catch (error) {
+      console.error('Address lookup error:', error);
+    } finally {
+      setLookingUpAddress(false);
+    }
+  }, [updatePersonal]);
+
+  const handlePostcodeChange = (value: string) => {
+    updatePersonal('postalCode', value);
+    // Trigger lookup if house number is already filled
+    if (cvData.personal.houseNumber) {
+      lookupAddress(value, cvData.personal.houseNumber);
+    }
+  };
+
+  const handleHouseNumberChange = (value: string) => {
+    updatePersonal('houseNumber', value);
+    // Trigger lookup if postcode is already filled
+    if (cvData.personal.postalCode) {
+      lookupAddress(cvData.personal.postalCode, value);
+    }
+  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -183,30 +243,42 @@ export function PersonalSection() {
       />
 
       {/* Address */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="sm:col-span-2">
+      <div>
+        <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Adres"
-            placeholder="Hoofdstraat 1"
+            label="Postcode"
+            placeholder="1234 AB"
             icon={MapPin}
-            value={cvData.personal.address}
-            onChange={(e) => updatePersonal('address', e.target.value)}
+            value={cvData.personal.postalCode}
+            onChange={(e) => handlePostcodeChange(e.target.value)}
+          />
+          <Input
+            label="Huisnummer"
+            placeholder="12a"
+            value={cvData.personal.houseNumber}
+            onChange={(e) => handleHouseNumberChange(e.target.value)}
           />
         </div>
-        <Input
-          label="Postcode"
-          placeholder="1234 AB"
-          value={cvData.personal.postalCode}
-          onChange={(e) => updatePersonal('postalCode', e.target.value)}
-        />
-      </div>
 
-      <Input
-        label="Woonplaats"
-        placeholder="Amsterdam"
-        value={cvData.personal.city}
-        onChange={(e) => updatePersonal('city', e.target.value)}
-      />
+        {/* Address lookup result */}
+        {lookingUpAddress && (
+          <div className="flex items-center gap-2 mt-2 text-sm text-slate-500">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Adres opzoeken...</span>
+          </div>
+        )}
+        {!lookingUpAddress && cvData.personal.address && cvData.personal.city && (
+          <div className="flex items-center gap-2 mt-2 text-sm text-emerald-600">
+            <CheckCircle className="w-4 h-4" />
+            <span>{cvData.personal.address} {cvData.personal.houseNumber}, {cvData.personal.city}</span>
+          </div>
+        )}
+        {addressError && (
+          <div className="mt-2 text-sm text-amber-600">
+            {addressError}
+          </div>
+        )}
+      </div>
 
       {/* Optional fields */}
       <div className="pt-4 border-t border-slate-200">

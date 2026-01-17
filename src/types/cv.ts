@@ -25,6 +25,7 @@ export interface PersonalInfo {
   email: string;
   phone: string;
   address: string;
+  houseNumber: string;
   city: string;
   postalCode: string;
   dateOfBirth: string;
@@ -104,6 +105,7 @@ export const createEmptyCVData = (): CVData => ({
     email: '',
     phone: '',
     address: '',
+    houseNumber: '',
     city: '',
     postalCode: '',
     dateOfBirth: '',

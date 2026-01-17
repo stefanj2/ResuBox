@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { CVOrder, OrderAction, OrderStatus, OrderWithActions, OrderStatistics, OrderFilters } from '@/types/admin';
+import { CVData } from '@/types/cv';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 
 const ORDERS_STORAGE_KEY = 'cv_orders';
@@ -40,8 +41,13 @@ export async function createOrder(orderData: {
   customer_name: string;
   customer_email: string;
   customer_phone?: string;
+  customer_address?: string;
+  customer_house_number?: string;
+  customer_postal_code?: string;
+  customer_city?: string;
   cv_id?: string;
   template_used?: string;
+  cv_data?: CVData;
 }): Promise<CVOrder> {
   const now = new Date().toISOString();
   const newOrder: CVOrder = {
@@ -50,8 +56,13 @@ export async function createOrder(orderData: {
     customer_name: orderData.customer_name,
     customer_email: orderData.customer_email,
     customer_phone: orderData.customer_phone,
+    customer_address: orderData.customer_address,
+    customer_house_number: orderData.customer_house_number,
+    customer_postal_code: orderData.customer_postal_code,
+    customer_city: orderData.customer_city,
     cv_id: orderData.cv_id,
     template_used: orderData.template_used,
+    cv_data: orderData.cv_data,
     amount: 42.0,
     dossier_number: generateDossierNumber(),
     created_at: now,

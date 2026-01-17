@@ -104,30 +104,34 @@ export function TechTemplate({ cvData, colorScheme }: TemplateProps) {
                 </span>
               </div>
 
-              <div className={`flex items-center gap-2 ${isPlaceholder.email ? 'text-slate-500' : 'text-slate-300'}`}>
+              <div className="flex items-center gap-2 text-slate-300">
                 <Mail className="w-4 h-4 text-slate-500" />
                 <span className="text-xs break-all">{personal.email}</span>
               </div>
 
-              <div className={`flex items-center gap-2 ${isPlaceholder.phone ? 'text-slate-500' : 'text-slate-300'}`}>
-                <Phone className="w-4 h-4 text-slate-500" />
-                <span className="text-xs">{personal.phone}</span>
-              </div>
+              {personal.phone && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Phone className="w-4 h-4 text-slate-500" />
+                  <span className="text-xs">{personal.phone}</span>
+                </div>
+              )}
 
-              <div className={`flex items-center gap-2 ${isPlaceholder.city ? 'text-slate-500' : 'text-slate-300'}`}>
-                <MapPin className="w-4 h-4 text-slate-500" />
-                <span className="text-xs">{!isPlaceholder.address && personal.address && `${personal.address}, `}{personal.city}</span>
-              </div>
+              {(personal.address || personal.city) && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <MapPin className="w-4 h-4 text-slate-500" />
+                  <span className="text-xs">{personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}{personal.city}</span>
+                </div>
+              )}
 
               {personal.linkedIn && (
-                <div className={`flex items-center gap-2 ${isPlaceholder.linkedIn ? 'text-slate-500' : 'text-slate-300'}`}>
+                <div className="flex items-center gap-2 text-slate-300">
                   <Linkedin className="w-4 h-4 text-slate-500" />
                   <span className="text-xs break-all">{personal.linkedIn}</span>
                 </div>
               )}
 
               {personal.website && (
-                <div className={`flex items-center gap-2 ${isPlaceholder.website ? 'text-slate-500' : 'text-slate-300'}`}>
+                <div className="flex items-center gap-2 text-slate-300">
                   <Globe className="w-4 h-4 text-slate-500" />
                   <span className="text-xs break-all">{personal.website}</span>
                 </div>
@@ -135,152 +139,160 @@ export function TechTemplate({ cvData, colorScheme }: TemplateProps) {
             </div>
 
             {/* Skills with progress bars */}
-            <div className={isPlaceholder.skills ? 'opacity-50' : ''}>
-              <div className="flex items-center gap-2 text-slate-400 mb-4">
-                <Database className="w-3.5 h-3.5" style={{ color: colors.primary }} />
-                <span
-                  className="text-[10px] uppercase tracking-wider font-medium"
-                  style={{ color: colors.primary }}
-                >
-                  Skills
-                </span>
-              </div>
+            {skills.length > 0 && (
+              <div className={isPlaceholder.skills ? 'opacity-50' : ''}>
+                <div className="flex items-center gap-2 text-slate-400 mb-4">
+                  <Database className="w-3.5 h-3.5" style={{ color: colors.primary }} />
+                  <span
+                    className="text-[10px] uppercase tracking-wider font-medium"
+                    style={{ color: colors.primary }}
+                  >
+                    Skills
+                  </span>
+                </div>
 
-              <div className="space-y-3">
-                {skills.map((skill) => (
-                  <div key={skill.id}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className={`text-xs ${isPlaceholder.skills ? 'text-slate-500' : 'text-slate-300'}`}>{skill.name}</span>
-                      <span className="text-[10px] text-slate-500 font-mono">
-                        {skillLevelToPercent(skill.level)}%
-                      </span>
+                <div className="space-y-3">
+                  {skills.map((skill) => (
+                    <div key={skill.id}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className={`text-xs ${isPlaceholder.skills ? 'text-slate-500' : 'text-slate-300'}`}>{skill.name}</span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {skillLevelToPercent(skill.level)}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${skillLevelToPercent(skill.level)}%`,
+                            background: `linear-gradient(to right, ${colors.primary}, ${colors.primaryLight})`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${skillLevelToPercent(skill.level)}%`,
-                          background: `linear-gradient(to right, ${colors.primary}, ${colors.primaryLight})`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
         {/* Main Content - 62% */}
         <div className="w-[62%] bg-white p-6">
           {/* Profile Summary */}
-          <section className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Cpu className="w-4 h-4" style={{ color: colors.primary }} />
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Over mij</h2>
-            </div>
-            <p className={`leading-relaxed text-sm pl-6 ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-600'}`}>
-              {profile.summary}
-            </p>
-          </section>
+          {profile.summary && (
+            <section className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Cpu className="w-4 h-4" style={{ color: colors.primary }} />
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Over mij</h2>
+              </div>
+              <p className={`leading-relaxed text-sm pl-6 ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-600'}`}>
+                {profile.summary}
+              </p>
+            </section>
+          )}
 
           {/* Work Experience */}
-          <section className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Terminal className="w-4 h-4" style={{ color: colors.primary }} />
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Ervaring</h2>
-            </div>
-            <div className={`space-y-4 pl-6 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-              {experience.map((exp) => (
-                <div
-                  key={exp.id}
-                  className="relative pl-4"
-                  style={{ borderLeft: `2px solid ${isPlaceholder.experience ? '#cbd5e1' : colors.primaryLight}` }}
-                >
+          {experience.length > 0 && (
+            <section className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Terminal className="w-4 h-4" style={{ color: colors.primary }} />
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Ervaring</h2>
+              </div>
+              <div className={`space-y-4 pl-6 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
+                {experience.map((exp) => (
                   <div
-                    className="absolute left-0 top-0 w-2 h-2 rounded-full -translate-x-[5px]"
-                    style={{ backgroundColor: isPlaceholder.experience ? '#94a3b8' : colors.primary }}
-                  />
+                    key={exp.id}
+                    className="relative pl-4"
+                    style={{ borderLeft: `2px solid ${colors.primaryLight}` }}
+                  >
+                    <div
+                      className="absolute left-0 top-0 w-2 h-2 rounded-full -translate-x-[5px]"
+                      style={{ backgroundColor: colors.primary }}
+                    />
 
-                  <div className="mb-1">
+                    <div className="mb-1">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-semibold text-sm text-slate-900">
+                          {exp.jobTitle}
+                        </h3>
+                        <span
+                          className="text-[10px] font-mono px-2 py-0.5 rounded"
+                          style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark }}
+                        >
+                          {formatDate(exp.startDate)} → {exp.current ? 'now' : formatDate(exp.endDate)}
+                        </span>
+                      </div>
+                      <p className="text-xs font-medium" style={{ color: colors.primary }}>
+                        {exp.company}
+                        {exp.location && <span className="text-slate-400"> @ {exp.location}</span>}
+                      </p>
+                    </div>
+
+                    {exp.description && (
+                      <p className="text-xs mt-1 text-slate-600">{exp.description}</p>
+                    )}
+
+                    {exp.tasks.length > 0 && (
+                      <ul className="mt-2 space-y-1">
+                        {exp.tasks.map((task, i) => (
+                          <li key={i} className="text-xs flex items-start gap-2 text-slate-700">
+                            <span style={{ color: colors.primary }} className="font-mono mt-0.5">›</span>
+                            {task}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Education */}
+          {education.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <Database className="w-4 h-4" style={{ color: colors.primary }} />
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Opleiding</h2>
+              </div>
+              <div className={`space-y-3 pl-6 ${isPlaceholder.education ? 'opacity-50' : ''}`}>
+                {education.map((edu) => (
+                  <div
+                    key={edu.id}
+                    className="relative pl-4"
+                    style={{ borderLeft: `2px solid ${colors.primaryLight}` }}
+                  >
+                    <div
+                      className="absolute left-0 top-0 w-2 h-2 rounded-full -translate-x-[5px]"
+                      style={{ backgroundColor: colors.primary }}
+                    />
+
                     <div className="flex justify-between items-start">
-                      <h3 className={`font-semibold text-sm ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {exp.jobTitle}
-                      </h3>
+                      <div>
+                        <h3 className="font-semibold text-sm text-slate-900">
+                          {edu.degree}
+                        </h3>
+                        <p className="text-xs font-medium" style={{ color: colors.primary }}>
+                          {edu.institution}
+                          {edu.location && <span className="text-slate-400"> @ {edu.location}</span>}
+                        </p>
+                      </div>
                       <span
                         className="text-[10px] font-mono px-2 py-0.5 rounded"
                         style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark }}
                       >
-                        {formatDate(exp.startDate)} → {exp.current ? 'now' : formatDate(exp.endDate)}
+                        {formatDate(edu.startDate)} → {edu.current ? 'now' : formatDate(edu.endDate)}
                       </span>
                     </div>
-                    <p className="text-xs font-medium" style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>
-                      {exp.company}
-                      {exp.location && <span className="text-slate-400"> @ {exp.location}</span>}
-                    </p>
+                    {edu.description && (
+                      <p className="text-xs mt-1 text-slate-600">{edu.description}</p>
+                    )}
                   </div>
-
-                  {exp.description && (
-                    <p className={`text-xs mt-1 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-                  )}
-
-                  {exp.tasks.length > 0 && (
-                    <ul className="mt-2 space-y-1">
-                      {exp.tasks.map((task, i) => (
-                        <li key={i} className={`text-xs flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                          <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }} className="font-mono mt-0.5">›</span>
-                          {task}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Education */}
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <Database className="w-4 h-4" style={{ color: colors.primary }} />
-              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide">Opleiding</h2>
-            </div>
-            <div className={`space-y-3 pl-6 ${isPlaceholder.education ? 'opacity-50' : ''}`}>
-              {education.map((edu) => (
-                <div
-                  key={edu.id}
-                  className="relative pl-4"
-                  style={{ borderLeft: `2px solid ${isPlaceholder.education ? '#cbd5e1' : colors.primaryLight}` }}
-                >
-                  <div
-                    className="absolute left-0 top-0 w-2 h-2 rounded-full -translate-x-[5px]"
-                    style={{ backgroundColor: isPlaceholder.education ? '#94a3b8' : colors.primary }}
-                  />
-
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className={`font-semibold text-sm ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {edu.degree}
-                      </h3>
-                      <p className="text-xs font-medium" style={{ color: isPlaceholder.education ? '#94a3b8' : colors.primary }}>
-                        {edu.institution}
-                        {edu.location && <span className="text-slate-400"> @ {edu.location}</span>}
-                      </p>
-                    </div>
-                    <span
-                      className="text-[10px] font-mono px-2 py-0.5 rounded"
-                      style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark }}
-                    >
-                      {formatDate(edu.startDate)} → {edu.current ? 'now' : formatDate(edu.endDate)}
-                    </span>
-                  </div>
-                  {edu.description && (
-                    <p className={`text-xs mt-1 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>

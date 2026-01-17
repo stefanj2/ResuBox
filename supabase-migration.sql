@@ -8,9 +8,16 @@ CREATE TABLE IF NOT EXISTS cv_orders (
   customer_email VARCHAR(255) NOT NULL,
   customer_phone VARCHAR(50),
 
+  -- Adresgegevens (voor debiteurenbeheer/brieven)
+  customer_address VARCHAR(255),
+  customer_house_number VARCHAR(20),
+  customer_postal_code VARCHAR(10),
+  customer_city VARCHAR(100),
+
   -- CV referentie
   cv_id VARCHAR(255),
   template_used VARCHAR(50),
+  cv_data JSONB, -- Full CV data for PDF regeneration
 
   -- Financieel
   amount DECIMAL(10, 2) DEFAULT 42.00,
@@ -60,3 +67,13 @@ CREATE POLICY "Service role has full access to cv_orders" ON cv_orders
 
 CREATE POLICY "Service role has full access to order_actions" ON order_actions
   FOR ALL USING (true) WITH CHECK (true);
+
+-- Migration: Add address columns to existing cv_orders table
+-- Run these if the table already exists without address columns
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS customer_address VARCHAR(255);
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS customer_house_number VARCHAR(20);
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS customer_postal_code VARCHAR(10);
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS customer_city VARCHAR(100);
+
+-- Migration: Add cv_data column for storing full CV data
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS cv_data JSONB;

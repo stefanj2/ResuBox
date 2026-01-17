@@ -56,8 +56,13 @@ export interface Database {
           customer_name: string;
           customer_email: string;
           customer_phone: string | null;
+          customer_address: string | null;
+          customer_house_number: string | null;
+          customer_postal_code: string | null;
+          customer_city: string | null;
           cv_id: string | null;
           template_used: string | null;
+          cv_data: Record<string, unknown> | null;
           amount: number;
           dossier_number: string | null;
           mollie_payment_id: string | null;

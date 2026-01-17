@@ -149,8 +149,13 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           customer_name: customerName,
           customer_email: customerEmail,
           customer_phone: customerPhone,
+          customer_address: cvData.personal.address,
+          customer_house_number: cvData.personal.houseNumber,
+          customer_postal_code: cvData.personal.postalCode,
+          customer_city: cvData.personal.city,
           cv_id: cvData.id,
           template_used: cvData.meta.selectedTemplate,
+          cv_data: cvData, // Store full CV data for admin download
         });
         console.log('📦 Order aangemaakt voor:', customerEmail);
       } catch (orderError) {
@@ -204,7 +209,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
   return (
     <>
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title="Download CV">
       <div className="p-4 sm:p-6">
         {status === 'success' ? (
           <div className="text-center py-8">
@@ -231,15 +236,15 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           </div>
         ) : (
           <>
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-emerald-600" />
+            {/* Header - compact on mobile */}
+            <div className="text-center mb-3 sm:mb-6">
+              <div className="w-10 h-10 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
+                <FileText className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-2">
                 Download je CV
               </h2>
-              <p className="text-slate-600">
+              <p className="text-slate-600 text-sm sm:text-base hidden sm:block">
                 Je CV is klaar om te downloaden. Je ontvangt de PDF ook per e-mail op <strong>{cvData.personal.email || 'je opgegeven e-mailadres'}</strong>.
               </p>
             </div>
@@ -247,30 +252,34 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             {/* CV Preview - scaled version of actual template */}
             <div
               ref={previewRef}
-              className="flex justify-center bg-slate-50 rounded-xl p-4 mb-6"
+              className="flex justify-center bg-slate-50 rounded-xl p-2 pb-1 sm:p-4 sm:pb-2 mb-2 sm:mb-6"
             >
-              <div
-                className="relative overflow-hidden bg-white rounded-lg shadow-md border border-slate-200"
-                style={{
-                  width: '52.5mm', // 210mm * 0.25
-                  height: '74.25mm', // 297mm * 0.25
-                }}
-              >
+              {/* Responsive wrapper - smaller on mobile (0.55 * 0.25 = 0.1375 effective scale) */}
+              {/* Negative margin compensates for scale transform not reducing layout height */}
+              <div className="origin-top scale-[0.55] sm:scale-100 -mb-[126px] sm:mb-0">
                 <div
-                  className="pointer-events-none origin-top-left"
+                  className="relative overflow-hidden bg-white rounded-lg shadow-md border border-slate-200"
                   style={{
-                    transform: 'scale(0.25)',
-                    width: '210mm',
-                    height: '297mm',
+                    width: '52.5mm', // 210mm * 0.25
+                    height: '74.25mm', // 297mm * 0.25
                   }}
                 >
-                  <CVPreview dataOverride={cvData} />
+                  <div
+                    className="pointer-events-none origin-top-left"
+                    style={{
+                      transform: 'scale(0.25)',
+                      width: '210mm',
+                      height: '297mm',
+                    }}
+                  >
+                    <CVPreview dataOverride={cvData} />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Checkbox */}
-            <div className="mb-6">
+            <div className="mb-3 sm:mb-6">
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div className="relative flex-shrink-0 mt-0.5">
                   <input
@@ -338,7 +347,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             </button>
 
             {/* Trust badges */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 mt-6 text-xs text-slate-500">
+            <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-6 text-xs text-slate-500">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />

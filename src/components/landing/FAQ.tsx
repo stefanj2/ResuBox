@@ -106,7 +106,7 @@ export function FAQ() {
               iconPosition="right"
               className="bg-white !text-emerald-600 !border-white hover:bg-emerald-50 hover:!border-emerald-50"
             >
-              Start nu direct (100% Gratis)
+              Maak gratis mijn CV
             </Button>
           </Link>
         </div>

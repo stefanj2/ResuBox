@@ -1,5 +1,7 @@
 // Admin Dashboard Types for CV Orders
 
+import { CVData } from './cv';
+
 export type OrderStatus =
   | 'nieuw'
   | 'bevestigd'
@@ -18,9 +20,16 @@ export interface CVOrder {
   customer_email: string;
   customer_phone?: string;
 
+  // Address data (for debt collection letters)
+  customer_address?: string;
+  customer_house_number?: string;
+  customer_postal_code?: string;
+  customer_city?: string;
+
   // CV reference
   cv_id?: string;
   template_used?: string;
+  cv_data?: CVData; // Full CV data for regenerating PDF
 
   // Financial
   amount: number;

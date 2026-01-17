@@ -37,7 +37,7 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row items-center gap-5 mb-8">
               <Link href="/builder">
                 <Button size="lg" icon={ArrowRight} iconPosition="right" className="text-lg px-8 py-4 shadow-xl shadow-emerald-500/20">
-                  Start nu — het is gratis
+                  Maak gratis mijn CV
                 </Button>
               </Link>
 

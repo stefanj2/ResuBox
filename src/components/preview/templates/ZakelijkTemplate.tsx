@@ -65,153 +65,157 @@ export function ZakelijkTemplate({ cvData, colorScheme }: TemplateProps) {
               className="flex flex-wrap gap-x-4 gap-y-1 text-xs mt-2"
               style={{ fontFamily: 'system-ui, sans-serif' }}
             >
-              <span className={isPlaceholder.email ? 'text-slate-400' : 'text-slate-600'}>{personal.email}</span>
-              <span className={isPlaceholder.phone ? 'text-slate-400' : 'text-slate-600'}>{personal.phone}</span>
-              <span className={isPlaceholder.city ? 'text-slate-400' : 'text-slate-600'}>
-                {!isPlaceholder.address && personal.address && `${personal.address}, `}{personal.city}
-              </span>
-              {personal.linkedIn && (
-                <span className={isPlaceholder.linkedIn ? 'text-slate-400' : 'text-slate-600'}>{personal.linkedIn}</span>
+              <span className="text-slate-600">{personal.email}</span>
+              {personal.phone && <span className="text-slate-600">{personal.phone}</span>}
+              {(personal.address || personal.city) && (
+                <span className="text-slate-600">
+                  {personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}{personal.city}
+                </span>
               )}
-              {personal.website && (
-                <span className={isPlaceholder.website ? 'text-slate-400' : 'text-slate-600'}>{personal.website}</span>
-              )}
-              {personal.dateOfBirth && (
-                <span className={isPlaceholder.dateOfBirth ? 'text-slate-400' : 'text-slate-600'}>Geb. {personal.dateOfBirth}</span>
-              )}
+              {personal.linkedIn && <span className="text-slate-600">{personal.linkedIn}</span>}
+              {personal.website && <span className="text-slate-600">{personal.website}</span>}
+              {personal.dateOfBirth && <span className="text-slate-600">Geb. {personal.dateOfBirth}</span>}
             </div>
           </div>
         </div>
       </header>
 
       {/* Profile Summary */}
-      <section className="mb-5">
-        <h2
-          className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-          style={{
-            color: colors.primaryDark,
-            borderBottom: `1px solid ${colors.primaryLight}`,
-          }}
-        >
-          Profiel
-        </h2>
-        <p
-          className={`leading-relaxed text-xs ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-700'}`}
-          style={{ fontFamily: 'system-ui, sans-serif' }}
-        >
-          {profile.summary}
-        </p>
-      </section>
+      {profile.summary && (
+        <section className="mb-5">
+          <h2
+            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{
+              color: colors.primaryDark,
+              borderBottom: `1px solid ${colors.primaryLight}`,
+            }}
+          >
+            Profiel
+          </h2>
+          <p
+            className={`leading-relaxed text-xs ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-700'}`}
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            {profile.summary}
+          </p>
+        </section>
+      )}
 
       {/* Work Experience */}
-      <section className="mb-5">
-        <h2
-          className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-          style={{
-            color: colors.primaryDark,
-            borderBottom: `1px solid ${colors.primaryLight}`,
-          }}
-        >
-          Werkervaring
-        </h2>
-        <div className={`space-y-3 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-          {experience.map((exp) => (
-            <div key={exp.id} style={{ fontFamily: 'system-ui, sans-serif' }}>
-              <div className="flex justify-between items-baseline">
-                <div>
-                  <span className={`font-semibold text-sm ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                    {exp.jobTitle}
-                  </span>
-                  <span className="text-slate-600 text-xs ml-2">
-                    | {exp.company}
-                    {exp.location && `, ${exp.location}`}
+      {experience.length > 0 && (
+        <section className="mb-5">
+          <h2
+            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{
+              color: colors.primaryDark,
+              borderBottom: `1px solid ${colors.primaryLight}`,
+            }}
+          >
+            Werkervaring
+          </h2>
+          <div className={`space-y-3 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
+            {experience.map((exp) => (
+              <div key={exp.id} style={{ fontFamily: 'system-ui, sans-serif' }}>
+                <div className="flex justify-between items-baseline">
+                  <div>
+                    <span className={`font-semibold text-sm ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
+                      {exp.jobTitle}
+                    </span>
+                    <span className="text-slate-600 text-xs ml-2">
+                      | {exp.company}
+                      {exp.location && `, ${exp.location}`}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-500">
+                    {formatDate(exp.startDate)} – {exp.current ? 'Heden' : formatDate(exp.endDate)}
                   </span>
                 </div>
-                <span className="text-xs text-slate-500">
-                  {formatDate(exp.startDate)} – {exp.current ? 'Heden' : formatDate(exp.endDate)}
-                </span>
+
+                {exp.description && (
+                  <p className={`text-xs mt-1 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
+                )}
+
+                {exp.tasks.length > 0 && (
+                  <ul className="mt-1 space-y-0.5">
+                    {exp.tasks.map((task, i) => (
+                      <li key={i} className={`text-xs flex items-start gap-1.5 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
+                        <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>–</span>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-
-              {exp.description && (
-                <p className={`text-xs mt-1 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-              )}
-
-              {exp.tasks.length > 0 && (
-                <ul className="mt-1 space-y-0.5">
-                  {exp.tasks.map((task, i) => (
-                    <li key={i} className={`text-xs flex items-start gap-1.5 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                      <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>–</span>
-                      {task}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Education */}
-      <section className="mb-5">
-        <h2
-          className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-          style={{
-            color: colors.primaryDark,
-            borderBottom: `1px solid ${colors.primaryLight}`,
-          }}
-        >
-          Opleiding
-        </h2>
-        <div className={`space-y-2 ${isPlaceholder.education ? 'opacity-50' : ''}`} style={{ fontFamily: 'system-ui, sans-serif' }}>
-          {education.map((edu) => (
-            <div key={edu.id}>
-              <div className="flex justify-between items-baseline">
-                <div>
-                  <span className={`font-semibold text-sm ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                    {edu.degree}
-                  </span>
-                  <span className="text-slate-600 text-xs ml-2">
-                    | {edu.institution}
-                    {edu.location && `, ${edu.location}`}
+      {education.length > 0 && (
+        <section className="mb-5">
+          <h2
+            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{
+              color: colors.primaryDark,
+              borderBottom: `1px solid ${colors.primaryLight}`,
+            }}
+          >
+            Opleiding
+          </h2>
+          <div className={`space-y-2 ${isPlaceholder.education ? 'opacity-50' : ''}`} style={{ fontFamily: 'system-ui, sans-serif' }}>
+            {education.map((edu) => (
+              <div key={edu.id}>
+                <div className="flex justify-between items-baseline">
+                  <div>
+                    <span className={`font-semibold text-sm ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
+                      {edu.degree}
+                    </span>
+                    <span className="text-slate-600 text-xs ml-2">
+                      | {edu.institution}
+                      {edu.location && `, ${edu.location}`}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-500">
+                    {formatDate(edu.startDate)} – {edu.current ? 'Heden' : formatDate(edu.endDate)}
                   </span>
                 </div>
-                <span className="text-xs text-slate-500">
-                  {formatDate(edu.startDate)} – {edu.current ? 'Heden' : formatDate(edu.endDate)}
-                </span>
+                {edu.description && (
+                  <p className={`text-xs mt-0.5 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
+                )}
               </div>
-              {edu.description && (
-                <p className={`text-xs mt-0.5 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Skills */}
-      <section>
-        <h2
-          className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-          style={{
-            color: colors.primaryDark,
-            borderBottom: `1px solid ${colors.primaryLight}`,
-          }}
-        >
-          Vaardigheden
-        </h2>
-        <div
-          className={`flex flex-wrap gap-x-3 gap-y-1 text-xs ${isPlaceholder.skills ? 'text-slate-400' : 'text-slate-700'}`}
-          style={{ fontFamily: 'system-ui, sans-serif' }}
-        >
-          {skills.map((skill, index) => (
-            <span key={skill.id}>
-              {skill.name}
-              {index < skills.length - 1 && (
-                <span className="ml-3" style={{ color: isPlaceholder.skills ? '#94a3b8' : colors.primary }}>|</span>
-              )}
-            </span>
-          ))}
-        </div>
-      </section>
+      {skills.length > 0 && (
+        <section>
+          <h2
+            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
+            style={{
+              color: colors.primaryDark,
+              borderBottom: `1px solid ${colors.primaryLight}`,
+            }}
+          >
+            Vaardigheden
+          </h2>
+          <div
+            className={`flex flex-wrap gap-x-3 gap-y-1 text-xs ${isPlaceholder.skills ? 'text-slate-400' : 'text-slate-700'}`}
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            {skills.map((skill, index) => (
+              <span key={skill.id}>
+                {skill.name}
+                {index < skills.length - 1 && (
+                  <span className="ml-3" style={{ color: isPlaceholder.skills ? '#94a3b8' : colors.primary }}>|</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

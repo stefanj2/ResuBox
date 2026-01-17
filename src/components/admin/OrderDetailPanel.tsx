@@ -6,6 +6,7 @@ import {
   User,
   Mail,
   Phone,
+  MapPin,
   Calendar,
   FileText,
   Euro,
@@ -14,6 +15,7 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Download,
 } from 'lucide-react';
 import { OrderWithActions, OrderStatus } from '@/types/admin';
 import { ORDER_STATUS_CONFIG, ORDER_STATUSES } from '@/lib/orderStatusConfig';
@@ -26,6 +28,7 @@ interface OrderDetailPanelProps {
   onClose: () => void;
   onStatusChange: (orderId: string, status: OrderStatus) => Promise<void>;
   onSendEmail: (orderId: string, emailType: string) => Promise<void>;
+  onDownloadCV?: (orderId: string) => Promise<void>;
 }
 
 export function OrderDetailPanel({
@@ -33,10 +36,12 @@ export function OrderDetailPanel({
   onClose,
   onStatusChange,
   onSendEmail,
+  onDownloadCV,
 }: OrderDetailPanelProps) {
   const [changingStatus, setChangingStatus] = useState(false);
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [downloadingCV, setDownloadingCV] = useState(false);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '-';
@@ -82,6 +87,16 @@ export function OrderDetailPanel({
     await navigator.clipboard.writeText(text);
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleDownloadCV = async () => {
+    if (!onDownloadCV || !order.cv_data) return;
+    setDownloadingCV(true);
+    try {
+      await onDownloadCV(order.id);
+    } finally {
+      setDownloadingCV(false);
+    }
   };
 
   const emailButtons = [
@@ -161,6 +176,26 @@ export function OrderDetailPanel({
                 <span>{order.customer_phone}</span>
               </div>
             )}
+            {(order.customer_address || order.customer_city) && (
+              <div className="flex items-start gap-2 text-sm text-slate-600">
+                <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <div>
+                  {order.customer_address && (
+                    <span>
+                      {order.customer_address}
+                      {order.customer_house_number && ` ${order.customer_house_number}`}
+                    </span>
+                  )}
+                  {order.customer_address && order.customer_city && <br />}
+                  {(order.customer_postal_code || order.customer_city) && (
+                    <span>
+                      {order.customer_postal_code && `${order.customer_postal_code} `}
+                      {order.customer_city}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-sm text-slate-600">
               <Calendar className="w-4 h-4" />
               <span>Aangemaakt: {formatDate(order.created_at)}</span>
@@ -237,10 +272,10 @@ export function OrderDetailPanel({
         </div>
 
         {/* CV Details */}
-        {(order.cv_id || order.template_used) && (
+        {(order.cv_id || order.template_used || order.cv_data) && (
           <div className="space-y-3">
             <h3 className="text-sm font-medium text-slate-700">CV Details</h3>
-            <div className="bg-slate-50 rounded-lg p-4 space-y-2">
+            <div className="bg-slate-50 rounded-lg p-4 space-y-3">
               {order.template_used && (
                 <div className="flex items-center gap-2 text-sm text-slate-600">
                   <FileText className="w-4 h-4" />
@@ -251,6 +286,23 @@ export function OrderDetailPanel({
                 <div className="flex items-center gap-2 text-sm text-slate-500 font-mono text-xs">
                   <span>ID: {order.cv_id}</span>
                 </div>
+              )}
+              {order.cv_data && onDownloadCV && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleDownloadCV}
+                  loading={downloadingCV}
+                  icon={<Download className="w-4 h-4" />}
+                  fullWidth
+                >
+                  Download CV (PDF)
+                </Button>
+              )}
+              {!order.cv_data && (
+                <p className="text-xs text-slate-400 italic">
+                  CV data niet beschikbaar (oude order)
+                </p>
               )}
             </div>
           </div>

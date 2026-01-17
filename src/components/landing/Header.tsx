@@ -74,7 +74,7 @@ export function Header() {
               </button>
               <Link href="/builder" className="flex items-center gap-2">
                 <Button size="md" icon={ArrowRight} iconPosition="right">
-                  Start gratis
+                  Maak gratis mijn CV
                 </Button>
               </Link>
             </div>
@@ -128,7 +128,7 @@ export function Header() {
               className="block"
             >
               <Button fullWidth size="md" icon={ArrowRight} iconPosition="right">
-                Start gratis
+                Maak gratis mijn CV
               </Button>
             </Link>
           </div>

@@ -69,26 +69,30 @@ export function ExecutiveTemplate({ cvData, colorScheme }: TemplateProps) {
 
             {/* Contact Grid */}
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              <div className={`flex items-center gap-2 text-slate-300 ${isPlaceholder.email ? 'opacity-50' : ''}`}>
+              <div className="flex items-center gap-2 text-slate-300">
                 <Mail className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
                 <span>{personal.email}</span>
               </div>
-              <div className={`flex items-center gap-2 text-slate-300 ${isPlaceholder.phone ? 'opacity-50' : ''}`}>
-                <Phone className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
-                <span>{personal.phone}</span>
-              </div>
-              <div className={`flex items-center gap-2 text-slate-300 ${isPlaceholder.city ? 'opacity-50' : ''}`}>
-                <MapPin className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
-                <span>{!isPlaceholder.address && personal.address && `${personal.address}, `}{personal.city}</span>
-              </div>
+              {personal.phone && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <Phone className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
+                  <span>{personal.phone}</span>
+                </div>
+              )}
+              {(personal.address || personal.city) && (
+                <div className="flex items-center gap-2 text-slate-300">
+                  <MapPin className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
+                  <span>{personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}{personal.city}</span>
+                </div>
+              )}
               {personal.linkedIn && (
-                <div className={`flex items-center gap-2 text-slate-300 ${isPlaceholder.linkedIn ? 'opacity-50' : ''}`}>
+                <div className="flex items-center gap-2 text-slate-300">
                   <Linkedin className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
                   <span>{personal.linkedIn}</span>
                 </div>
               )}
               {personal.website && (
-                <div className={`flex items-center gap-2 text-slate-300 ${isPlaceholder.website ? 'opacity-50' : ''}`}>
+                <div className="flex items-center gap-2 text-slate-300">
                   <Globe className="w-4 h-4" style={{ color: `${colors.primary}cc` }} />
                   <span>{personal.website}</span>
                 </div>
@@ -98,11 +102,13 @@ export function ExecutiveTemplate({ cvData, colorScheme }: TemplateProps) {
         </div>
 
         {/* Profile Summary in header */}
-        <div className="relative z-10 mt-6 pt-6 border-t border-slate-700/50">
-          <p className={`leading-relaxed text-sm ${isPlaceholder.summary ? 'text-slate-500 italic' : 'text-slate-300'}`}>
-            {profile.summary}
-          </p>
-        </div>
+        {profile.summary && (
+          <div className="relative z-10 mt-6 pt-6 border-t border-slate-700/50">
+            <p className={`leading-relaxed text-sm ${isPlaceholder.summary ? 'text-slate-500 italic' : 'text-slate-300'}`}>
+              {profile.summary}
+            </p>
+          </div>
+        )}
       </header>
 
       {/* Accent bar */}
@@ -112,110 +118,116 @@ export function ExecutiveTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* Main Content */}
       <div className="p-8 bg-slate-50/50">
         {/* Work Experience */}
-        <section className="mb-8">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
-              <Briefcase className="w-5 h-5" style={{ color: colors.primary }} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Werkervaring</h2>
-              <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
-            </div>
-          </div>
-
-          <div className={`space-y-5 ml-[52px] ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-            {experience.map((exp) => (
-              <div key={exp.id} className="relative bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className={`font-bold text-base ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                      {exp.jobTitle}
-                    </h3>
-                    <p className="text-sm font-semibold" style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>
-                      {exp.company}
-                      {exp.location && <span className="text-slate-400 font-normal"> — {exp.location}</span>}
-                    </p>
-                  </div>
-                  <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap">
-                    {formatDate(exp.startDate)} – {exp.current ? 'Heden' : formatDate(exp.endDate)}
-                  </span>
-                </div>
-                {exp.description && (
-                  <p className={`text-sm mt-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-                )}
-                {exp.tasks.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {exp.tasks.map((task, i) => (
-                      <li key={i} className={`text-sm flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                        <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }} className="mt-0.5 font-bold">▪</span>
-                        {task}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+        {experience.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
+                <Briefcase className="w-5 h-5" style={{ color: colors.primary }} />
               </div>
-            ))}
-          </div>
-        </section>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Werkervaring</h2>
+                <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
+              </div>
+            </div>
+
+            <div className={`space-y-5 ml-[52px] ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
+              {experience.map((exp) => (
+                <div key={exp.id} className="relative bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className={`font-bold text-base ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
+                        {exp.jobTitle}
+                      </h3>
+                      <p className="text-sm font-semibold" style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>
+                        {exp.company}
+                        {exp.location && <span className="text-slate-400 font-normal"> — {exp.location}</span>}
+                      </p>
+                    </div>
+                    <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap">
+                      {formatDate(exp.startDate)} – {exp.current ? 'Heden' : formatDate(exp.endDate)}
+                    </span>
+                  </div>
+                  {exp.description && (
+                    <p className={`text-sm mt-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
+                  )}
+                  {exp.tasks.length > 0 && (
+                    <ul className="mt-3 space-y-1.5">
+                      {exp.tasks.map((task, i) => (
+                        <li key={i} className={`text-sm flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
+                          <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }} className="mt-0.5 font-bold">▪</span>
+                          {task}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Education */}
-        <section className="mb-8">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
-              <GraduationCap className="w-5 h-5" style={{ color: colors.primary }} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Opleiding</h2>
-              <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
-            </div>
-          </div>
-
-          <div className={`space-y-4 ml-[52px] ${isPlaceholder.education ? 'opacity-50' : ''}`}>
-            {education.map((edu) => (
-              <div key={edu.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-                <div className="flex justify-between items-start mb-1">
-                  <div>
-                    <h3 className={`font-bold ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                      {edu.degree}
-                    </h3>
-                    <p className="text-sm font-semibold" style={{ color: isPlaceholder.education ? '#94a3b8' : colors.primary }}>
-                      {edu.institution}
-                      {edu.location && <span className="text-slate-400 font-normal"> — {edu.location}</span>}
-                    </p>
-                  </div>
-                  <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap">
-                    {formatDate(edu.startDate)} – {edu.current ? 'Heden' : formatDate(edu.endDate)}
-                  </span>
-                </div>
-                {edu.description && (
-                  <p className={`text-sm mt-2 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-                )}
+        {education.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
+                <GraduationCap className="w-5 h-5" style={{ color: colors.primary }} />
               </div>
-            ))}
-          </div>
-        </section>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Opleiding</h2>
+                <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
+              </div>
+            </div>
+
+            <div className={`space-y-4 ml-[52px] ${isPlaceholder.education ? 'opacity-50' : ''}`}>
+              {education.map((edu) => (
+                <div key={edu.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-1">
+                    <div>
+                      <h3 className={`font-bold ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
+                        {edu.degree}
+                      </h3>
+                      <p className="text-sm font-semibold" style={{ color: isPlaceholder.education ? '#94a3b8' : colors.primary }}>
+                        {edu.institution}
+                        {edu.location && <span className="text-slate-400 font-normal"> — {edu.location}</span>}
+                      </p>
+                    </div>
+                    <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap">
+                      {formatDate(edu.startDate)} – {edu.current ? 'Heden' : formatDate(edu.endDate)}
+                    </span>
+                  </div>
+                  {edu.description && (
+                    <p className={`text-sm mt-2 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Skills */}
-        <section>
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
-              <Award className="w-5 h-5" style={{ color: colors.primary }} />
+        {skills.length > 0 && (
+          <section>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: '#1e293b' }}>
+                <Award className="w-5 h-5" style={{ color: colors.primary }} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Vaardigheden</h2>
+                <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 uppercase tracking-wide">Vaardigheden</h2>
-              <div className="w-12 h-0.5 rounded-full mt-1" style={{ backgroundColor: colors.primary }}></div>
-            </div>
-          </div>
 
-          <div className={`flex flex-wrap gap-2 ml-[52px] ${isPlaceholder.skills ? 'opacity-50' : ''}`}>
-            {skills.map((skill) => (
-              <span key={skill.id} className="px-4 py-2 text-white text-sm font-medium rounded-lg shadow-md"
-                style={{ backgroundColor: '#1e293b' }}>
-                {skill.name}
-              </span>
-            ))}
-          </div>
-        </section>
+            <div className={`flex flex-wrap gap-2 ml-[52px] ${isPlaceholder.skills ? 'opacity-50' : ''}`}>
+              {skills.map((skill) => (
+                <span key={skill.id} className="px-4 py-2 text-white text-sm font-medium rounded-lg shadow-md"
+                  style={{ backgroundColor: '#1e293b' }}>
+                  {skill.name}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

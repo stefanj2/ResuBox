@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { CVOrder, OrderStatus, OrderWithActions, OrderStatistics } from '@/types/admin';
+import { CVData } from '@/types/cv';
 import {
   getOrders,
   getOrderWithActions,
@@ -14,6 +16,9 @@ import { StatisticsGrid } from '@/components/admin/StatisticsGrid';
 import { FilterSection } from '@/components/admin/FilterSection';
 import { OrderList } from '@/components/admin/OrderList';
 import { OrderDetailPanel } from '@/components/admin/OrderDetailPanel';
+import { CVPreview } from '@/components/preview';
+import { toPng } from 'html-to-image';
+import { jsPDF } from 'jspdf';
 
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<CVOrder[]>([]);
@@ -37,6 +42,13 @@ export default function AdminDashboardPage() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [cvDataForPdf, setCvDataForPdf] = useState<CVData | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -117,6 +129,107 @@ export default function AdminDashboardPage() {
     setStatusFilter(status);
   };
 
+  const handleDownloadCV = async (orderId: string) => {
+    const order = orders.find((o) => o.id === orderId) || selectedOrder;
+    if (!order?.cv_data) return;
+
+    // Set the CV data to trigger rendering
+    setCvDataForPdf(order.cv_data);
+
+    // Wait for the component to render
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const element = pdfContainerRef.current;
+    if (!element) {
+      setCvDataForPdf(null);
+      return;
+    }
+
+    try {
+      // Temporarily make element visible for capture
+      const originalStyle = element.style.cssText;
+      element.style.cssText = `
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        min-height: 297mm;
+        background-color: white;
+        z-index: 9999;
+        overflow: visible;
+      `;
+
+      // Wait for styles to apply
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Create PNG from the template
+      const imgData = await toPng(element, {
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        cacheBust: true,
+        skipFonts: true,
+      });
+
+      // Restore original positioning
+      element.style.cssText = originalStyle;
+
+      // A4 dimensions in mm
+      const a4Width = 210;
+      const a4Height = 297;
+
+      // Create PDF
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      // Create image to get dimensions
+      const img = new Image();
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imgData;
+      });
+
+      // Calculate scaling to fit A4
+      const imgWidth = a4Width;
+      const imgHeight = (img.height * a4Width) / img.width;
+
+      // Handle pagination
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= a4Height;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= a4Height;
+      }
+
+      // Download PDF
+      const fileName = `CV_${order.customer_name.replace(/\s+/g, '_')}_${order.dossier_number}.pdf`;
+      pdf.save(fileName);
+
+      // Log the action
+      await addOrderAction(orderId, 'manual_action', 'CV PDF gedownload door admin', 'admin');
+
+      // Refresh selected order to show the action
+      if (selectedOrder?.id === orderId) {
+        const updated = await getOrderWithActions(orderId);
+        setSelectedOrder(updated);
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setCvDataForPdf(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
       <AdminHeader onRefresh={handleRefresh} refreshing={refreshing} />
@@ -167,6 +280,7 @@ export default function AdminDashboardPage() {
                 onClose={handleCloseDetail}
                 onStatusChange={handleStatusChange}
                 onSendEmail={handleSendEmail}
+                onDownloadCV={handleDownloadCV}
               />
             ) : (
               <div className="bg-white rounded-xl border border-slate-200 p-12 text-center h-full flex flex-col items-center justify-center">
@@ -196,6 +310,27 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Hidden container for PDF generation */}
+      {mounted && cvDataForPdf && createPortal(
+        <div
+          ref={pdfContainerRef}
+          id="admin-pdf-export-container"
+          style={{
+            position: 'fixed',
+            left: '-9999px',
+            top: 0,
+            width: '210mm',
+            minHeight: '297mm',
+            backgroundColor: 'white',
+            overflow: 'visible',
+            zIndex: -1,
+          }}
+        >
+          <CVPreview dataOverride={cvDataForPdf} />
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
