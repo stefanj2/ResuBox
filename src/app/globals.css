@@ -2,11 +2,11 @@
 
 /* Base styles for overscroll background */
 html {
-  background-color: #f8fafc; /* slate-50 */
+  background-color: #f1f5f9; /* slate-100 - matches builder background */
 }
 
 body {
-  background-color: #f8fafc; /* slate-50 */
+  background-color: #f1f5f9; /* slate-100 */
   overscroll-behavior-y: none;
 }
 
