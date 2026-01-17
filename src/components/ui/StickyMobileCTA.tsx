@@ -9,9 +9,10 @@ interface StickyMobileCTAProps {
 
 export function StickyMobileCTA({ onClick }: StickyMobileCTAProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-slate-100 sticky-cta-overscroll">
+    <div className="fixed bottom-0 left-0 right-0 md:hidden z-50">
       {/* Gradient fade for smoother transition */}
-      <div className="h-4 bg-gradient-to-t from-slate-100 to-transparent pointer-events-none" />
+      <div className="h-4 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+      {/* White container for button with safe area padding */}
       <div className="bg-white border-t border-slate-200 px-4 py-2.5 pb-safe">
         <button
           onClick={onClick}
