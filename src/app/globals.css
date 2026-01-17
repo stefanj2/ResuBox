@@ -210,3 +210,14 @@ body {
 .animate-cta-pulse {
   animation: ctaPulse 2s ease-in-out infinite;
 }
+
+/* Extend sticky CTA background below viewport for iOS overscroll */
+.sticky-cta-overscroll::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -100px;
+  height: 100px;
+  background-color: #f1f5f9; /* slate-100 */
+}
