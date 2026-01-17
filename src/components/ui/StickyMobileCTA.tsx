@@ -24,7 +24,7 @@ export function StickyMobileCTA({ onClick }: StickyMobileCTAProps) {
         </button>
       </div>
       {/* Bottom spacer - Safari uses this color for toolbar */}
-      <div className="h-10 bg-slate-100" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
+      <div className="h-3 bg-slate-100" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
     </div>
   );
 }
