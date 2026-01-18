@@ -81,18 +81,16 @@ export const ORDER_STATUSES: OrderStatus[] = [
 
 // Email flow timing (in milliseconds)
 export const EMAIL_FLOW_TIMING = {
-  confirmation: 4 * 60 * 60 * 1000, // 4 hours after order
-  invoice: 24 * 60 * 60 * 1000, // 24 hours after order
+  invoice: 4 * 60 * 60 * 1000, // 4 hours after order - factuur met betaallink
   reminder_1: 7 * 24 * 60 * 60 * 1000, // 7 days after order
   reminder_2: 14 * 24 * 60 * 60 * 1000, // 14 days after order
 };
 
 // For test mode (much shorter intervals)
 export const EMAIL_FLOW_TIMING_TEST = {
-  confirmation: 10 * 1000, // 10 seconds
-  invoice: 30 * 1000, // 30 seconds
-  reminder_1: 60 * 1000, // 1 minute
-  reminder_2: 120 * 1000, // 2 minutes
+  invoice: 10 * 1000, // 10 seconds - factuur met betaallink
+  reminder_1: 30 * 1000, // 30 seconds
+  reminder_2: 60 * 1000, // 1 minute
 };
 
 export function getStatusConfig(status: OrderStatus): StatusConfig {

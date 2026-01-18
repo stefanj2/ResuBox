@@ -12,6 +12,7 @@ import {
   addOrderAction,
 } from '@/lib/orders';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { ViewTabs, ViewMode } from '@/components/admin/ViewTabs';
 import { StatisticsGrid } from '@/components/admin/StatisticsGrid';
 import { FilterSection } from '@/components/admin/FilterSection';
 import { OrderList } from '@/components/admin/OrderList';
@@ -40,6 +41,7 @@ export default function AdminDashboardPage() {
   });
   const [searchValue, setSearchValue] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('all');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [cvDataForPdf, setCvDataForPdf] = useState<CVData | null>(null);
@@ -127,6 +129,31 @@ export default function AdminDashboardPage() {
 
   const handleStatusFilterClick = (status: OrderStatus | 'all') => {
     setStatusFilter(status);
+  };
+
+  const handleViewModeChange = (view: ViewMode) => {
+    setViewMode(view);
+    // Reset status filter when changing view
+    setStatusFilter('all');
+  };
+
+  // Filter orders based on view mode
+  const filteredOrders = orders.filter((order) => {
+    if (viewMode === 'betaald') {
+      return order.status === 'betaald';
+    }
+    if (viewMode === 'debiteurs') {
+      // Debiteurenbeheer: all unpaid orders (excluding afgeboekt)
+      return !['betaald', 'afgeboekt'].includes(order.status);
+    }
+    return true; // 'all' view shows everything
+  });
+
+  // Calculate view counts
+  const viewCounts = {
+    all: orders.length,
+    debiteurs: orders.filter((o) => !['betaald', 'afgeboekt'].includes(o.status)).length,
+    betaald: orders.filter((o) => o.status === 'betaald').length,
   };
 
   const handleDownloadCV = async (orderId: string) => {
@@ -241,7 +268,17 @@ export default function AdminDashboardPage() {
           <p className="text-slate-500 mt-1">Beheer CV download orders</p>
         </div>
 
-        {/* Statistics */}
+        {/* View Tabs */}
+        <div className="mb-6">
+          <ViewTabs
+            activeView={viewMode}
+            onViewChange={handleViewModeChange}
+            counts={viewCounts}
+          />
+        </div>
+
+        {/* Statistics - only show on 'all' view */}
+        {viewMode === 'all' && (
         <div className="mb-6">
           <StatisticsGrid
             statistics={statistics}
@@ -249,6 +286,7 @@ export default function AdminDashboardPage() {
             activeStatus={statusFilter}
           />
         </div>
+        )}
 
         {/* Filters */}
         <div className="mb-6">
@@ -265,7 +303,7 @@ export default function AdminDashboardPage() {
           {/* Order List */}
           <div className="lg:col-span-2">
             <OrderList
-              orders={orders}
+              orders={filteredOrders}
               selectedOrderId={selectedOrder?.id}
               onSelectOrder={handleSelectOrder}
               loading={loading}

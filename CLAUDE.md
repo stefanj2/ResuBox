@@ -13,7 +13,20 @@ npm start        # Start production server
 
 ## Architecture
 
-This is a Next.js 16 CV builder application written in Dutch (nl_NL locale). It uses the App Router with React 19 and Tailwind CSS v4.
+This is a Next.js 16 CV builder application (ResuBox) written in Dutch (nl_NL locale). Uses App Router with React 19 and Tailwind CSS v4.
+
+### External Services
+
+- **Supabase**: Database for orders and CV data (with localStorage fallback)
+- **Mollie**: Payment processing (€42 per CV download)
+- **Resend**: Transactional emails (confirmation, invoices, reminders)
+
+Required environment variables (see `.env.local.example`):
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- `MOLLIE_API_KEY`
+- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
+- `ADMIN_USERNAME`, `ADMIN_PASSWORD` (simple admin auth)
+- `NEXT_PUBLIC_SITE_URL`, `CRON_SECRET`
 
 ### Key Data Flow
 
@@ -27,6 +40,7 @@ All CV data is managed through `CVContext` (`src/context/CVContext.tsx`) which p
 
 - `/` - Landing page with Hero, USPSection, FAQ, Footer components
 - `/builder` - Main CV editor wrapped in `CVProvider`
+- `/admin` - Order management dashboard (requires login)
 - `/faq`, `/contact`, `/privacy`, `/voorwaarden` - Static pages
 
 ### Component Organization
@@ -43,6 +57,7 @@ src/components/
 ├── templateSelector/ # Template and color scheme picker
 ├── download/         # Download flow with payment agreement
 ├── landing/          # Marketing page components
+├── admin/            # Admin dashboard components
 └── ui/               # Reusable components (Button, Input, TextArea, Modal, Card)
 ```
 
@@ -58,9 +73,19 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 
 ### API Routes
 
-`POST /api/optimize-cv` - Vacancy-based CV optimization
-- Accepts vacancy URL/text, fetches and extracts keywords
-- Returns optimized profile/experience/skills with change diffs and match score
+- `POST /api/optimize-cv` - AI-powered CV optimization against job vacancies
+- `POST /api/email/send` - Send transactional emails via Resend
+- `POST /api/mollie/webhook` - Mollie payment status webhook
+- `POST /api/admin/login` - Admin authentication
+- `GET /api/cron/process-orders` - Scheduled order processing (every 15 min via Vercel cron)
+- `GET /api/postcode/lookup` - Dutch postal code address lookup
+
+### Order Flow
+
+Orders use status pipeline defined in `src/lib/orderStatusConfig.ts`:
+`nieuw` → `bevestigd` → `factuur_verstuurd` → `herinnering_1` → `herinnering_2` → `betaald` (or `afgeboekt`)
+
+Order operations in `src/lib/orders.ts` handle both Supabase and localStorage fallback.
 
 ### PDF Export
 
@@ -72,6 +97,8 @@ CV data types are defined in `src/types/cv.ts`:
 - `CVData` - Root type containing all sections plus metadata (`CVMeta`)
 - `CVMeta` - Stores template selection, color scheme, payment status, magic link tokens
 - Helper functions: `createEmptyCVData()`, `createEmptyExperience()`, `createEmptyEducation()`, `createEmptySkill()`
+
+Admin types in `src/types/admin.ts`: `CVOrder`, `OrderStatus`, `OrderAction`, `OrderStatistics`
 
 ### Import Aliases
 

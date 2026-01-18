@@ -62,35 +62,7 @@ export async function GET(request: NextRequest) {
         // Process based on current status
         switch (order.status) {
           case 'nieuw':
-            // Send confirmation email after 4 hours (or 10s in test mode)
-            if (orderAge >= timing.confirmation && !order.confirmation_sent_at) {
-              const template = getEmailTemplate(order, 'confirmation');
-              const result = await sendEmail({
-                to: order.customer_email,
-                subject: template.subject,
-                html: template.html,
-              });
-
-              if (result.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    status: 'bevestigd' as OrderStatus,
-                    confirmation_sent_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'email_sent', 'Bevestigingsmail automatisch verstuurd');
-                results.actions.push(`${order.dossier_number}: Bevestigingsmail verstuurd`);
-              } else {
-                results.errors.push(`${order.dossier_number}: Fout bij versturen bevestigingsmail`);
-              }
-            }
-            break;
-
-          case 'bevestigd':
-            // Send invoice after 24 hours (or 30s in test mode)
+            // Send invoice with payment link after 4 hours (or 10s in test mode)
             if (orderAge >= timing.invoice && !order.invoice_sent_at) {
               // Create Mollie payment if not exists
               if (!order.mollie_payment_id) {
@@ -135,7 +107,7 @@ export async function GET(request: NextRequest) {
                   })
                   .eq('id', order.id);
 
-                await logAction(supabase, order.id, 'email_sent', 'Factuur automatisch verstuurd');
+                await logAction(supabase, order.id, 'email_sent', 'Factuur met betaallink automatisch verstuurd');
                 results.actions.push(`${order.dossier_number}: Factuur verstuurd`);
               } else {
                 results.errors.push(`${order.dossier_number}: Fout bij versturen factuur`);

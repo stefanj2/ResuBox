@@ -206,7 +206,7 @@ export function OrderDetailPanel({
         {/* Financial Details */}
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-slate-700">Financieel</h3>
-          <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+          <div className={`rounded-lg p-4 space-y-3 ${order.status === 'betaald' ? 'bg-emerald-50 border border-emerald-200' : 'bg-slate-50'}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-slate-600">
                 <Euro className="w-4 h-4" />
@@ -216,7 +216,7 @@ export function OrderDetailPanel({
                 {formatCurrency(order.amount)}
               </span>
             </div>
-            {order.payment_link && (
+            {order.payment_link && order.status !== 'betaald' && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-slate-600">
                   <CreditCard className="w-4 h-4" />
@@ -232,10 +232,21 @@ export function OrderDetailPanel({
                 </a>
               </div>
             )}
-            {order.paid_at && (
-              <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 -mx-4 -mb-4 px-4 py-2 mt-3 rounded-b-lg">
-                <Check className="w-4 h-4" />
-                <span>Betaald op {formatDate(order.paid_at)}</span>
+            {order.status === 'betaald' && (
+              <div className="border-t border-emerald-200 pt-3 mt-3 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-700 font-medium">
+                  <Check className="w-5 h-5" />
+                  <span>Betaling ontvangen via iDEAL</span>
+                </div>
+                <div className="text-sm text-emerald-600 space-y-1">
+                  <p>Betaald op: {formatDate(order.paid_at)}</p>
+                  {order.mollie_payment_id && (
+                    <p className="font-mono text-xs">Mollie ID: {order.mollie_payment_id}</p>
+                  )}
+                  {order.mollie_payment_status && (
+                    <p>Status: <span className="capitalize font-medium">{order.mollie_payment_status}</span></p>
+                  )}
+                </div>
               </div>
             )}
           </div>
