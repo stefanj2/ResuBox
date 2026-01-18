@@ -6,3 +6,4 @@ export { Card } from './Card';
 export { StickyMobileCTA } from './StickyMobileCTA';
 export { MobileProgressBar } from './MobileProgressBar';
 export { SocialProofToast } from './SocialProofToast';
+export { PreviewTooltip, shouldShowPreviewTooltip } from './PreviewTooltip';

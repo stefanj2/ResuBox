@@ -3,30 +3,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Download, X } from 'lucide-react';
 
-const messages = [
-  { type: 'download', text: 'Iemand heeft zojuist een CV gedownload' },
-  { type: 'count', text: 'CVs vandaag gedownload' },
-];
-
 const cities = ['Amsterdam', 'Rotterdam', 'Utrecht', 'Den Haag', 'Eindhoven', 'Groningen', 'Breda', 'Nijmegen'];
 
 export function SocialProofToast() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentMessage, setCurrentMessage] = useState('');
-  const [downloadCount, setDownloadCount] = useState(0);
 
   const showToast = useCallback(() => {
-    const messageType = messages[Math.floor(Math.random() * messages.length)];
-
-    if (messageType.type === 'download') {
-      const city = cities[Math.floor(Math.random() * cities.length)];
-      setCurrentMessage(`Iemand uit ${city} heeft zojuist een CV gedownload`);
-    } else {
-      const count = Math.floor(Math.random() * 15) + 8; // 8-22 downloads
-      setDownloadCount(count);
-      setCurrentMessage(`${count} ${messageType.text}`);
-    }
-
+    const city = cities[Math.floor(Math.random() * cities.length)];
+    setCurrentMessage(`Iemand uit ${city} heeft zojuist een CV gedownload`);
     setIsVisible(true);
 
     // Auto-dismiss after 4 seconds
@@ -43,7 +28,7 @@ export function SocialProofToast() {
 
     // Then show toasts at random intervals between 45-90 seconds
     const interval = setInterval(() => {
-      const randomDelay = Math.floor(Math.random() * 45000) + 45000; // 45-90 seconds
+      const randomDelay = Math.floor(Math.random() * 45000) + 45000;
       setTimeout(() => {
         showToast();
       }, randomDelay);
@@ -58,7 +43,8 @@ export function SocialProofToast() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-toast-slide-in md:top-6 md:left-auto md:right-6 md:translate-x-0">
+    // Desktop only: Top right position (hidden on mobile)
+    <div className="hidden md:block fixed top-6 right-6 z-50 animate-toast-slide-in">
       <div className="bg-white rounded-xl shadow-xl border border-slate-200 px-4 py-3 flex items-center gap-3 max-w-sm">
         <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
           <Download className="w-5 h-5 text-emerald-600" />

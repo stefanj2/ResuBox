@@ -9,6 +9,7 @@ npm run dev      # Start development server at localhost:3000
 npm run build    # Production build
 npm run lint     # Run ESLint (uses eslint-config-next with TypeScript)
 npm start        # Start production server
+npx tsc --noEmit # Type-check without emitting files
 ```
 
 ## Architecture
@@ -77,7 +78,7 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 - `POST /api/email/send` - Send transactional emails via Resend
 - `POST /api/mollie/webhook` - Mollie payment status webhook
 - `POST /api/admin/login` - Admin authentication
-- `GET /api/cron/process-orders` - Scheduled order processing (every 15 min via Vercel cron)
+- `GET /api/cron/process-orders` - Scheduled order processing (every 15 min via Vercel cron, see `vercel.json`)
 - `GET /api/postcode/lookup` - Dutch postal code address lookup
 
 ### Order Flow
@@ -103,3 +104,7 @@ Admin types in `src/types/admin.ts`: `CVOrder`, `OrderStatus`, `OrderAction`, `O
 ### Import Aliases
 
 Use `@/*` to import from `src/*` (configured in tsconfig.json).
+
+### Admin Authentication
+
+Simple token-based auth in `src/lib/auth.ts`. Tokens stored in localStorage with 24-hour expiry. Sessions auto-extend on each authenticated request.

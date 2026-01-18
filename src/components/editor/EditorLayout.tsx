@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sidebar } from './Sidebar';
@@ -9,21 +9,19 @@ import { ProfileSection } from './sections/ProfileSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { EducationSection } from './sections/EducationSection';
 import { SkillsSection } from './sections/SkillsSection';
-import { VacancySection } from './sections/VacancySection';
 import { CVPreview } from '@/components/preview';
 import { DownloadModal } from '@/components/download/DownloadModal';
 import { useCVData } from '@/context/CVContext';
-import { Eye, Download, Palette, User, FileText, Briefcase, GraduationCap, Wrench, Sparkles, Check, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button, Modal, StickyMobileCTA, SocialProofToast } from '@/components/ui';
+import { Eye, Download, Palette, User, FileText, Briefcase, GraduationCap, Wrench, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button, Modal, StickyMobileCTA, SocialProofToast, PreviewTooltip, shouldShowPreviewTooltip } from '@/components/ui';
 import { TemplateSelector } from '@/components/templateSelector';
 
 const sections = [
   { id: 0, title: 'Persoonsgegevens', shortTitle: 'Persoon', icon: User, component: PersonalSection },
-  { id: 1, title: 'Profiel', shortTitle: 'Profiel', icon: FileText, component: ProfileSection },
-  { id: 2, title: 'Werkervaring', shortTitle: 'Werk', icon: Briefcase, component: ExperienceSection },
-  { id: 3, title: 'Opleiding', shortTitle: 'Studie', icon: GraduationCap, component: EducationSection },
-  { id: 4, title: 'Vaardigheden', shortTitle: 'Skills', icon: Wrench, component: SkillsSection },
-  { id: 5, title: 'Optimaliseren', shortTitle: 'AI', icon: Sparkles, component: VacancySection },
+  { id: 1, title: 'Werkervaring', shortTitle: 'Werk', icon: Briefcase, component: ExperienceSection },
+  { id: 2, title: 'Opleiding', shortTitle: 'Studie', icon: GraduationCap, component: EducationSection },
+  { id: 3, title: 'Vaardigheden', shortTitle: 'Skills', icon: Wrench, component: SkillsSection },
+  { id: 4, title: 'Profiel', shortTitle: 'Profiel', icon: FileText, component: ProfileSection },
 ];
 
 export function EditorLayout() {
@@ -31,24 +29,41 @@ export function EditorLayout() {
   const [showPreview, setShowPreview] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showPreviewTooltip, setShowPreviewTooltip] = useState(false);
 
   const CurrentSectionComponent = sections[currentSection].component;
 
+  // Show preview tooltip when user has typed their first name on section 0
+  useEffect(() => {
+    // Only trigger on section 0 (Persoonsgegevens) and if firstName has content
+    if (
+      currentSection === 0 &&
+      cvData.personal.firstName.length >= 2 &&
+      shouldShowPreviewTooltip() &&
+      !showPreviewTooltip
+    ) {
+      // Small delay to ensure user has finished typing
+      const timer = setTimeout(() => {
+        setShowPreviewTooltip(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentSection, cvData.personal.firstName, showPreviewTooltip]);
+
   // Check section completion (same logic as Sidebar)
+  // Order: Persoon, Werk, Studie, Skills, Profiel
   const isSectionComplete = (id: number): boolean => {
     switch (id) {
-      case 0:
+      case 0: // Persoonsgegevens
         return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email);
-      case 1:
-        return cvData.profile.summary.length > 20;
-      case 2:
+      case 1: // Werkervaring
         return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
-      case 3:
+      case 2: // Opleiding
         return cvData.education.length > 0 && cvData.education.some(e => e.degree && e.institution);
-      case 4:
+      case 3: // Vaardigheden
         return cvData.skills.length >= 3;
-      case 5:
-        return false;
+      case 4: // Profiel
+        return cvData.profile.summary.length > 20;
       default:
         return false;
     }
@@ -171,6 +186,17 @@ export function EditorLayout() {
             </div>
           </header>
 
+          {/* Preview Tooltip - Onboarding coach mark */}
+          {showPreviewTooltip && (
+            <PreviewTooltip
+              onDismiss={() => setShowPreviewTooltip(false)}
+              onPreviewClick={() => {
+                setShowPreviewTooltip(false);
+                setShowPreview(true);
+              }}
+            />
+          )}
+
           {/* Mobile Icon Navigation - Compact tabs */}
           <nav className="bg-white border-b border-slate-200 sticky top-[46px] z-30">
             <div className="flex items-center justify-between px-1">
@@ -253,7 +279,12 @@ export function EditorLayout() {
           </div>
 
           {/* Sticky Mobile CTA */}
-          <StickyMobileCTA onClick={() => setShowDownloadModal(true)} />
+          <StickyMobileCTA
+            currentSection={currentSection}
+            totalSections={sections.length}
+            onNextStep={goToNextSection}
+            onDownload={() => setShowDownloadModal(true)}
+          />
 
           {/* Mobile Preview Modal */}
           {showPreview && (
