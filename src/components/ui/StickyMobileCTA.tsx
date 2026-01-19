@@ -8,6 +8,7 @@ interface StickyMobileCTAProps {
   totalSections: number;
   onNextStep: () => void;
   onDownload: () => void;
+  isCurrentSectionComplete?: boolean;
 }
 
 // Motivational micro-copy based on current step
@@ -33,7 +34,8 @@ export function StickyMobileCTA({
   currentSection,
   totalSections,
   onNextStep,
-  onDownload
+  onDownload,
+  isCurrentSectionComplete = true
 }: StickyMobileCTAProps) {
   const isLastSection = currentSection === totalSections - 1;
   const progressMessage = getProgressMessage(currentSection, totalSections);
@@ -64,9 +66,14 @@ export function StickyMobileCTA({
           // Next step button for steps 0-4
           <button
             onClick={onNextStep}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold rounded-xl px-6 py-3.5 min-h-[52px] shadow-lg shadow-emerald-500/25 hover:bg-emerald-700 active:scale-[0.98] transition-all duration-200"
+            disabled={!isCurrentSectionComplete}
+            className={`w-full flex items-center justify-center gap-2 font-semibold rounded-xl px-6 py-3.5 min-h-[52px] transition-all duration-200 ${
+              isCurrentSectionComplete
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:bg-emerald-700 active:scale-[0.98]'
+                : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+            }`}
           >
-            <span>Volgende stap</span>
+            <span>{isCurrentSectionComplete ? 'Volgende stap' : 'Vul verplichte velden in'}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         )}

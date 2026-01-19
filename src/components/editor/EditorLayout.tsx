@@ -42,7 +42,7 @@ export function EditorLayout() {
   const isSectionComplete = useCallback((id: number): boolean => {
     switch (id) {
       case 0: // Persoonsgegevens
-        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email);
+        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email && cvData.personal.postalCode && cvData.personal.houseNumber);
       case 1: // Werkervaring
         return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
       case 2: // Opleiding
@@ -284,9 +284,9 @@ export function EditorLayout() {
             </div>
             <button
               onClick={goToNextSection}
-              disabled={currentSection === sections.length - 1}
+              disabled={currentSection === sections.length - 1 || !isSectionComplete(currentSection)}
               className={`p-1.5 rounded-lg transition-colors ${
-                currentSection === sections.length - 1
+                currentSection === sections.length - 1 || !isSectionComplete(currentSection)
                   ? 'text-slate-300'
                   : 'text-slate-500 hover:bg-slate-200 active:bg-slate-300'
               }`}
@@ -307,6 +307,7 @@ export function EditorLayout() {
             totalSections={sections.length}
             onNextStep={goToNextSection}
             onDownload={handleOpenDownloadModal}
+            isCurrentSectionComplete={isSectionComplete(currentSection)}
           />
 
           {/* Mobile Preview Modal */}

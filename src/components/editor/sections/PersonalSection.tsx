@@ -251,12 +251,14 @@ export function PersonalSection() {
             icon={MapPin}
             value={cvData.personal.postalCode}
             onChange={(e) => handlePostcodeChange(e.target.value)}
+            required
           />
           <Input
             label="Huisnummer"
             placeholder="12a"
             value={cvData.personal.houseNumber}
             onChange={(e) => handleHouseNumberChange(e.target.value)}
+            required
           />
         </div>
 

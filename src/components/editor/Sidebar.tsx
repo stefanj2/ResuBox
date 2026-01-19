@@ -26,7 +26,7 @@ export function Sidebar({ sections, currentSection, onSectionChange }: SidebarPr
   const isSectionComplete = (id: number): boolean => {
     switch (id) {
       case 0: // Persoonsgegevens
-        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email);
+        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email && cvData.personal.postalCode && cvData.personal.houseNumber);
       case 1: // Werkervaring
         return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
       case 2: // Opleiding
