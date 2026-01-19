@@ -99,6 +99,21 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['order_actions']['Row']>;
       };
+      analytics_events: {
+        Row: {
+          id: string;
+          session_id: string;
+          event_type: string;
+          section_id: number | null;
+          section_name: string | null;
+          metadata: Record<string, unknown> | null;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['analytics_events']['Row'], 'created_at'> & {
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['analytics_events']['Row']>;
+      };
     };
   };
 }

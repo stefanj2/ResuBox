@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut, LayoutDashboard, Users, RefreshCw } from 'lucide-react';
+import { LogOut, LayoutDashboard, Users, RefreshCw, BarChart3 } from 'lucide-react';
 import { logout } from '@/lib/auth';
 import { Button } from '@/components/ui';
 
@@ -27,6 +27,12 @@ export function AdminHeader({ onRefresh, refreshing }: AdminHeaderProps) {
       label: 'Dashboard',
       icon: LayoutDashboard,
       active: pathname === '/admin',
+    },
+    {
+      href: '/admin/analytics',
+      label: 'Analytics',
+      icon: BarChart3,
+      active: pathname === '/admin/analytics',
     },
     {
       href: '/admin/debiteurenbeheer',

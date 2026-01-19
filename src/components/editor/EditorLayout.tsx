@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sidebar } from './Sidebar';
@@ -15,6 +15,7 @@ import { useCVData } from '@/context/CVContext';
 import { Eye, Download, Palette, User, FileText, Briefcase, GraduationCap, Wrench, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button, Modal, StickyMobileCTA, SocialProofToast, PreviewTooltip, shouldShowPreviewTooltip } from '@/components/ui';
 import { TemplateSelector } from '@/components/templateSelector';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const sections = [
   { id: 0, title: 'Persoonsgegevens', shortTitle: 'Persoon', icon: User, component: PersonalSection },
@@ -31,7 +32,43 @@ export function EditorLayout() {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showPreviewTooltip, setShowPreviewTooltip] = useState(false);
 
+  // Analytics tracking
+  const { trackSectionView, trackSectionComplete, trackDownloadInitiated } = useAnalytics();
+
   const CurrentSectionComponent = sections[currentSection].component;
+
+  // Check section completion (same logic as Sidebar)
+  // Order: Persoon, Werk, Studie, Skills, Profiel
+  const isSectionComplete = useCallback((id: number): boolean => {
+    switch (id) {
+      case 0: // Persoonsgegevens
+        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email);
+      case 1: // Werkervaring
+        return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
+      case 2: // Opleiding
+        return cvData.education.length > 0 && cvData.education.some(e => e.degree && e.institution);
+      case 3: // Vaardigheden
+        return cvData.skills.length >= 3;
+      case 4: // Profiel
+        return cvData.profile.summary.length > 20;
+      default:
+        return false;
+    }
+  }, [cvData]);
+
+  // Track section views when section changes
+  useEffect(() => {
+    trackSectionView(currentSection);
+  }, [currentSection, trackSectionView]);
+
+  // Track section completions
+  useEffect(() => {
+    for (let i = 0; i <= 4; i++) {
+      if (isSectionComplete(i)) {
+        trackSectionComplete(i);
+      }
+    }
+  }, [isSectionComplete, trackSectionComplete]);
 
   // Show preview tooltip when user has typed their first name on section 0
   useEffect(() => {
@@ -50,25 +87,6 @@ export function EditorLayout() {
     }
   }, [currentSection, cvData.personal.firstName, showPreviewTooltip]);
 
-  // Check section completion (same logic as Sidebar)
-  // Order: Persoon, Werk, Studie, Skills, Profiel
-  const isSectionComplete = (id: number): boolean => {
-    switch (id) {
-      case 0: // Persoonsgegevens
-        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email);
-      case 1: // Werkervaring
-        return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
-      case 2: // Opleiding
-        return cvData.education.length > 0 && cvData.education.some(e => e.degree && e.institution);
-      case 3: // Vaardigheden
-        return cvData.skills.length >= 3;
-      case 4: // Profiel
-        return cvData.profile.summary.length > 20;
-      default:
-        return false;
-    }
-  };
-
   // Progress tracking available via isSectionComplete for each section
 
   const goToNextSection = () => {
@@ -81,6 +99,11 @@ export function EditorLayout() {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1);
     }
+  };
+
+  const handleOpenDownloadModal = () => {
+    trackDownloadInitiated();
+    setShowDownloadModal(true);
   };
 
   return (
@@ -114,7 +137,7 @@ export function EditorLayout() {
                   variant="primary"
                   size="sm"
                   icon={Download}
-                  onClick={() => setShowDownloadModal(true)}
+                  onClick={handleOpenDownloadModal}
                 >
                   Download CV
                 </Button>
@@ -283,7 +306,7 @@ export function EditorLayout() {
             currentSection={currentSection}
             totalSections={sections.length}
             onNextStep={goToNextSection}
-            onDownload={() => setShowDownloadModal(true)}
+            onDownload={handleOpenDownloadModal}
           />
 
           {/* Mobile Preview Modal */}

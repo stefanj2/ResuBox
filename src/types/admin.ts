@@ -102,3 +102,41 @@ export interface AdminUser {
   username: string;
   authenticated: boolean;
 }
+
+// Analytics Types for User Journey Tracking
+export type AnalyticsEventType =
+  | 'session_start'
+  | 'section_view'
+  | 'section_complete'
+  | 'download_initiated'
+  | 'download_completed'
+  | 'payment_started'
+  | 'session_end';
+
+export interface AnalyticsEvent {
+  id: string;
+  session_id: string;
+  event_type: AnalyticsEventType;
+  section_id?: number; // 0-4 for form sections
+  section_name?: string;
+  metadata?: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface FunnelStep {
+  id: number;
+  name: string;
+  count: number;
+  percentage: number;
+  dropOffCount: number;
+  dropOffPercentage: number;
+}
+
+export interface AnalyticsStats {
+  totalSessions: number;
+  completedSessions: number; // sessions that reached download
+  conversionRate: number;
+  funnel: FunnelStep[];
+  periodStart: string;
+  periodEnd: string;
+}
