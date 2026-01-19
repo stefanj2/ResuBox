@@ -12,17 +12,18 @@ export default function Icon() {
       <div
         style={{
           fontSize: 24,
-          background: 'transparent',
+          background: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          borderRadius: '6px',
         }}
       >
         <svg
-          width="28"
-          height="28"
+          width="26"
+          height="26"
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +31,7 @@ export default function Icon() {
           {/* Green 3D Box */}
           <path
             d="M8 20 L32 8 L56 20 L56 44 L32 56 L8 44 Z"
-            fill="none"
+            fill="#ecfdf5"
             stroke="#16a34a"
             strokeWidth="4"
             strokeLinejoin="round"

@@ -12,12 +12,13 @@ export default function AppleIcon() {
       <div
         style={{
           fontSize: 24,
-          background: 'transparent',
+          background: 'white',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          borderRadius: '32px',
         }}
       >
         <svg
@@ -30,7 +31,7 @@ export default function AppleIcon() {
           {/* Green 3D Box */}
           <path
             d="M8 20 L32 8 L56 20 L56 44 L32 56 L8 44 Z"
-            fill="none"
+            fill="#ecfdf5"
             stroke="#16a34a"
             strokeWidth="3"
             strokeLinejoin="round"
