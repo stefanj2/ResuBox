@@ -12,13 +12,12 @@ export default function AppleIcon() {
       <div
         style={{
           fontSize: 24,
-          background: 'white',
+          background: 'transparent',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '32px',
         }}
       >
         <svg
