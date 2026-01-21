@@ -7,11 +7,27 @@ import { Button } from '@/components/ui';
 import { TemplateThumbnail } from '@/components/preview/thumbnails/TemplateThumbnail';
 import { TemplateId } from '@/types/cv';
 
-const showcaseTemplates: { id: TemplateId; name: string; description: string }[] = [
+const showcaseTemplates: { id: TemplateId; name: string; description: string; badge?: string }[] = [
   {
     id: 'modern',
     name: 'Modern',
     description: 'Strakke zijbalk met frisse kleuren',
+    badge: 'Populair',
+  },
+  {
+    id: 'zakelijk',
+    name: 'Zakelijk',
+    description: 'Professioneel en tijdloos design',
+  },
+  {
+    id: 'creatief',
+    name: 'Creatief',
+    description: 'Opvallend voor creatieve functies',
+  },
+  {
+    id: 'minimalist',
+    name: 'Minimalist',
+    description: 'Elegant en overzichtelijk',
   },
   {
     id: 'executive',
@@ -19,9 +35,9 @@ const showcaseTemplates: { id: TemplateId; name: string; description: string }[]
     description: 'Premium uitstraling voor senior functies',
   },
   {
-    id: 'minimalist',
-    name: 'Minimalist',
-    description: 'Elegant en overzichtelijk',
+    id: 'tech',
+    name: 'Tech',
+    description: 'Modern design voor IT-professionals',
   },
 ];
 
@@ -44,26 +60,33 @@ export function TemplateShowcase() {
           </p>
         </div>
 
-        {/* Template Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        {/* Template Grid - 6 templates in 2 rows */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
           {showcaseTemplates.map((template) => (
             <div
               key={template.id}
-              className="group relative bg-white rounded-2xl p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300"
+              className="group relative bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300"
             >
+              {/* Badge */}
+              {template.badge && (
+                <div className="absolute -top-2 -right-2 z-10 bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                  {template.badge}
+                </div>
+              )}
+
               {/* Template Preview */}
-              <div className="relative overflow-hidden rounded-lg mb-4 bg-slate-100 flex justify-center py-4">
+              <div className="relative overflow-hidden rounded-lg mb-3 sm:mb-4 bg-slate-100 flex justify-center py-3 sm:py-4">
                 <div className="transform group-hover:scale-105 transition-transform duration-300">
-                  <TemplateThumbnail templateId={template.id} scale={0.28} />
+                  <TemplateThumbnail templateId={template.id} scale={0.22} />
                 </div>
               </div>
 
               {/* Template Info */}
               <div className="text-center">
-                <h3 className="font-semibold text-slate-900 mb-1">
+                <h3 className="font-semibold text-slate-900 mb-0.5 sm:mb-1 text-sm sm:text-base">
                   {template.name}
                 </h3>
-                <p className="text-sm text-slate-500">
+                <p className="text-xs sm:text-sm text-slate-500 line-clamp-2">
                   {template.description}
                 </p>
               </div>
@@ -78,7 +101,7 @@ export function TemplateShowcase() {
         <div className="text-center">
           <Link href="/builder">
             <Button size="lg" icon={ArrowRight} iconPosition="right">
-              Bekijk alle 6 templates
+              Start met je favoriete template
             </Button>
           </Link>
           <p className="mt-4 text-sm text-slate-500">

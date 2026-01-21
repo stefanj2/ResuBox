@@ -9,32 +9,32 @@ import { createEmptyExperience, Experience } from '@/types/cv';
 // AI Suggesties voor taken per functietitel
 const taskSuggestions: Record<string, string[]> = {
   'default': [
-    'Verantwoordelijk voor dagelijkse operationele werkzaamheden',
-    'Samenwerken met cross-functionele teams om projectdoelen te behalen',
-    'Bijdragen aan proces verbeteringen en efficiëntie optimalisatie',
-    'Rapporteren aan management over voortgang en resultaten',
-    'Onderhouden van klantrelaties en stakeholder communicatie',
+    'Dagelijkse operaties aansturen',
+    'Samenwerken in cross-functionele teams',
+    'Processen verbeteren en optimaliseren',
+    'Rapportages opstellen voor management',
+    'Klantrelaties onderhouden',
   ],
   'manager': [
-    'Leiding geven aan een team van 10+ medewerkers',
-    'Opstellen en bewaken van afdelingsbudget (€500K+)',
-    'Implementeren van nieuwe processen die productiviteit met 25% verhoogden',
-    'Voeren van functioneringsgesprekken en ontwikkelen van teamleden',
-    'Strategische planning en uitvoering van bedrijfsdoelstellingen',
+    'Team van 10+ medewerkers aansturen',
+    'Budget van €500K+ beheren',
+    'Productiviteit met 25% verhoogd',
+    'Teamleden coachen en ontwikkelen',
+    'Strategische doelen realiseren',
   ],
   'developer': [
-    'Ontwikkelen van schaalbare webapplicaties met moderne frameworks',
-    'Code reviews uitvoeren en junior developers begeleiden',
-    'Optimaliseren van applicatie performance met 40% snellere laadtijden',
-    'Implementeren van CI/CD pipelines voor geautomatiseerde deployments',
-    'Samenwerken met UX designers voor optimale gebruikerservaring',
+    'Webapplicaties ontwikkelen en onderhouden',
+    'Code reviews en junior developers begeleiden',
+    'Performance 40% verbeterd',
+    'CI/CD pipelines opgezet',
+    'Samenwerken met UX/design team',
   ],
   'sales': [
-    'Behalen van 120% van de jaarlijkse sales targets',
-    'Acquireren van 50+ nieuwe B2B klanten per jaar',
-    'Onderhandelen en sluiten van deals tot €1M',
-    'Onderhouden van een portfolio van 200+ klanten',
-    'Ontwikkelen van nieuwe marktstrategieën',
+    '120% van sales targets behaald',
+    '50+ nieuwe klanten per jaar geworven',
+    'Deals tot €1M gesloten',
+    'Portfolio van 200+ klanten beheerd',
+    'Nieuwe markten aangeboord',
   ],
 };
 
@@ -43,7 +43,7 @@ export function ExperienceSection() {
   const [expandedId, setExpandedId] = useState<string | null>(
     cvData.experience.length > 0 ? cvData.experience[0].id : null
   );
-  const [showSuggestions, setShowSuggestions] = useState<string | null>(null);
+  const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set());
 
   const handleAddExperience = () => {
     const newExp = createEmptyExperience();
@@ -188,46 +188,73 @@ export function ExperienceSection() {
 
                 {/* Tasks with AI Suggestions */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-slate-700">
-                      Belangrijkste taken
-                    </label>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      icon={Sparkles}
-                      onClick={() => setShowSuggestions(showSuggestions === exp.id ? null : exp.id)}
-                    >
-                      Suggesties tonen
-                    </Button>
-                  </div>
+                  <label className="text-sm font-medium text-slate-700 block mb-2">
+                    Belangrijkste taken
+                  </label>
 
-                  {/* AI Suggestions */}
-                  {showSuggestions === exp.id && (
-                    <div className="mb-3 bg-emerald-50 rounded-lg p-3 border border-emerald-100">
-                      <p className="text-xs font-medium text-emerald-700 mb-2">
-                        Klik om toe te voegen:
-                      </p>
-                      <div className="space-y-1">
+                  {/* AI Suggestions - Shown by default */}
+                  {!hiddenSuggestions.has(exp.id) && (
+                    <div className="mb-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200 shadow-sm">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-emerald-900 text-sm">
+                            AI Suggesties
+                          </h4>
+                          <p className="text-xs text-emerald-700 mt-0.5">
+                            Klik op een suggestie om deze toe te voegen aan je CV
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setHiddenSuggestions(prev => new Set(prev).add(exp.id))}
+                          className="text-emerald-400 hover:text-emerald-600 transition-colors"
+                          title="Verbergen"
+                        >
+                          <ChevronUp className="w-5 h-5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1.5">
                         {getSuggestionsForTitle(exp.jobTitle).map((task, i) => (
                           <button
                             key={i}
                             onClick={() => handleAddTask(exp.id, task)}
                             disabled={exp.tasks.includes(task)}
-                            className={`w-full text-left text-sm p-2 rounded transition-colors ${
+                            className={`w-full text-left text-sm p-2.5 rounded-lg transition-all ${
                               exp.tasks.includes(task)
-                                ? 'bg-emerald-100 text-emerald-600 cursor-not-allowed'
-                                : 'bg-white hover:bg-emerald-100 text-slate-700'
+                                ? 'bg-emerald-200/50 text-emerald-700 cursor-not-allowed'
+                                : 'bg-white hover:bg-emerald-100 hover:shadow-sm text-slate-700 border border-emerald-100'
                             }`}
                           >
                             <span className="flex items-center gap-2">
-                              {exp.tasks.includes(task) && <Check className="w-4 h-4" />}
-                              {task}
+                              {exp.tasks.includes(task) ? (
+                                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                              ) : (
+                                <Plus className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                              )}
+                              <span className="line-clamp-2">{task}</span>
                             </span>
                           </button>
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {/* Show suggestions button when hidden */}
+                  {hiddenSuggestions.has(exp.id) && (
+                    <button
+                      onClick={() => setHiddenSuggestions(prev => {
+                        const newSet = new Set(prev);
+                        newSet.delete(exp.id);
+                        return newSet;
+                      })}
+                      className="mb-3 flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>AI suggesties tonen</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
                   )}
 
                   {/* Added tasks */}

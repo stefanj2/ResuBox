@@ -1,7 +1,9 @@
 export { Header } from './Header';
 export { Hero } from './Hero';
+export { HowItWorks } from './HowItWorks';
 export { USPSection } from './USPSection';
 export { TemplateShowcase } from './TemplateShowcase';
+export { Testimonials } from './Testimonials';
 export { FAQ } from './FAQ';
 export { Footer } from './Footer';
 export { MagicLinkModal } from './MagicLinkModal';
