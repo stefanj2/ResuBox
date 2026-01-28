@@ -22,9 +22,10 @@ export function Header() {
   }, []);
 
   const navLinks = [
-    { href: '/', label: 'Home' },
+    { href: '/#templates', label: 'Templates' },
+    { href: '/#hoe-het-werkt', label: 'Hoe het werkt' },
+    { href: '/#reviews', label: 'Reviews' },
     { href: '/faq', label: 'FAQ' },
-    { href: '/contact', label: 'Contact' },
   ];
 
   return (

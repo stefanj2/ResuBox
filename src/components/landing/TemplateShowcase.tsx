@@ -43,7 +43,7 @@ const showcaseTemplates: { id: TemplateId; name: string; description: string; ba
 
 export function TemplateShowcase() {
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-slate-50">
+    <section id="templates" className="py-24 bg-gradient-to-b from-white to-slate-50 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
