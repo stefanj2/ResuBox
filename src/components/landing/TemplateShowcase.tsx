@@ -63,9 +63,10 @@ export function TemplateShowcase() {
         {/* Template Grid - 6 templates in 2 rows */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
           {showcaseTemplates.map((template) => (
-            <div
+            <Link
               key={template.id}
-              className="group relative bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300"
+              href={`/builder?template=${template.id}`}
+              className="group relative bg-white rounded-2xl p-3 sm:p-4 border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               {/* Badge */}
               {template.badge && (
@@ -91,9 +92,13 @@ export function TemplateShowcase() {
                 </p>
               </div>
 
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 rounded-2xl transition-colors duration-300 pointer-events-none" />
-            </div>
+              {/* Hover CTA overlay */}
+              <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/5 rounded-2xl transition-colors duration-300 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+                <span className="bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg">
+                  Kies deze template →
+                </span>
+              </div>
+            </Link>
           ))}
         </div>
 

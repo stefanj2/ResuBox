@@ -1,19 +1,39 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { CVProvider } from '@/context/CVContext';
+import { useSearchParams } from 'next/navigation';
+import { CVProvider, useCVData } from '@/context/CVContext';
 import { EditorLayout } from '@/components/editor';
 import { TemplateSelector } from '@/components/templateSelector';
+import { TemplateId } from '@/types/cv';
 
 const TEMPLATE_SELECTED_KEY = 'cv-builder-template-selected';
 
+const validTemplates: TemplateId[] = ['modern', 'zakelijk', 'creatief', 'minimalist', 'executive', 'tech'];
+
 function BuilderContent() {
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
+  const searchParams = useSearchParams();
+  const { setTemplate } = useCVData();
 
   useEffect(() => {
+    // Check for template parameter from landing page
+    const templateParam = searchParams.get('template') as TemplateId | null;
+
+    if (templateParam && validTemplates.includes(templateParam)) {
+      // User clicked a specific template on landing page
+      setTemplate(templateParam);
+      localStorage.setItem(TEMPLATE_SELECTED_KEY, 'true');
+      setShowOnboarding(false);
+      // Clean up URL
+      window.history.replaceState({}, '', '/builder');
+      return;
+    }
+
+    // Otherwise check if user has selected a template before
     const templateSelected = localStorage.getItem(TEMPLATE_SELECTED_KEY);
     setShowOnboarding(!templateSelected);
-  }, []);
+  }, [searchParams, setTemplate]);
 
   const handleTemplateSelected = () => {
     localStorage.setItem(TEMPLATE_SELECTED_KEY, 'true');
