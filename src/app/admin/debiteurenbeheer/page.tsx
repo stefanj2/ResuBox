@@ -21,6 +21,7 @@ const PIPELINE_STATUSES: OrderStatus[] = [
   'factuur_verstuurd',
   'herinnering_1',
   'herinnering_2',
+  'incasso_overgedragen',
 ];
 
 export default function DebiteurenbeheerPage() {
@@ -30,6 +31,7 @@ export default function DebiteurenbeheerPage() {
     factuur_verstuurd: [],
     herinnering_1: [],
     herinnering_2: [],
+    incasso_overgedragen: [],
     betaald: [],
     afgeboekt: [],
   });
@@ -48,6 +50,7 @@ export default function DebiteurenbeheerPage() {
         factuur_verstuurd: [],
         herinnering_1: [],
         herinnering_2: [],
+        incasso_overgedragen: [],
         betaald: [],
         afgeboekt: [],
       };

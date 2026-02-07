@@ -258,6 +258,72 @@ export function getReminder2Email(order: CVOrder): { subject: string; html: stri
   };
 }
 
+// Incasso-notificatie email (28 dagen na bestelling)
+export function getIncassoEmail(order: CVOrder): { subject: string; html: string } {
+  const subject = `INCASSO: Vordering ${order.dossier_number} overgedragen aan incassobureau`;
+  const paymentUrl = order.payment_link || `${siteUrl}/betalen/${order.id}`;
+
+  const content = `
+    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
+
+    <div style="background-color: #450a0a; border-radius: 8px; padding: 20px; margin: 0 0 24px;">
+      <h3 style="margin: 0 0 8px; color: #fecaca; font-size: 18px;">INCASSO-OVERDRACHT</h3>
+      <p style="margin: 0; color: #fca5a5; line-height: 1.6;">
+        Uw dossier is overgedragen aan de Incasso Afdeling. De vordering wordt nu behandeld door Justus Collect.
+      </p>
+    </div>
+
+    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
+      Ondanks meerdere herinneringen en een laatste aanmaning (WIK-brief) hebben wij geen betaling ontvangen voor factuur <strong>${order.dossier_number}</strong>.
+    </p>
+
+    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
+      Conform de Wet Incassokosten (WIK) zijn de wettelijke incassokosten nu aan de vordering toegevoegd.
+    </p>
+
+    <div style="background-color: #fef2f2; border-radius: 8px; padding: 20px; margin: 24px 0; border: 2px solid #dc2626;">
+      <table style="width: 100%;">
+        <tr>
+          <td style="padding: 4px 0; color: #475569;">Oorspronkelijk bedrag:</td>
+          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">&euro;42,00</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; color: #475569;">Wettelijke incassokosten:</td>
+          <td style="padding: 4px 0; color: #dc2626; font-weight: 600; text-align: right;">&euro;40,00</td>
+        </tr>
+        <tr style="border-top: 2px solid #fecaca;">
+          <td style="padding: 12px 0 4px; color: #475569; font-weight: 600;">Totaal te betalen:</td>
+          <td style="padding: 12px 0 4px; color: #dc2626; font-weight: 700; font-size: 24px; text-align: right;">&euro;82,00</td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
+      U kunt <strong>verdere kosten voorkomen</strong> door het volledige bedrag direct te betalen via onderstaande knop. Na ontvangst van uw betaling wordt het incassodossier onmiddellijk gesloten.
+    </p>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${paymentUrl}" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+        Nu betalen - &euro;82,00
+      </a>
+    </div>
+
+    <p style="margin: 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.6;">
+      Bij vragen over deze vordering kunt u contact opnemen via <a href="mailto:incasso@resubox.nl" style="color: #dc2626;">incasso@resubox.nl</a>.
+    </p>
+
+    <p style="margin: 24px 0 0; color: #475569;">
+      Met vriendelijke groet,<br>
+      <strong>Incasso Afdeling - ResuBox</strong>
+    </p>
+  `;
+
+  return {
+    subject,
+    html: emailWrapper(content),
+  };
+}
+
 // Betaling ontvangen bevestiging
 export function getPaymentReceivedEmail(order: CVOrder): { subject: string; html: string } {
   const subject = `Betaling ontvangen - ${order.dossier_number}`;
@@ -300,9 +366,11 @@ export function getPaymentReceivedEmail(order: CVOrder): { subject: string; html
 }
 
 // Get email template by type
+export type EmailType = 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'incasso' | 'payment_received';
+
 export function getEmailTemplate(
   order: CVOrder,
-  type: 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'payment_received'
+  type: EmailType
 ): { subject: string; html: string } {
   switch (type) {
     case 'confirmation':
@@ -313,6 +381,8 @@ export function getEmailTemplate(
       return getReminder1Email(order);
     case 'reminder_2':
       return getReminder2Email(order);
+    case 'incasso':
+      return getIncassoEmail(order);
     case 'payment_received':
       return getPaymentReceivedEmail(order);
     default:

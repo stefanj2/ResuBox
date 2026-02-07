@@ -1,6 +1,6 @@
 'use client';
 
-import { Mail, FileText, Bell, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Mail, FileText, Bell, AlertTriangle, Gavel, ChevronRight } from 'lucide-react';
 
 interface EmailFlowBannerProps {
   testMode?: boolean;
@@ -13,12 +13,14 @@ export function EmailFlowBanner({ testMode }: EmailFlowBannerProps) {
         { label: 'Factuur', time: '30s', icon: FileText, color: 'text-purple-600 bg-purple-100' },
         { label: '1e Herinnering', time: '1m', icon: Bell, color: 'text-orange-600 bg-orange-100' },
         { label: 'WIK-brief', time: '2m', icon: AlertTriangle, color: 'text-red-600 bg-red-100' },
+        { label: 'Incasso', time: '90s', icon: Gavel, color: 'text-red-900 bg-red-200' },
       ]
     : [
         { label: 'Bevestiging', time: '4 uur', icon: Mail, color: 'text-blue-600 bg-blue-100' },
         { label: 'Factuur', time: '24 uur', icon: FileText, color: 'text-purple-600 bg-purple-100' },
         { label: '1e Herinnering', time: '7 dagen', icon: Bell, color: 'text-orange-600 bg-orange-100' },
         { label: 'WIK-brief', time: '14 dagen', icon: AlertTriangle, color: 'text-red-600 bg-red-100' },
+        { label: 'Incasso', time: '28 dagen', icon: Gavel, color: 'text-red-900 bg-red-200' },
       ];
 
   return (

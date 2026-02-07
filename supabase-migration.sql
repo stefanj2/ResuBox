@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS cv_orders (
   amount DECIMAL(10, 2) DEFAULT 42.00,
   dossier_number VARCHAR(50) UNIQUE,
 
-  -- Mollie betaling
-  mollie_payment_id VARCHAR(255),
-  mollie_payment_status VARCHAR(50),
+  -- bunq betaling
+  bunq_payment_id VARCHAR(255),
+  bunq_payment_status VARCHAR(50),
   payment_link VARCHAR(500),
   paid_at TIMESTAMPTZ,
 
@@ -77,3 +77,23 @@ ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS customer_city VARCHAR(100);
 
 -- Migration: Add cv_data column for storing full CV data
 ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS cv_data JSONB;
+
+-- Migration: Add Justus Collect (incasso) columns
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS justus_case_id VARCHAR(255);
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS justus_case_number VARCHAR(255);
+ALTER TABLE cv_orders ADD COLUMN IF NOT EXISTS incasso_sent_at TIMESTAMPTZ;
+
+-- Migration: Rename Mollie columns to bunq
+ALTER TABLE cv_orders RENAME COLUMN mollie_payment_id TO bunq_payment_id;
+ALTER TABLE cv_orders RENAME COLUMN mollie_payment_status TO bunq_payment_status;
+
+-- Migration: Add system_cache table for bunq session caching
+CREATE TABLE IF NOT EXISTS system_cache (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for bunq payment ID lookups
+CREATE INDEX IF NOT EXISTS idx_cv_orders_bunq_payment_id ON cv_orders(bunq_payment_id);

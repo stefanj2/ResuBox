@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 import { sendEmail } from '@/lib/resend';
-import { getEmailTemplate } from '@/lib/emailTemplates';
+import { getEmailTemplate, EmailType } from '@/lib/emailTemplates';
 import { CVOrder } from '@/types/admin';
 import { rateLimiter } from '@/lib/rate-limit';
+
+const fromEmailIncasso = process.env.FROM_EMAIL_INCASSO || 'Incasso Afdeling <incasso@resubox.nl>';
 
 const limiter = rateLimiter({ limit: 10, windowMs: 60_000 });
 
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get email template
-    const validTypes = ['confirmation', 'invoice', 'reminder_1', 'reminder_2', 'payment_received'];
+    const validTypes = ['confirmation', 'invoice', 'reminder_1', 'reminder_2', 'incasso', 'payment_received'];
     if (!validTypes.includes(emailType)) {
       return NextResponse.json(
         { error: 'Ongeldig email type' },
@@ -58,13 +60,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const template = getEmailTemplate(order, emailType as 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'payment_received');
+    const template = getEmailTemplate(order, emailType as EmailType);
 
-    // Send email
+    // Send email (use incasso from address for incasso emails)
     const result = await sendEmail({
       to: order.customer_email,
       subject: template.subject,
       html: template.html,
+      from: emailType === 'incasso' ? fromEmailIncasso : undefined,
     });
 
     if (!result.success) {

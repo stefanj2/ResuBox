@@ -19,13 +19,15 @@ This is a Next.js 16 CV builder application (ResuBox) written in Dutch (nl_NL lo
 ### External Services
 
 - **Supabase**: Database for orders and CV data (with localStorage fallback)
-- **Mollie**: Payment processing (€42 per CV download)
-- **Resend**: Transactional emails (confirmation, invoices, reminders)
+- **bunq**: Payment processing via bunq.me tabs (€42 per CV download, €82 na incasso, €0 transactiekosten)
+- **Resend**: Transactional emails (confirmation, invoices, reminders, incasso)
+- **Justus Collect**: Incassobureau integratie voor onbetaalde dossiers na WIK-brief
 
 Required environment variables (see `.env.local.example`):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-- `MOLLIE_API_KEY`
-- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
+- `BUNQ_API_KEY`, `BUNQ_PRIVATE_KEY_BASE64`, `BUNQ_USER_ID`, `BUNQ_MONETARY_ACCOUNT_ID`, `BUNQ_ENVIRONMENT`
+- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `FROM_EMAIL_INCASSO`
+- `JUSTUS_API_KEY` (Justus Collect incasso integratie)
 - `ADMIN_USERNAME`, `ADMIN_PASSWORD` (simple admin auth)
 - `NEXT_PUBLIC_SITE_URL`, `CRON_SECRET`
 
@@ -76,7 +78,9 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 
 - `POST /api/optimize-cv` - AI-powered CV optimization against job vacancies (10 req/min)
 - `POST /api/email/send` - Send transactional emails via Resend (10 req/min)
-- `POST /api/mollie/webhook` - Mollie payment status webhook (no rate limit, trusted service)
+- `POST /api/bunq/create-payment` - Create bunq.me tab payment request
+- `POST /api/bunq/webhook` - bunq payment notification webhook (no rate limit, trusted service)
+- `POST /api/justus/webhook` - Justus Collect incasso webhook (API key auth, no rate limit)
 - `POST /api/admin/login` - Admin authentication (5 req/15min)
 - `GET /api/cron/process-orders` - Scheduled order processing (no rate limit, CRON_SECRET auth)
 - `POST /api/analytics/track` - Track analytics events (100 req/min)
@@ -85,12 +89,14 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 
 ### Rate Limiting
 
-In-memory sliding-window rate limiter per IP (`src/lib/rate-limit.ts`). Returns 429 when exceeded. Not applied to trusted/authenticated routes (mollie webhook, cron).
+In-memory sliding-window rate limiter per IP (`src/lib/rate-limit.ts`). Returns 429 when exceeded. Not applied to trusted/authenticated routes (bunq webhook, cron).
 
 ### Order Flow
 
 Orders use status pipeline defined in `src/lib/orderStatusConfig.ts`:
-`nieuw` → `bevestigd` → `factuur_verstuurd` → `herinnering_1` → `herinnering_2` → `betaald` (or `afgeboekt`)
+`nieuw` → `bevestigd` → `factuur_verstuurd` → `herinnering_1` → `herinnering_2` → `incasso_overgedragen` → `betaald` (or `afgeboekt`)
+
+After the WIK-brief (herinnering_2), if unpaid after 28 days total, the order is automatically transferred to Justus Collect incasso. The amount increases from €42 to €82 (incl. wettelijke incassokosten). If payment is received directly after incasso transfer, the Justus case is automatically withdrawn.
 
 Order operations in `src/lib/orders.ts` handle both Supabase and localStorage fallback.
 

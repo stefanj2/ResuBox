@@ -16,6 +16,7 @@ import {
   Copy,
   Check,
   Download,
+  Gavel,
 } from 'lucide-react';
 import { OrderWithActions, OrderStatus } from '@/types/admin';
 import { ORDER_STATUS_CONFIG, ORDER_STATUSES } from '@/lib/orderStatusConfig';
@@ -104,6 +105,7 @@ export function OrderDetailPanel({
     { type: 'invoice', label: 'Factuur', sentAt: order.invoice_sent_at },
     { type: 'reminder_1', label: '1e Herinnering', sentAt: order.reminder_1_sent_at },
     { type: 'reminder_2', label: 'WIK-brief', sentAt: order.reminder_2_sent_at },
+    { type: 'incasso', label: 'Incasso', sentAt: order.incasso_sent_at },
   ];
 
   return (
@@ -240,17 +242,47 @@ export function OrderDetailPanel({
                 </div>
                 <div className="text-sm text-emerald-600 space-y-1">
                   <p>Betaald op: {formatDate(order.paid_at)}</p>
-                  {order.mollie_payment_id && (
-                    <p className="font-mono text-xs">Mollie ID: {order.mollie_payment_id}</p>
+                  {order.bunq_payment_id && (
+                    <p className="font-mono text-xs">bunq ID: {order.bunq_payment_id}</p>
                   )}
-                  {order.mollie_payment_status && (
-                    <p>Status: <span className="capitalize font-medium">{order.mollie_payment_status}</span></p>
+                  {order.bunq_payment_status && (
+                    <p>Status: <span className="capitalize font-medium">{order.bunq_payment_status}</span></p>
                   )}
                 </div>
               </div>
             )}
           </div>
         </div>
+
+        {/* Justus Collect Info */}
+        {(order.justus_case_id || order.status === 'incasso_overgedragen') && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-slate-700">Incasso (Justus Collect)</h3>
+            <div className="bg-red-50 rounded-lg p-4 space-y-3 border border-red-200">
+              <div className="flex items-center gap-2 text-sm text-red-800">
+                <Gavel className="w-4 h-4" />
+                <span className="font-medium">Dossier overgedragen</span>
+              </div>
+              {order.justus_case_number && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600">Zaaknummer:</span>
+                  <span className="font-mono text-slate-900">{order.justus_case_number}</span>
+                </div>
+              )}
+              {order.justus_case_id && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600">Case ID:</span>
+                  <span className="font-mono text-xs text-slate-500">{order.justus_case_id}</span>
+                </div>
+              )}
+              {order.incasso_sent_at && (
+                <div className="text-xs text-red-600">
+                  Overgedragen op: {formatDate(order.incasso_sent_at)}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Email Actions */}
         <div className="space-y-3">

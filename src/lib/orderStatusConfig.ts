@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Ban,
+  Gavel,
   LucideIcon,
 } from 'lucide-react';
 import { OrderStatus } from '@/types/admin';
@@ -53,6 +54,13 @@ export const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
     icon: AlertTriangle,
     description: 'WIK-brief (laatste aanmaning) verstuurd',
   },
+  incasso_overgedragen: {
+    label: 'Incasso',
+    color: 'text-red-900',
+    bgColor: 'bg-red-200',
+    icon: Gavel,
+    description: 'Dossier overgedragen aan incassobureau (Justus Collect)',
+  },
   betaald: {
     label: 'Betaald',
     color: 'text-emerald-700',
@@ -75,6 +83,7 @@ export const ORDER_STATUSES: OrderStatus[] = [
   'factuur_verstuurd',
   'herinnering_1',
   'herinnering_2',
+  'incasso_overgedragen',
   'betaald',
   'afgeboekt',
 ];
@@ -84,6 +93,7 @@ export const EMAIL_FLOW_TIMING = {
   invoice: 4 * 60 * 60 * 1000, // 4 hours after order - factuur met betaallink
   reminder_1: 7 * 24 * 60 * 60 * 1000, // 7 days after order
   reminder_2: 14 * 24 * 60 * 60 * 1000, // 14 days after order
+  incasso: 28 * 24 * 60 * 60 * 1000, // 28 days after order (14 days after WIK)
 };
 
 // For test mode (much shorter intervals)
@@ -91,6 +101,7 @@ export const EMAIL_FLOW_TIMING_TEST = {
   invoice: 10 * 1000, // 10 seconds - factuur met betaallink
   reminder_1: 30 * 1000, // 30 seconds
   reminder_2: 60 * 1000, // 1 minute
+  incasso: 90 * 1000, // 90 seconds
 };
 
 export function getStatusConfig(status: OrderStatus): StatusConfig {
@@ -104,6 +115,7 @@ export function getNextStatus(currentStatus: OrderStatus): OrderStatus | null {
     'factuur_verstuurd',
     'herinnering_1',
     'herinnering_2',
+    'incasso_overgedragen',
   ];
 
   const currentIndex = flow.indexOf(currentStatus);
@@ -126,6 +138,7 @@ export function canTransitionTo(from: OrderStatus, to: OrderStatus): boolean {
     'factuur_verstuurd',
     'herinnering_1',
     'herinnering_2',
+    'incasso_overgedragen',
   ];
 
   const fromIndex = flowOrder.indexOf(from);

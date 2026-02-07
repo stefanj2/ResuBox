@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 import { sendEmail } from '@/lib/resend';
 import { getEmailTemplate } from '@/lib/emailTemplates';
-import { createPayment } from '@/lib/mollie';
+import { createPayment } from '@/lib/bunq';
+import { createCase } from '@/lib/justusCollect';
 import { CVOrder, OrderStatus } from '@/types/admin';
 import { EMAIL_FLOW_TIMING, EMAIL_FLOW_TIMING_TEST } from '@/lib/orderStatusConfig';
+
+const fromEmailIncasso = process.env.FROM_EMAIL_INCASSO || 'Incasso Afdeling <incasso@resubox.nl>';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -48,9 +51,12 @@ export async function GET(request: NextRequest) {
     const { data: orders, error } = await supabase
       .from('cv_orders')
       .select(`
-        id, status, customer_name, customer_email, amount, dossier_number,
-        mollie_payment_id, mollie_payment_status, payment_link,
-        invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at,
+        id, status, customer_name, customer_email, customer_phone,
+        customer_address, customer_house_number, customer_postal_code, customer_city,
+        amount, dossier_number,
+        bunq_payment_id, bunq_payment_status, payment_link,
+        invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at, incasso_sent_at,
+        justus_case_id, justus_case_number,
         created_at, updated_at
       `)
       .not('status', 'in', '("betaald","afgeboekt")');
@@ -69,29 +75,28 @@ export async function GET(request: NextRequest) {
           case 'nieuw':
             // Send invoice with payment link after 4 hours (or 10s in test mode)
             if (orderAge >= timing.invoice && !order.invoice_sent_at) {
-              // Create Mollie payment if not exists
-              if (!order.mollie_payment_id) {
+              // Create bunq payment if not exists
+              if (!order.bunq_payment_id) {
                 const paymentResult = await createPayment({
                   orderId: order.id,
                   amount: order.amount,
-                  description: `ResuBox CV Download - ${order.dossier_number}`,
+                  description: `ResuBox by Dune Legal - ${order.dossier_number}`,
                   customerEmail: order.customer_email,
                   customerName: order.customer_name,
                   redirectUrl: `${siteUrl}/betaald/${order.id}`,
-                  webhookUrl: `${siteUrl}/api/mollie/webhook`,
                 });
 
                 if (paymentResult.success && paymentResult.paymentId && paymentResult.paymentUrl) {
                   await supabase
                     .from('cv_orders')
                     .update({
-                      mollie_payment_id: paymentResult.paymentId,
+                      bunq_payment_id: paymentResult.paymentId,
                       payment_link: paymentResult.paymentUrl,
                     })
                     .eq('id', order.id);
 
                   order.payment_link = paymentResult.paymentUrl;
-                  await logAction(supabase, order.id, 'payment_created', 'Betaallink aangemaakt via Mollie');
+                  await logAction(supabase, order.id, 'payment_created', 'Betaallink aangemaakt via bunq');
                 }
               }
 
@@ -176,7 +181,89 @@ export async function GET(request: NextRequest) {
             }
             break;
 
-          // herinnering_2 status: No automatic action, wait for payment or manual intervention
+          case 'herinnering_2':
+            // Transfer to incasso after 28 days (or 90s in test mode)
+            if (orderAge >= timing.incasso && !order.incasso_sent_at) {
+              // Update amount to €82 (original €42 + €40 incassokosten)
+              await supabase
+                .from('cv_orders')
+                .update({ amount: 82.0 })
+                .eq('id', order.id);
+              order.amount = 82.0;
+
+              // Create new bunq.me tab for €82 (old one was €42)
+              const incassoPayment = await createPayment({
+                orderId: order.id,
+                amount: 82.0,
+                description: `ResuBox by Dune Legal - ${order.dossier_number}`,
+                customerEmail: order.customer_email,
+                customerName: order.customer_name,
+                redirectUrl: `${siteUrl}/betaald/${order.id}`,
+              });
+
+              if (incassoPayment.success && incassoPayment.paymentId && incassoPayment.paymentUrl) {
+                await supabase
+                  .from('cv_orders')
+                  .update({
+                    bunq_payment_id: incassoPayment.paymentId,
+                    payment_link: incassoPayment.paymentUrl,
+                  })
+                  .eq('id', order.id);
+
+                order.payment_link = incassoPayment.paymentUrl;
+                await logAction(supabase, order.id, 'payment_created',
+                  `Nieuwe betaallink aangemaakt voor incassobedrag €82,00`);
+              }
+
+              // Create Justus Collect case
+              const justusResult = await createCase(order);
+
+              if (justusResult.success) {
+                await supabase
+                  .from('cv_orders')
+                  .update({
+                    justus_case_id: justusResult.caseId,
+                    justus_case_number: justusResult.caseNumber,
+                  })
+                  .eq('id', order.id);
+
+                await logAction(supabase, order.id, 'manual_action',
+                  `Incassodossier aangemaakt bij Justus Collect (${justusResult.caseNumber})`);
+              } else {
+                await logAction(supabase, order.id, 'manual_action',
+                  `Justus Collect aanmelding mislukt: ${justusResult.error}`);
+              }
+
+              // Send incasso notification email (uses updated payment_link for €82)
+              const template = getEmailTemplate(order, 'incasso');
+              const result = await sendEmail({
+                to: order.customer_email,
+                subject: template.subject,
+                html: template.html,
+                from: fromEmailIncasso,
+              });
+
+              if (result.success) {
+                await supabase
+                  .from('cv_orders')
+                  .update({
+                    status: 'incasso_overgedragen' as OrderStatus,
+                    incasso_sent_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  })
+                  .eq('id', order.id);
+
+                await logAction(supabase, order.id, 'email_sent', 'Incasso-notificatie email verstuurd');
+                await logAction(supabase, order.id, 'status_changed',
+                  'Status gewijzigd naar incasso_overgedragen - dossier overgedragen aan Justus Collect');
+                results.actions.push(`${order.dossier_number}: Incasso overgedragen`);
+              } else {
+                results.errors.push(`${order.dossier_number}: Fout bij versturen incasso-notificatie`);
+              }
+            }
+            break;
+
+          // incasso_overgedragen status: Handled by Justus webhook or direct payment via bunq
         }
 
         results.processed++;

@@ -8,6 +8,7 @@ export type OrderStatus =
   | 'factuur_verstuurd'
   | 'herinnering_1'
   | 'herinnering_2'
+  | 'incasso_overgedragen'
   | 'betaald'
   | 'afgeboekt';
 
@@ -35,9 +36,9 @@ export interface CVOrder {
   amount: number;
   dossier_number?: string;
 
-  // Mollie payment
-  mollie_payment_id?: string;
-  mollie_payment_status?: string;
+  // bunq payment
+  bunq_payment_id?: string;
+  bunq_payment_status?: string;
   payment_link?: string;
   paid_at?: string;
 
@@ -46,6 +47,11 @@ export interface CVOrder {
   invoice_sent_at?: string;
   reminder_1_sent_at?: string;
   reminder_2_sent_at?: string;
+  incasso_sent_at?: string;
+
+  // Justus Collect (incasso)
+  justus_case_id?: string;
+  justus_case_number?: string;
 
   // Timestamps
   created_at: string;

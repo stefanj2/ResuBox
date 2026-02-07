@@ -18,6 +18,7 @@ export interface SendEmailParams {
   html: string;
   text?: string;
   replyTo?: string;
+  from?: string;
 }
 
 export interface EmailResult {
@@ -45,7 +46,7 @@ export async function sendEmail(params: SendEmailParams): Promise<EmailResult> {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: fromEmail,
+      from: params.from || fromEmail,
       to: params.to,
       subject: params.subject,
       html: params.html,

@@ -140,8 +140,9 @@ const ORDER_LIST_COLUMNS = `
   customer_address, customer_house_number, customer_postal_code, customer_city,
   cv_id, template_used,
   amount, dossier_number,
-  mollie_payment_id, mollie_payment_status, payment_link, paid_at,
-  confirmation_sent_at, invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at,
+  bunq_payment_id, bunq_payment_status, payment_link, paid_at,
+  confirmation_sent_at, invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at, incasso_sent_at,
+  justus_case_id, justus_case_number,
   created_at, updated_at
 `;
 
@@ -403,6 +404,7 @@ export async function getOrderStatistics(): Promise<OrderStatistics> {
       factuur_verstuurd: 0,
       herinnering_1: 0,
       herinnering_2: 0,
+      incasso_overgedragen: 0,
       betaald: 0,
       afgeboekt: 0,
     },

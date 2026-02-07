@@ -33,6 +33,7 @@ export default function AdminDashboardPage() {
       factuur_verstuurd: 0,
       herinnering_1: 0,
       herinnering_2: 0,
+      incasso_overgedragen: 0,
       betaald: 0,
       afgeboekt: 0,
     },
