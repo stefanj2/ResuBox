@@ -74,12 +74,18 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 
 ### API Routes
 
-- `POST /api/optimize-cv` - AI-powered CV optimization against job vacancies
-- `POST /api/email/send` - Send transactional emails via Resend
-- `POST /api/mollie/webhook` - Mollie payment status webhook
-- `POST /api/admin/login` - Admin authentication
-- `GET /api/cron/process-orders` - Scheduled order processing (every 15 min via Vercel cron, see `vercel.json`)
-- `GET /api/postcode/lookup` - Dutch postal code address lookup
+- `POST /api/optimize-cv` - AI-powered CV optimization against job vacancies (10 req/min)
+- `POST /api/email/send` - Send transactional emails via Resend (10 req/min)
+- `POST /api/mollie/webhook` - Mollie payment status webhook (no rate limit, trusted service)
+- `POST /api/admin/login` - Admin authentication (5 req/15min)
+- `GET /api/cron/process-orders` - Scheduled order processing (no rate limit, CRON_SECRET auth)
+- `POST /api/analytics/track` - Track analytics events (100 req/min)
+- `GET /api/analytics/stats` - Fetch analytics statistics (30 req/min)
+- `GET /api/postcode/lookup` - Dutch postal code address lookup via PDOK (30 req/min)
+
+### Rate Limiting
+
+In-memory sliding-window rate limiter per IP (`src/lib/rate-limit.ts`). Returns 429 when exceeded. Not applied to trusted/authenticated routes (mollie webhook, cron).
 
 ### Order Flow
 
