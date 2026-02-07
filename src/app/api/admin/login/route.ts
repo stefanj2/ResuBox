@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimiter } from '@/lib/rate-limit';
+
+const limiter = rateLimiter({ limit: 5, windowMs: 15 * 60_000 });
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = limiter.check(ip);
+  if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+
   try {
     const { username, password } = await request.json();
 

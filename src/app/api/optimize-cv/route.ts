@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CVData } from '@/types/cv';
+import { rateLimiter } from '@/lib/rate-limit';
+
+const limiter = rateLimiter({ limit: 10, windowMs: 60_000 });
 
 interface OptimizeRequest {
   cvData: CVData;
@@ -346,6 +349,10 @@ function calculateMatchScore(cvData: CVData, keywords: string[]): number {
 }
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const { success } = limiter.check(ip);
+  if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+
   try {
     const body: OptimizeRequest = await request.json();
     const { cvData, vacancyUrl, vacancyText, companyUrl } = body;
