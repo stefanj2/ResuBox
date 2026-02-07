@@ -6,6 +6,7 @@ import { CVOrder, OrderStatus, OrderWithActions, OrderStatistics } from '@/types
 import { CVData } from '@/types/cv';
 import {
   getOrders,
+  getOrder,
   getOrderWithActions,
   updateOrderStatus,
   getOrderStatistics,
@@ -157,7 +158,11 @@ export default function AdminDashboardPage() {
   };
 
   const handleDownloadCV = async (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId) || selectedOrder;
+    // Fetch full order with cv_data (not included in list queries for performance)
+    const fullOrder = selectedOrder?.id === orderId && selectedOrder?.cv_data
+      ? selectedOrder
+      : await getOrder(orderId);
+    const order = fullOrder;
     if (!order?.cv_data) return;
 
     // Set the CV data to trigger rendering

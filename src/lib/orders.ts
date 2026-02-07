@@ -36,7 +36,33 @@ function setLocalActions(actions: OrderAction[]): void {
   localStorage.setItem(ACTIONS_STORAGE_KEY, JSON.stringify(actions));
 }
 
-// Create a new order
+// Check if order exists for email
+async function getExistingOrderByEmail(email: string): Promise<CVOrder | null> {
+  const supabase = getSupabaseClient();
+
+  if (supabase && isSupabaseConfigured) {
+    const { data, error } = await supabase
+      .from('cv_orders')
+      .select('*')
+      .eq('customer_email', email.toLowerCase())
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      // Check localStorage as fallback
+      const orders = getLocalOrders();
+      return orders.find(o => o.customer_email.toLowerCase() === email.toLowerCase()) || null;
+    }
+
+    return data as CVOrder;
+  }
+
+  // localStorage only
+  const orders = getLocalOrders();
+  return orders.find(o => o.customer_email.toLowerCase() === email.toLowerCase()) || null;
+}
+
+// Create a new order (only if no order exists for this email)
 export async function createOrder(orderData: {
   customer_name: string;
   customer_email: string;
@@ -49,6 +75,13 @@ export async function createOrder(orderData: {
   template_used?: string;
   cv_data?: CVData;
 }): Promise<CVOrder> {
+  // Check if order already exists for this email to prevent duplicates
+  const existingOrder = await getExistingOrderByEmail(orderData.customer_email);
+  if (existingOrder) {
+    console.log('📋 Order bestaat al voor:', orderData.customer_email, '- geen nieuwe order aangemaakt');
+    return existingOrder;
+  }
+
   const now = new Date().toISOString();
   const newOrder: CVOrder = {
     id: uuidv4(),
@@ -100,6 +133,18 @@ export async function createOrder(orderData: {
   return newOrder;
 }
 
+// Columns to fetch for order lists (excludes large cv_data JSONB)
+const ORDER_LIST_COLUMNS = `
+  id, status,
+  customer_name, customer_email, customer_phone,
+  customer_address, customer_house_number, customer_postal_code, customer_city,
+  cv_id, template_used,
+  amount, dossier_number,
+  mollie_payment_id, mollie_payment_status, payment_link, paid_at,
+  confirmation_sent_at, invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at,
+  created_at, updated_at
+`;
+
 // Get all orders with optional filters
 export async function getOrders(filters?: OrderFilters): Promise<CVOrder[]> {
   const supabase = getSupabaseClient();
@@ -109,8 +154,9 @@ export async function getOrders(filters?: OrderFilters): Promise<CVOrder[]> {
   if (supabase && isSupabaseConfigured) {
     let query = supabase
       .from('cv_orders')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select(ORDER_LIST_COLUMNS)
+      .order('created_at', { ascending: false })
+      .limit(200);
 
     if (filters?.status && filters.status !== 'all') {
       query = query.eq('status', filters.status);

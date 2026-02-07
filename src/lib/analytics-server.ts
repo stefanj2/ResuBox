@@ -120,7 +120,8 @@ export async function getAnalyticsStats(days: number = 30): Promise<AnalyticsSta
         .select('*')
         .gte('created_at', periodStart.toISOString())
         .lte('created_at', periodEnd.toISOString())
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        .limit(10000);
 
       debug.supabaseEventsCount = data?.length ?? null;
       debug.supabaseError = error?.message ?? null;

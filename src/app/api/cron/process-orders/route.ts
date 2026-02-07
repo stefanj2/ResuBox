@@ -44,10 +44,15 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    // Get all orders that are not paid or afgeboekt
+    // Get all orders that are not paid or afgeboekt (exclude cv_data to reduce bandwidth)
     const { data: orders, error } = await supabase
       .from('cv_orders')
-      .select('*')
+      .select(`
+        id, status, customer_name, customer_email, amount, dossier_number,
+        mollie_payment_id, mollie_payment_status, payment_link,
+        invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at,
+        created_at, updated_at
+      `)
       .not('status', 'in', '("betaald","afgeboekt")');
 
     if (error || !orders) {
