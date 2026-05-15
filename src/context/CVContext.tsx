@@ -3,14 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { CVData, createEmptyCVData, Experience, Education, Skill, TemplateId, ColorSchemeId } from '@/types/cv';
 
-export interface BulkImportData {
-  personal?: Partial<CVData['personal']>;
-  profile?: { summary: string };
-  experience?: Experience[];
-  education?: Education[];
-  skills?: Skill[];
-}
-
 const STORAGE_KEY = 'cv-builder-session';
 const SESSIONS_KEY = 'cv-builder-sessions';
 
@@ -33,8 +25,6 @@ interface CVContextType {
   removeSkill: (id: string) => void;
   // Meta
   updateMeta: (updates: Partial<CVData['meta']>) => void;
-  // Bulk import (e.g. LinkedIn PDF) — merges parsed fields into current CV
-  bulkImport: (data: BulkImportData) => void;
   // Account sync state — null = working in localStorage only;
   // string = ID of the user_cvs row this CV is synced to
   serverCvId: string | null;
@@ -349,26 +339,6 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  // Bulk import — merges fields from an external source (e.g. LinkedIn PDF parse)
-  // into the current CV. Existing entries are kept; imported entries appended.
-  const bulkImport = useCallback((data: BulkImportData) => {
-    setCVData(prev => ({
-      ...prev,
-      personal: { ...prev.personal, ...(data.personal ?? {}) },
-      profile: data.profile && data.profile.summary ? data.profile : prev.profile,
-      experience: data.experience && data.experience.length > 0
-        ? [...prev.experience, ...data.experience]
-        : prev.experience,
-      education: data.education && data.education.length > 0
-        ? [...prev.education, ...data.education]
-        : prev.education,
-      skills: data.skills && data.skills.length > 0
-        ? [...prev.skills, ...data.skills]
-        : prev.skills,
-      updatedAt: new Date().toISOString(),
-    }));
-  }, []);
-
   // Meta update
   const updateMeta = useCallback((updates: Partial<CVData['meta']>) => {
     setCVData(prev => ({
@@ -492,7 +462,6 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
     updateSkill,
     removeSkill,
     updateMeta,
-    bulkImport,
     serverCvId,
     syncStatus,
     saveToAccount,
