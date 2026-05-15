@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, CheckCircle, AlertCircle, FileText, Loader2 } from 'lucide-react';
+import { Download, CheckCircle, AlertCircle, FileText, Loader2, FileType } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { createOrder } from '@/lib/api/orders';
+
+type Format = 'pdf' | 'docx';
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -15,6 +17,7 @@ interface DownloadModalProps {
 export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const { cvData } = useCVData();
   const [agreed, setAgreed] = useState(false);
+  const [format, setFormat] = useState<Format>('pdf');
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -29,18 +32,25 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
     try {
       const filename = `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}`;
+      const endpoint = format === 'pdf' ? '/api/generate-pdf' : '/api/generate-docx';
+      const payload =
+        format === 'pdf'
+          ? {
+              cvData,
+              templateId: cvData.meta.selectedTemplate,
+              colorSchemeId: cvData.meta.selectedColorScheme,
+              filename,
+            }
+          : {
+              cvData,
+              colorSchemeId: cvData.meta.selectedColorScheme,
+              filename,
+            };
 
-      // Server-side PDF generation — produces a real text-selectable PDF
-      // (ATS-parseable, recruiter-friendly) instead of a rasterised image.
-      const response = await fetch('/api/generate-pdf', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cvData,
-          templateId: cvData.meta.selectedTemplate,
-          colorSchemeId: cvData.meta.selectedColorScheme,
-          filename,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -51,7 +61,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
         } catch {
           // ignore
         }
-        throw new Error(detail || `PDF generatie mislukt (${response.status})`);
+        throw new Error(detail || `${format.toUpperCase()} generatie mislukt (${response.status})`);
       }
 
       // Trigger browser download from the returned PDF blob
@@ -59,7 +69,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${filename}.pdf`;
+      a.download = `${filename}.${format}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -175,6 +185,45 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     <CVPreview dataOverride={cvData} />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Format selector */}
+            <div className="mb-3 sm:mb-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                Bestandsformaat
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormat('pdf')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                    format === 'pdf'
+                      ? 'border-emerald-500 bg-emerald-50'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <FileText className={`w-5 h-5 flex-shrink-0 ${format === 'pdf' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900">PDF</p>
+                    <p className="text-xs text-slate-500">Aanbevolen — gekleurd, A4</p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormat('docx')}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border-2 transition-all text-left ${
+                    format === 'docx'
+                      ? 'border-emerald-500 bg-emerald-50'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <FileType className={`w-5 h-5 flex-shrink-0 ${format === 'docx' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-900">Word (.docx)</p>
+                    <p className="text-xs text-slate-500">Bewerkbaar in Word</p>
+                  </div>
+                </button>
               </div>
             </div>
 

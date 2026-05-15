@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { EXAMPLE_SLUGS } from '@/lib/cv-examples/data';
+import { hasLetterContext } from '@/lib/cover-letter-examples/data';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://resubox.nl';
@@ -9,6 +10,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
+  }));
+
+  const letterExamplePages: MetadataRoute.Sitemap = EXAMPLE_SLUGS.filter(hasLetterContext).map((slug) => ({
+    url: `${baseUrl}/motivatiebrief-voorbeeld/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.65,
   }));
 
   return [
@@ -42,6 +50,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.85,
     },
+    {
+      url: `${baseUrl}/motivatiebrief-voorbeeld`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...letterExamplePages,
     ...examplePages,
     {
       url: `${baseUrl}/faq`,

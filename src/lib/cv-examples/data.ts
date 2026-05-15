@@ -835,6 +835,770 @@ const EXAMPLES: FunctieExample[] = [
       },
     ],
   },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'logistiek-medewerker',
+    functie: 'Logistiek Medewerker',
+    title: 'CV Voorbeeld: Logistiek Medewerker',
+    description:
+      'CV voorbeeld voor logistiek medewerkers in distributiecentra, transport en warehousing. Met heftruck-certificaten, WMS-kennis en tips voor flexcontracten.',
+    templateId: 'zakelijk',
+    colorSchemeId: 'slate',
+    cv: buildExampleCV({
+      firstName: 'Kevin',
+      lastName: 'de Wit',
+      email: 'kevin.dewit@example.nl',
+      phone: '06 1122 3344',
+      city: 'Tilburg',
+      summary:
+        'Ervaren logistiek medewerker met 7 jaar werkervaring in food-distributie en e-commerce fulfilment. Heftruck- en reachtruck-gecertificeerd, ervaring met WMS-systemen Manhattan en Centric. Vaste werknemer bij DSV Solutions sinds 2020 met meerdere keren shift-coach verantwoordelijkheid.',
+      experiences: [
+        {
+          jobTitle: 'Senior Orderpicker / Shift-coach',
+          company: 'DSV Solutions',
+          location: 'Tilburg',
+          startDate: '2020-04',
+          current: true,
+          description: 'Distributiecentrum voor Albert Heijn-leveranciers. 2-ploegen dienst (06:00-14:30 / 14:30-23:00).',
+          tasks: [
+            'Picken en consolideren van orders met VR-bril (Honeywell A700x); gemiddeld 220 picks/uur.',
+            'Shift-coach voor team van 8 uitzendkrachten; eerste aanspreekpunt bij storingen.',
+            'Cyclische voorraadtelling: nauwkeurigheid 99,4% over kalenderjaar 2024.',
+          ],
+        },
+        {
+          jobTitle: 'Heftruckchauffeur',
+          company: 'Bol.com Fulfilment',
+          location: 'Waalwijk',
+          startDate: '2018-02',
+          endDate: '2020-03',
+          description: 'Inbound goederenstromen op een van de grootste fulfilment-centra van Nederland.',
+          tasks: [
+            'Lossen van containers (gemiddeld 6 per dienst); inboeken via Manhattan WMS.',
+            'Verplaatsen van pallets naar verschillende voorraadlocaties met reachtruck.',
+            'Zero-accident-bilanz over 24 maanden.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MBO Niveau 2 — Logistiek Medewerker',
+          institution: 'ROC Tilburg',
+          location: 'Tilburg',
+          startDate: '2015-09',
+          endDate: '2017-06',
+        },
+      ],
+      skills: ['Heftruck-certificaat', 'Reachtruck-certificaat', 'Manhattan WMS', 'Centric WMS', 'VR-picking (Honeywell)', 'VCA-Basis'],
+      template: 'zakelijk',
+      colorScheme: 'slate',
+    }),
+    advice: [
+      {
+        heading: 'Certificaten in regel 1 van je profiel',
+        body:
+          'Logistieke werkgevers screenen op één ding: kan deze persoon morgen aan de slag? Zet je certificaten (heftruck, reachtruck, VCA, ADR) en WMS-systemen meteen bovenaan. Vermijd vage profielen zoals "hardwerkende professional"; vermeld dat je gecertificeerd bent en op welke systemen.',
+      },
+      {
+        heading: 'Cijfers waar mogelijk',
+        body:
+          'Picks per uur, accuratesse-percentage, zero-accident records, aantal containers per dienst — alle meetbare data telt. Logistieke recruiters bij DSV, Bol.com, Albert Heijn en PostNL zoeken specifiek naar deze cijfers omdat ze direct vergelijken zijn tussen kandidaten.',
+      },
+      {
+        heading: 'Shift-coach / teamleider ervaring expliciet',
+        body:
+          'Veel logistieke medewerkers krijgen na 1-2 jaar coach-verantwoordelijkheid voor uitzendkrachten of nieuwe collega\'s. Vermeld het concreet ("Shift-coach voor team van 8 uitzendkrachten"). Dit signaleert promotiepotentieel naar afdelingsleider-rollen.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'monteur',
+    functie: 'Monteur / Technicus',
+    title: 'CV Voorbeeld: Monteur / Technicus',
+    description:
+      'CV voorbeeld voor electromonteurs, automonteurs en installatietechniek. Met certificeringen, opdrachtgevers en tips voor zelfstandige monteurs.',
+    templateId: 'zakelijk',
+    colorSchemeId: 'orange',
+    cv: buildExampleCV({
+      firstName: 'Jeroen',
+      lastName: 'Kuipers',
+      email: 'jeroen.kuipers@example.nl',
+      phone: '06 2233 4455',
+      city: 'Apeldoorn',
+      summary:
+        'Eerste monteur installatietechniek met 12 jaar ervaring in CV-installaties, warmtepompen en zonneboilers bij ITHO Daalderop en lokale installatiebedrijven. F-gassen certificaat, NEN-3140 en BEI-VOP. Bij Feenstra Energie verantwoordelijk voor het bijscholingsprogramma rond hybride warmtepompen.',
+      experiences: [
+        {
+          jobTitle: 'Eerste Monteur Installatietechniek',
+          company: 'Feenstra Energie',
+          location: 'Stadsregio Arnhem-Nijmegen',
+          startDate: '2019-06',
+          current: true,
+          description: 'Installatie en service van CV-ketels, hybride warmtepompen en HRe-systemen bij particulieren en VvE\'s.',
+          tasks: [
+            'Eindverantwoordelijk voor gemiddeld 4 installaties per week; klanttevredenheid 4,8/5,0 over 2024.',
+            'Trainer voor 6 nieuwe collega\'s in 2023-2024 op het traject hybride warmtepompen.',
+            'Lid van het regionale storingsteam buiten kantooruren (2 nachten per maand).',
+          ],
+        },
+        {
+          jobTitle: 'Monteur Installatietechniek',
+          company: 'Van der Linden Installatietechniek',
+          location: 'Apeldoorn',
+          startDate: '2013-08',
+          endDate: '2019-05',
+          description: 'Familiebedrijf — particuliere CV en sanitair installaties.',
+          tasks: [
+            'Installatie en onderhoud van Vaillant, Remeha en Intergas-ketels.',
+            'Renovatie-projecten in monumentale panden inclusief leidingwerk en sanitair.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MBO Niveau 4 — Eerste Monteur Werktuigkundige Installaties',
+          institution: 'Aventus',
+          location: 'Apeldoorn',
+          startDate: '2009-09',
+          endDate: '2013-07',
+        },
+      ],
+      skills: ['F-gassen Cat. I', 'NEN-3140 VOP', 'BEI-VOP', 'Hybride warmtepompen', 'CV-ketel Vaillant/Remeha/Intergas', 'Loodgieterswerk', 'Rijbewijs B'],
+      template: 'zakelijk',
+      colorScheme: 'orange',
+    }),
+    advice: [
+      {
+        heading: 'Certificaten als hard filter',
+        body:
+          'Installatiebedrijven kunnen zonder F-gassen of NEN-3140 geen werk geven; vermeld ze in je profiel. Voor warmtepompen specifiek: ISDE-erkenning of fabrikant-trainingen (Vaillant, Remeha) vermelden. Vermeld ook je rijbewijs (B is meestal verplicht voor servicemonteur).',
+      },
+      {
+        heading: 'Klant-tevredenheid en betrouwbaarheid telt',
+        body:
+          'Werkgevers zoals Feenstra, ENGIE en Eneco beoordelen monteurs deels op klant-feedback. Heb je een score uit je servicemanagement-systeem? Vermeld die. Geen score? Vermeld zero-accident jaren, on-time-completion rate of First-Time-Fix percentage.',
+      },
+      {
+        heading: 'Specialisatie hybride warmtepompen is de winnende skill 2026',
+        body:
+          'Energietransitie en gas-vrij maakt warmtepomp-installatie de groei-niche. Als je hier ervaring of training in hebt, schrijf het expliciet. Recruiters bij Feenstra en BAM Energie & Water zoeken specifiek hierop.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'horeca-medewerker',
+    functie: 'Horeca Medewerker',
+    title: 'CV Voorbeeld: Horeca (Bediening / Kok / Barman)',
+    description:
+      'CV voorbeeld voor horeca-medewerkers in restaurants, hotels en catering. Met tips voor seizoenswerk, fooi-omzet en doorgroei naar shift-leader.',
+    templateId: 'creatief',
+    colorSchemeId: 'amber',
+    cv: buildExampleCV({
+      firstName: 'Lotte',
+      lastName: 'Verhoeven',
+      email: 'lotte.verhoeven@example.nl',
+      phone: '06 3344 5566',
+      city: 'Amsterdam',
+      summary:
+        'Allround horeca-medewerker met 6 jaar ervaring in fine-dining bediening bij Restaurant Vinkeles (1 ster) en bistro De Kas. Sommelier-cursus afgerond bij Wijnacademie Nederland in 2024. Doorgegroeid naar shift-leader bij De Kas: aansturing van 4 collega\'s tijdens diensten van 80+ couverts.',
+      experiences: [
+        {
+          jobTitle: 'Shift-leader Bediening',
+          company: 'Restaurant De Kas',
+          location: 'Amsterdam',
+          startDate: '2022-04',
+          current: true,
+          description: 'Farm-to-table restaurant in Frankendael Park. Lunch en diner, 80-100 couverts per service.',
+          tasks: [
+            'Aansturing van 4 medewerkers per shift; verantwoordelijk voor de runner-flow en menu-uitleg.',
+            'Wijn-adviezen geven en wijn-pairings opzetten met de keuken; bottle-omzet +18% in 2024.',
+            'Coach voor nieuwe medewerkers in hun eerste 6 weken.',
+          ],
+        },
+        {
+          jobTitle: 'Bediening',
+          company: 'Restaurant Vinkeles*',
+          location: 'Amsterdam',
+          startDate: '2019-08',
+          endDate: '2022-03',
+          description: 'Michelin-sterren restaurant in The Dylan Hotel. Dineren à la carte en chef\'s menu.',
+          tasks: [
+            'Verzorgen van à la carte service en wijn-pairing voor het 7-gangen chef\'s menu.',
+            'Communicatie in Nederlands, Engels en Frans met internationale clientèle.',
+            'Lid van het opening-team voor de zomer-terraseditie 2020.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'Sommelier-cursus (basisniveau)',
+          institution: 'Wijnacademie Nederland',
+          location: 'Utrecht',
+          startDate: '2024-01',
+          endDate: '2024-06',
+        },
+        {
+          degree: 'MBO Niveau 3 — Zelfstandig Werkend Gastvrouw',
+          institution: 'ROC van Amsterdam',
+          location: 'Amsterdam',
+          startDate: '2016-09',
+          endDate: '2019-06',
+        },
+      ],
+      skills: ['Wijn-pairing', 'Engels (vloeiend)', 'Frans (gevorderd)', 'POS Untill', 'Allergieën-coaching', 'Sociale Hygiëne diploma'],
+      template: 'creatief',
+      colorScheme: 'amber',
+    }),
+    advice: [
+      {
+        heading: 'Specialisme + niveau in regel 1',
+        body:
+          'Horeca-werkgevers (Vinkeles, Lute, Bookstore Hotel, Kaag-jachthavens, KLM Crowne Plaza) screenen op niveau: fine-dining vs. brasserie vs. fastservice. Specificeer waar je werkte (sterrenrestaurant, hotel-chain, lokale bistro). Talen vermelden — Frans of Duits voor internationale clientèle in Amsterdam is een echt onderscheid.',
+      },
+      {
+        heading: 'Doorgroei en verantwoordelijkheid',
+        body:
+          'Veel horecamedewerkers groeien intern naar shift-leader, supervisor of head waiter. Vermeld die titel als je hem had — werkgevers zien dan dat anderen jou al gepromoveerd hebben. Ook: lid zijn geweest van een opening-team voor een nieuwe locatie is een sterk signaal.',
+      },
+      {
+        heading: 'Cijfers waar mogelijk: omzet, couverts, fooien',
+        body:
+          'Wijn-omzet+%, fooi-omzet, gemiddeld aantal couverts per service. Niet alle cijfers zijn beschikbaar maar als je er ééntje hebt, gebruik die. "+18% bottle-omzet 2024" zegt veel meer dan "gepassioneerd over wijn".',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'data-analist',
+    functie: 'Data Analist',
+    title: 'CV Voorbeeld: Data Analist',
+    description:
+      'CV voorbeeld voor data analisten met SQL, Python, Tableau en Power BI. Met tips voor portfolio, business-impact en doorgroei naar analytics engineer.',
+    templateId: 'tech',
+    colorSchemeId: 'teal',
+    cv: buildExampleCV({
+      firstName: 'Anouk',
+      lastName: 'Smit',
+      email: 'anouk.smit@example.nl',
+      phone: '06 4455 6677',
+      city: 'Rotterdam',
+      linkedIn: 'linkedin.com/in/anouksmit',
+      summary:
+        'Data analist met 4 jaar ervaring in retail-analytics bij Albert Heijn en Picnic. SQL, Python (pandas, scikit-learn) en dbt voor pipelines; Tableau en Power BI voor stakeholder-rapportages. Eigenaar van het wekelijkse forecasting-dashboard waar 12 categorymanagers op stuurden voor inkoopbeslissingen.',
+      experiences: [
+        {
+          jobTitle: 'Data Analyst — Category & Pricing',
+          company: 'Picnic',
+          location: 'Amsterdam',
+          startDate: '2023-08',
+          current: true,
+          description: 'Analytics-team binnen Commerce, ondersteunt 12 categorymanagers met data-gedreven inkoop- en prijsbeslissingen.',
+          tasks: [
+            'Bouwde forecasting-dashboard in Tableau dat 12 categorymanagers wekelijks gebruiken voor inkoopbeslissingen.',
+            'Migreerde 8 legacy reports van Excel naar dbt + Looker; gemiddelde refresh-tijd van 3u naar 8min.',
+            'A/B-test analyse voor promo-mechanismen; identificeerde dat 2-voor-1 op vers 23% beter performde dan korting.',
+          ],
+        },
+        {
+          jobTitle: 'Junior Data Analyst',
+          company: 'Albert Heijn',
+          location: 'Zaandam',
+          startDate: '2021-09',
+          endDate: '2023-07',
+          description: 'Onderdeel van het Customer Insights team binnen AH Online.',
+          tasks: [
+            'SQL-queries en dashboards in Power BI voor het marketing-team.',
+            'RFM-segmentatie van AH-bonus klanten; pilot resulteerde in +€340K incrementele omzet.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MSc Business Analytics',
+          institution: 'Erasmus Universiteit',
+          location: 'Rotterdam',
+          startDate: '2019-09',
+          endDate: '2021-08',
+        },
+      ],
+      skills: ['SQL (advanced)', 'Python (pandas, scikit-learn)', 'dbt', 'Tableau', 'Power BI', 'Looker', 'A/B testing', 'Statistische analyse'],
+      template: 'tech',
+      colorScheme: 'teal',
+    }),
+    advice: [
+      {
+        heading: 'Tools + impact, niet alleen tools',
+        body:
+          'Iedereen schrijft "SQL en Python". Wat onderscheid maakt: wat heb je ermee gedaan en wat veranderde meetbaar? "Bouwde forecasting-dashboard dat 12 category managers wekelijks gebruiken" is sterker dan "Tableau-ervaring".',
+      },
+      {
+        heading: 'Schaal van impact in cijfers',
+        body:
+          'Voor data-analist-rollen zijn drie cijfers koning: omzet/kosten-impact (€), efficiency-gains (uren bespaard, refresh-tijd), en dataset-grootte/users (12 stakeholders, 500K klanten, 8M rows). Pak ééntje per bullet.',
+      },
+      {
+        heading: 'Tooling overlap met je doelrol — exact aansluiten',
+        body:
+          'Recruiters bij Booking.com, Adyen, Picnic, Coolblue gebruiken keyword-matching. Als de vacature dbt + Looker noemt en jij hebt het, schrijf exact die woorden. Niet "transformaties bouwen" — "dbt models bouwen".',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'hr-manager',
+    functie: 'HR Manager / Adviseur',
+    title: 'CV Voorbeeld: HR Manager / Adviseur',
+    description:
+      'CV voorbeeld voor HR managers en HR adviseurs. Met tips voor werknemerstevredenheid, ATS-tooling en doorgroei van HR Generalist naar Manager.',
+    templateId: 'modern',
+    colorSchemeId: 'violet',
+    cv: buildExampleCV({
+      firstName: 'Sandra',
+      lastName: 'Klaassen',
+      email: 'sandra.klaassen@example.nl',
+      phone: '06 5566 7788',
+      city: 'Eindhoven',
+      linkedIn: 'linkedin.com/in/sandraklaassen',
+      summary:
+        'HR Manager met 9 jaar ervaring in scale-ups en mid-market (50-400 FTE) in tech en zorg. Eigenaar van de gehele HR-cyclus bij Mendix Eindhoven: recruitment, onboarding, performance, comp&ben en exit. Reduceerde employee turnover van 18% naar 11% over 18 maanden door gestructureerd onboarding-programma en quarterly check-ins.',
+      experiences: [
+        {
+          jobTitle: 'HR Manager NL',
+          company: 'Mendix (Siemens)',
+          location: 'Eindhoven',
+          startDate: '2022-01',
+          current: true,
+          description: 'Verantwoordelijk voor de NL-organisatie (180 FTE). Direct rapporterend aan VP People.',
+          tasks: [
+            'Reduceerde employee turnover van 18% naar 11% over 18 maanden door onboarding-redesign en quarterly 1:1-cyclus.',
+            'Implementeerde Workday (van BambooHR migratie); on-time delivery van 4-maanden project met 0 data-issues.',
+            'Manager van 2 HR Business Partners en 1 People Ops Specialist.',
+          ],
+        },
+        {
+          jobTitle: 'HR Business Partner',
+          company: 'Zorggroep Sint Maarten',
+          location: 'Oldenzaal',
+          startDate: '2017-04',
+          endDate: '2021-12',
+          description: 'Zorgorganisatie met 1.200 FTE verspreid over 8 locaties.',
+          tasks: [
+            'Voornaamste HR-aanspreekpunt voor 3 verpleegafdelingen (240 FTE).',
+            'Cao-onderhandelingen Verpleeg- Verzorgingshuizen en Thuiszorg (VVT); rondvloei van 11 onderhandelpunten in 2020.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MSc Human Resource Studies',
+          institution: 'Tilburg University',
+          location: 'Tilburg',
+          startDate: '2015-09',
+          endDate: '2017-08',
+        },
+      ],
+      skills: ['Workday', 'BambooHR', 'Greenhouse ATS', 'Cao-onderhandeling VVT', 'Cao-onderhandeling Metalektro', 'Performance management', 'NL arbeidsrecht (basisniveau)'],
+      template: 'modern',
+      colorScheme: 'violet',
+    }),
+    advice: [
+      {
+        heading: 'Scope: aantal FTE en branche eerst',
+        body:
+          'HR-recruiters bij KLM, Philips, ASML, NN Group screenen direct op organisatiegrootte (50? 500? 5000?) en branche-specifieke cao\'s. Zet de scope in regel 1: "HR Manager voor NL-organisatie van 180 FTE" beats "Ervaren HR professional".',
+      },
+      {
+        heading: 'Tooling vermelden — Workday is dé groene vlag',
+        body:
+          'Workday, SuccessFactors, BambooHR, Greenhouse, Lever, Personio — vermeld welke tools je actief beheert. Voor enterprise-rollen (KLM, ABN AMRO) is Workday-ervaring vaak een filter. Vermijd vage "HRIS-ervaring".',
+      },
+      {
+        heading: 'Meetbare HR-impact telt zwaar',
+        body:
+          'Turnover-percentage verlaagd, time-to-hire reduced, eNPS verhoogd, ziekteverzuim onder branche-gemiddelde — alle data telt. "Reduceerde employee turnover van 18% naar 11% over 18 maanden" is een interview-trigger.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'verzorgende-ig',
+    functie: 'Verzorgende IG',
+    title: 'CV Voorbeeld: Verzorgende IG',
+    description:
+      'CV voorbeeld voor verzorgenden in de individuele gezondheidszorg. Voor verpleeghuiszorg, thuiszorg en gehandicaptenzorg. Met BIG-tips.',
+    templateId: 'zakelijk',
+    colorSchemeId: 'blue',
+    cv: buildExampleCV({
+      firstName: 'Esther',
+      lastName: 'van den Berg',
+      email: 'esther.vandenberg@example.nl',
+      phone: '06 6677 8899',
+      city: 'Nijmegen',
+      summary:
+        'Verzorgende IG met 11 jaar ervaring in psychogeriatrie en somatische langdurige zorg bij Kalorama en Pluryn. BIG-geregistreerd, EVV\'er voor 8 cliënten met dementie. Werkbegeleider voor MBO-V niveau 3 leerlingen — laatste 5 jaren 12 leerlingen begeleid, allen geslaagd.',
+      experiences: [
+        {
+          jobTitle: 'EVV\'er Psychogeriatrie',
+          company: 'Kalorama',
+          location: 'Beek-Ubbergen',
+          startDate: '2019-08',
+          current: true,
+          description: 'Verpleeghuis voor mensen met dementie. Kleinschalige woongroep van 8 cliënten.',
+          tasks: [
+            'Eerstverantwoordelijke voor 8 cliënten: zorgplannen schrijven en evalueren, contactpersoon voor familie.',
+            'Werkbegeleider voor MBO-V niveau 3 leerlingen; 12 leerlingen begeleid in afgelopen 5 jaar (100% slaagpercentage).',
+            'Lid van de kwaliteitscommissie probleemgedrag; herziening protocol valpreventie 2023.',
+          ],
+        },
+        {
+          jobTitle: 'Verzorgende',
+          company: 'Pluryn',
+          location: 'Oosterbeek',
+          startDate: '2014-01',
+          endDate: '2019-07',
+          description: 'Gehandicaptenzorg, woongroep voor volwassenen met verstandelijke beperking.',
+          tasks: [
+            'Persoonlijke verzorging en dagelijkse ondersteuning van 6 cliënten met matig tot ernstige beperking.',
+            'Coördinatie van weekend-uitjes en familie-bezoeken.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MBO Niveau 3 — Verzorgende IG',
+          institution: 'ROC Nijmegen',
+          location: 'Nijmegen',
+          startDate: '2011-09',
+          endDate: '2013-12',
+        },
+      ],
+      skills: ['BIG-registratie', 'EVV\'er', 'Werkbegeleider MBO-V', 'Dementie / psychogeriatrie', 'ONS Nedap', 'Probleemgedrag (Omgaan met)', 'Risico-signalering valpreventie'],
+      template: 'zakelijk',
+      colorScheme: 'blue',
+    }),
+    advice: [
+      {
+        heading: 'BIG + niveau + zorgsetting in regel 1',
+        body:
+          'Zorginstellingen filteren op: BIG-registratie (ja/nee), niveau (3/4), en zorgsetting (psychogeriatrie/somatiek/gehandicapten/thuiszorg). Zet die combinatie in de eerste regel. EVV\'er-rol vermelden geeft direct senior-signaal.',
+      },
+      {
+        heading: 'EPD en zorgplan-systemen expliciet',
+        body:
+          'ONS Nedap, Cura, PinkRoccade — welke systemen heb je gebruikt? Voor zorgaanbieders is dit een filter — nieuwe medewerkers die direct in hun systeem kunnen werken, hebben voorkeur. Vermeld het in vaardigheden.',
+      },
+      {
+        heading: 'Werkbegeleiding is een onderscheidende rol',
+        body:
+          'Werkbegeleider zijn voor MBO-V leerlingen is een sterke status — zorginstellingen waarderen mensen die kennis kunnen overdragen. Vermeld het aantal begeleide leerlingen en slaagpercentage als je dat hebt.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'designer',
+    functie: 'Designer (UX / Grafisch)',
+    title: 'CV Voorbeeld: UX Designer / Grafisch Designer',
+    description:
+      'CV voorbeeld voor UX designers en grafisch designers. Met portfolio-links, Figma-skills en tips voor agency vs in-house sollicitaties.',
+    templateId: 'creatief',
+    colorSchemeId: 'rose',
+    cv: buildExampleCV({
+      firstName: 'Tessa',
+      lastName: 'Bouwman',
+      email: 'tessa.bouwman@example.nl',
+      phone: '06 7788 9900',
+      city: 'Utrecht',
+      linkedIn: 'linkedin.com/in/tessabouwman',
+      summary:
+        'Senior product designer met 6 jaar ervaring in B2C app-design bij Bunq en Mollie. Specialisatie in payment flows en onboarding-optimalisatie. Eigenaar van het design system bij Mollie sinds 2023: 80+ componenten, gebruikt door 14 engineers en 4 designers.',
+      experiences: [
+        {
+          jobTitle: 'Senior Product Designer',
+          company: 'Mollie',
+          location: 'Amsterdam',
+          startDate: '2023-03',
+          current: true,
+          description: 'Merchant Dashboard team — onboarding en payment configuration flows.',
+          tasks: [
+            'Eigenaar van het Mollie design system (80+ componenten in Figma); gebruikt door 14 engineers en 4 designers.',
+            'Onboarding-redesign: completion-rate van merchant sign-ups +24% in eerste 6 maanden.',
+            'User research met 12 KvK-eenmanszaken; resulteerde in vereenvoudiging van het KYC-proces.',
+          ],
+        },
+        {
+          jobTitle: 'Product Designer',
+          company: 'Bunq',
+          location: 'Amsterdam',
+          startDate: '2019-09',
+          endDate: '2023-02',
+          description: 'Mobile app design — focus op investeren en split-payments features.',
+          tasks: [
+            'Lead designer voor de Investments-feature launch (2021); 60K+ Premium-gebruikers actief in eerste jaar.',
+            'Design lead voor de redesign van de payment-request flow; conversie +18%.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'BSc Communicatie & Multimedia Design',
+          institution: 'HKU',
+          location: 'Hilversum',
+          startDate: '2015-09',
+          endDate: '2019-06',
+        },
+      ],
+      skills: ['Figma (advanced)', 'Design systems', 'User research', 'Prototyping', 'A/B testing', 'Webflow', 'Engels (vloeiend)'],
+      template: 'creatief',
+      colorScheme: 'rose',
+    }),
+    advice: [
+      {
+        heading: 'Portfolio-link in je profiel + per project',
+        body:
+          'Design-recruiters klikken in 5 seconden naar je portfolio. Zet die URL prominent in de header van je CV en linkje naar specifieke cases vanuit relevante experience-bullets. Vermijd algemene portfolio\'s met "alles erop"; recruiters willen 3-5 cases die je rol-relevant zijn.',
+      },
+      {
+        heading: 'Specialisatie + tool-stack',
+        body:
+          'B2C app-design ≠ B2B SaaS-design ≠ branding. Specificeer waar je sterk in bent. Tool-stack expliciet: Figma + Webflow + Notion / Maze / Hotjar. Design systems-ervaring is voor enterprise-rollen (KPN, ABN AMRO, ING Design Studio) een filter.',
+      },
+      {
+        heading: 'Meetbare impact: conversie, completion, retentie',
+        body:
+          'Senior designers worden afgerekend op business-impact, niet alleen op output. "Onboarding-redesign: completion-rate +24% in eerste 6 maanden" is interview-trigger. Vermeld user-research cijfers (aantal interviews, NPS-veranderingen).',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'financieel-medewerker',
+    functie: 'Financieel Medewerker / Boekhouder',
+    title: 'CV Voorbeeld: Financieel Medewerker / Boekhouder',
+    description:
+      'CV voorbeeld voor administratief medewerkers, boekhouders en finance ondersteuning. Met software-tooling en doorgroei naar controller.',
+    templateId: 'zakelijk',
+    colorSchemeId: 'slate',
+    cv: buildExampleCV({
+      firstName: 'Bianca',
+      lastName: 'de Lange',
+      email: 'bianca.delange@example.nl',
+      phone: '06 8899 0011',
+      city: 'Eindhoven',
+      summary:
+        'Allround financieel medewerker met 8 jaar ervaring bij MKB (omzet €5-50M) in productie en groothandel. Verantwoordelijk voor de volledige debiteuren- en crediteurenadministratie, BTW-aangiftes en ondersteuning van de jaarafsluiting. Exact Online en Twinfield superuser.',
+      experiences: [
+        {
+          jobTitle: 'Financieel Medewerker',
+          company: 'Bavaria Brouwerij',
+          location: 'Lieshout',
+          startDate: '2020-06',
+          current: true,
+          description: 'Familiebrouwerij. Onderdeel van het 6-koppige finance-team.',
+          tasks: [
+            'Volledige verwerking debiteuren- en crediteurenadministratie (gemiddeld 800 facturen per maand).',
+            'Maandelijkse BTW-aangiftes en kwartaal ICP-opgaven.',
+            'Ondersteuning bij jaarafsluiting samen met externe accountant (Deloitte Eindhoven).',
+            'Implementatie van Basware automatische factuurverwerking; reduceerde handmatig boekwerk met 60%.',
+          ],
+        },
+        {
+          jobTitle: 'Administratief Medewerker',
+          company: 'Van der Schoot Groothandel',
+          location: 'Helmond',
+          startDate: '2016-02',
+          endDate: '2020-05',
+          description: 'Familiebedrijf in technische groothandel; omzet €18M.',
+          tasks: [
+            'Verwerking inkomende en uitgaande facturen, bankboekingen, kas.',
+            'Voorbereiding maandelijkse rapportages voor de directie.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MBO Niveau 4 — Financieel Administratief Medewerker',
+          institution: 'ROC ter AA',
+          location: 'Helmond',
+          startDate: '2012-09',
+          endDate: '2016-01',
+        },
+      ],
+      skills: ['Exact Online', 'Twinfield', 'Basware', 'AFAS', 'BTW-aangifte', 'ICP-opgave', 'Microsoft Excel (advanced)'],
+      template: 'zakelijk',
+      colorScheme: 'slate',
+    }),
+    advice: [
+      {
+        heading: 'Software-stack expliciet vermelden',
+        body:
+          'MKB en accountantskantoren screenen finance-CV\'s op tool-ervaring: Exact Online, Twinfield, AFAS, Snelstart, Yuki, Visma. Vermeld welke je actief gebruikt. Voor accountantskantoor: bonus is Caseware (audit-tool) of Penta Vision (zorg-administratie).',
+      },
+      {
+        heading: 'Scope: omzet, factuurvolume, sector',
+        body:
+          'Een financieel medewerker bij een MKB van €5M omzet is heel anders dan bij €50M. Specificeer de schaal: gemiddeld aantal facturen per maand, bedrijfsomzet (indien openbaar), of branche. "800 facturen per maand" is concreet.',
+      },
+      {
+        heading: 'Automatisering / proces-verbetering is opvallend',
+        body:
+          'Veel finance-mensen doen routinewerk; iemand die proces-verbetering initieert (Basware-implementatie, automatische bankkoppelingen, factuur-OCR) onderscheidt zich onmiddellijk. "60% reductie handmatig boekwerk" is een interview-trigger voor controller-trajecten.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'klantenservice-medewerker',
+    functie: 'Klantenservice Medewerker',
+    title: 'CV Voorbeeld: Klantenservice Medewerker',
+    description:
+      'CV voorbeeld voor klantenservice in callcenter, e-commerce en B2B. Met First-Contact-Resolution, CSAT-cijfers en doorgroei tips.',
+    templateId: 'minimalist',
+    colorSchemeId: 'teal',
+    cv: buildExampleCV({
+      firstName: 'Mounir',
+      lastName: 'el Hassani',
+      email: 'mounir.elhassani@example.nl',
+      phone: '06 9900 1122',
+      city: 'Almere',
+      summary:
+        'Klantenservice-medewerker met 5 jaar ervaring in e-commerce en telecom. Bij Coolblue: top 5% First-Contact-Resolution score over 2024 en NPS 9,2 (team-gemiddelde 8,4). Werkbegeleider voor nieuwe collega\'s tijdens hun eerste 4 weken on the floor.',
+      experiences: [
+        {
+          jobTitle: 'Senior Klantenservice Medewerker / Coach',
+          company: 'Coolblue',
+          location: 'Rotterdam',
+          startDate: '2022-08',
+          current: true,
+          description: 'Webcare en telefonie team voor de afdeling Klein Huishouden.',
+          tasks: [
+            'First-Contact-Resolution rate 76% (team-gemiddelde 68%); top 5% van 220-koppige afdeling.',
+            'NPS 9,2 over 2024 (team-gemiddelde 8,4); behoorde tot top 10 voor klanttevredenheid Q4.',
+            'Werkbegeleider voor nieuwe collega\'s tijdens de eerste 4 weken on the floor; 14 collega\'s ingewerkt.',
+          ],
+        },
+        {
+          jobTitle: 'Klantenservice Medewerker',
+          company: 'KPN',
+          location: 'Almere',
+          startDate: '2020-03',
+          endDate: '2022-07',
+          description: 'Inbound team voor mobiele- en internetabonnementen.',
+          tasks: [
+            'Verwerking inbound calls voor product-vragen, facturering en storingen.',
+            'Identificatie van upsell-mogelijkheden binnen lopende abonnementen.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'MBO Niveau 4 — Marketing & Communicatie',
+          institution: 'ROC van Flevoland',
+          location: 'Almere',
+          startDate: '2016-09',
+          endDate: '2020-02',
+        },
+      ],
+      skills: ['Zendesk', 'Salesforce Service Cloud', 'Webcare (Twitter/Instagram)', 'NL, EN, AR vloeiend', 'De-escalatie technieken', 'Conflicthantering'],
+      template: 'minimalist',
+      colorScheme: 'teal',
+    }),
+    advice: [
+      {
+        heading: 'Performance-cijfers zijn dé valuta',
+        body:
+          'Klantenservice is een meetbaar vakgebied: FCR (First-Contact-Resolution), CSAT, NPS, AHT (Average Handle Time), gemiddelde calls per dienst. Vermeld de meetbare cijfers die je had. "NPS 9,2 vs team-gemiddelde 8,4" is veel sterker dan "klantgericht".',
+      },
+      {
+        heading: 'Software-stack en kanalen specificeren',
+        body:
+          'Zendesk, Salesforce Service Cloud, Freshdesk, Intercom — welk CRM/ticket-systeem heb je gebruikt? Telefonisch, chat, webcare (Twitter/Instagram), e-mail? Werkgevers zoals Coolblue, Bol, KLM Customer Care en Picnic willen weten of je day-one productief bent.',
+      },
+      {
+        heading: 'Werkbegeleiding & coaching tonen leiderschap',
+        body:
+          'Veel klantenservice-medewerkers krijgen na 1-2 jaar floor-coach verantwoordelijkheid. Vermeld het concreet ("14 nieuwe collega\'s ingewerkt"). Voor teamleider-traject is dit het meest doorslaggevende signaal.',
+      },
+    ],
+  },
+  // ────────────────────────────────────────────────────────────────
+  {
+    slug: 'recruiter',
+    functie: 'Recruiter / Talent Acquisition',
+    title: 'CV Voorbeeld: Recruiter / Talent Acquisition',
+    description:
+      'CV voorbeeld voor in-house en agency recruiters. Met time-to-hire metrics, ATS-tooling en tips voor het overstappen tussen agency en corporate.',
+    templateId: 'modern',
+    colorSchemeId: 'emerald',
+    cv: buildExampleCV({
+      firstName: 'Robin',
+      lastName: 'de Bruin',
+      email: 'robin.debruin@example.nl',
+      phone: '06 0011 2233',
+      city: 'Amsterdam',
+      linkedIn: 'linkedin.com/in/robindebruin',
+      summary:
+        'Tech recruiter met 5 jaar ervaring; 3 bij agency Brunel en 2 in-house bij Adyen. Specialisatie senior software engineers en data professionals. 2024: 38 hires gerealiseerd (target 30), gemiddelde time-to-hire 28 dagen (afdelingsgemiddelde 41).',
+      experiences: [
+        {
+          jobTitle: 'Senior Talent Acquisition Partner',
+          company: 'Adyen',
+          location: 'Amsterdam',
+          startDate: '2023-04',
+          current: true,
+          description: 'Tech recruitment, focus op senior engineering & data rollen.',
+          tasks: [
+            '38 hires gerealiseerd in 2024 (target 30); time-to-hire 28 dagen (afdelingsgemiddelde 41).',
+            'Hiring manager partnership voor 4 engineering teams; wekelijkse intake- en kalibreer-sessies.',
+            'Ownership van de NL employer branding samenwerking met de marketing-afdeling.',
+          ],
+        },
+        {
+          jobTitle: 'Recruiter',
+          company: 'Brunel',
+          location: 'Amsterdam',
+          startDate: '2020-09',
+          endDate: '2023-03',
+          description: 'Tech detacheringbureau. Eigen klantportefeuille van 12 corporate accounts.',
+          tasks: [
+            'Eigen portefeuille van 12 corporate accounts (gem. €1.8M jaarlijkse omzet).',
+            'Q4 2022: #1 op de NL Tech-leaderboard met 31 placements.',
+          ],
+        },
+      ],
+      educations: [
+        {
+          degree: 'HBO Bachelor — Personeel & Arbeid',
+          institution: 'Hogeschool van Amsterdam',
+          location: 'Amsterdam',
+          startDate: '2016-09',
+          endDate: '2020-06',
+        },
+      ],
+      skills: ['Greenhouse ATS', 'LinkedIn Recruiter', 'SmartRecruiters', 'Hireflix', 'Boolean search', 'Tech recruiting (Java/Go/Python stack)'],
+      template: 'modern',
+      colorScheme: 'emerald',
+    }),
+    advice: [
+      {
+        heading: 'Time-to-hire en placement-cijfers zijn jouw quota',
+        body:
+          'Recruitment is een meetbaar vak. Time-to-hire, placement-aantal, offer-acceptance-rate, candidate-NPS. Schrijf de cijfers exact: "38 hires in 2024 (target 30); time-to-hire 28 dagen (afdelingsgemiddelde 41)". Dit is hoe TA-leaders je inschalen.',
+      },
+      {
+        heading: 'ATS-tooling en sourcing-stack',
+        body:
+          'Welke ATS\'en heb je actief gebruikt? Greenhouse, Workable, SmartRecruiters, Recruitee, Lever. Welke sourcing-tools? LinkedIn Recruiter, Hiretual/SeekOut, GitHub-search voor tech, Boolean voor LinkedIn Free. Voor in-house corporate rollen is dit een filter.',
+      },
+      {
+        heading: 'Branche-specialisatie en seniority',
+        body:
+          'Tech recruiter, finance recruiter, healthcare recruiter — niche-specialisatie weegt zwaar. Vermeld welk type rollen en welke skills/stacks je actief recruiteert. "Senior software engineers Java/Go" is sterker dan "tech roles".',
+      },
+    ],
+  },
 ];
 
 export default EXAMPLES;
