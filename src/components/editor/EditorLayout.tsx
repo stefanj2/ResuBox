@@ -17,6 +17,7 @@ import { Button, Modal, StickyMobileCTA, SocialProofToast, PreviewTooltip, shoul
 import { TemplateSelector } from '@/components/templateSelector';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { SyncStatusPill } from './SyncStatusPill';
+import { LiveScorePanel } from './LiveScorePanel';
 
 const sections = [
   { id: 0, title: 'Persoonsgegevens', shortTitle: 'Persoon', icon: User, component: PersonalSection },
@@ -109,6 +110,7 @@ export function EditorLayout() {
 
   return (
     <>
+      <LiveScorePanel />
       <div className="min-h-screen bg-slate-100">
         {/* Desktop/Tablet Layout */}
         <div className="hidden md:flex h-screen">
