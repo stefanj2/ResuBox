@@ -85,6 +85,15 @@ export async function createCheckoutSession(params: CreateCheckoutParams): Promi
         dossierNumber: params.dossierNumber,
         customerName: params.customerName,
       },
+      // Propagate orderId to the underlying PaymentIntent (and therefore to
+      // every Charge). That way refund / dispute / fraud webhooks can find
+      // the order without an extra Stripe API lookup.
+      payment_intent_data: {
+        metadata: {
+          orderId: params.orderId,
+          dossierNumber: params.dossierNumber,
+        },
+      },
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       locale: 'nl',
