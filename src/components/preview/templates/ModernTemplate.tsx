@@ -2,15 +2,19 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { type, palette, space, formatDateRange } from './tokens';
+import { type, palette, space } from './tokens';
+import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.default;
 const placeholder: React.CSSProperties = { color: c.placeholder };
 
-export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
+export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   const accent = (colorScheme || getColorScheme('emerald')).primary;
+  const labels = getTemplateLabels(locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+  const formatDateRange = (s: string, e: string, current: boolean) =>
+    formatDateRangeLocalized(s, e, current, locale);
 
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
@@ -74,7 +78,7 @@ export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* PROFIEL — Pender-style oversized positioning statement */}
       {profile.summary && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <SectionLabel label="Profiel" />
+          <SectionLabel label={labels.profile} />
           <p
             style={{
               ...type.lead,
@@ -91,7 +95,7 @@ export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* WERKERVARING */}
       {experience.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <SectionLabel label="Werkervaring" />
+          <SectionLabel label={labels.experience} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.experience ? 0.5 : 1 }}>
             {experience.map((exp) => (
               <article key={exp.id}>
@@ -127,7 +131,7 @@ export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* OPLEIDING */}
       {education.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <SectionLabel label="Opleiding" />
+          <SectionLabel label={labels.education} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.education ? 0.5 : 1 }}>
             {education.map((edu) => (
               <article key={edu.id}>
@@ -151,7 +155,7 @@ export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* VAARDIGHEDEN */}
       {skills.length > 0 && (
         <section>
-          <SectionLabel label="Vaardigheden" />
+          <SectionLabel label={labels.skills} />
           <div style={{ ...type.body, color: isPlaceholder.skills ? c.placeholder : c.body, opacity: isPlaceholder.skills ? 0.6 : 1 }}>
             {skills.map((skill, i) => (
               <React.Fragment key={skill.id}>

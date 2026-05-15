@@ -33,7 +33,8 @@ const FONT_LINK =
 export async function renderTemplateToHtml(
   cvData: CVData,
   templateId: TemplateId,
-  colorSchemeId: ColorSchemeId
+  colorSchemeId: ColorSchemeId,
+  locale: string = 'nl'
 ): Promise<string> {
   // Dynamic import — react-dom/server cannot be statically imported into a
   // Next.js route handler, but dynamic import in a server-only module works.
@@ -43,7 +44,7 @@ export async function renderTemplateToHtml(
   const colorScheme = getColorScheme(colorSchemeId);
 
   const templateMarkup = renderToStaticMarkup(
-    <TemplateComponent cvData={cvData} colorScheme={colorScheme} />
+    <TemplateComponent cvData={cvData} colorScheme={colorScheme} locale={locale} />
   );
 
   return `<!DOCTYPE html>

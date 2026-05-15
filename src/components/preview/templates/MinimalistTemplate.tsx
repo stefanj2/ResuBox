@@ -1,14 +1,18 @@
 import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, space, formatDateRange } from './tokens';
+import { fonts, palette, space } from './tokens';
+import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 // Minimalist uses absolutely no accent color — typography is the only voice.
 const c = palette.default;
 
-export function MinimalistTemplate({ cvData }: TemplateProps) {
+export function MinimalistTemplate({ cvData, locale }: TemplateProps) {
+  const labels = getTemplateLabels(locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+  const formatDateRange = (s: string, e: string, current: boolean) =>
+    formatDateRangeLocalized(s, e, current, locale);
 
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
@@ -129,7 +133,7 @@ export function MinimalistTemplate({ cvData }: TemplateProps) {
 
       {profile.summary && (
         <section style={{ marginBottom: '28pt' }}>
-          <Heading label="Profiel" />
+          <Heading label={labels.profile} />
           <p
             style={{
               fontFamily: fonts.sans,
@@ -147,7 +151,7 @@ export function MinimalistTemplate({ cvData }: TemplateProps) {
 
       {experience.length > 0 && (
         <section style={{ marginBottom: '28pt' }}>
-          <Heading label="Werkervaring" />
+          <Heading label={labels.experience} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16pt', opacity: isPlaceholder.experience ? 0.5 : 1 }}>
             {experience.map((exp) => (
               <Item
@@ -170,7 +174,7 @@ export function MinimalistTemplate({ cvData }: TemplateProps) {
 
       {education.length > 0 && (
         <section style={{ marginBottom: '28pt' }}>
-          <Heading label="Opleiding" />
+          <Heading label={labels.education} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12pt', opacity: isPlaceholder.education ? 0.5 : 1 }}>
             {education.map((edu) => (
               <Item
@@ -192,7 +196,7 @@ export function MinimalistTemplate({ cvData }: TemplateProps) {
 
       {skills.length > 0 && (
         <section>
-          <Heading label="Vaardigheden" />
+          <Heading label={labels.skills} />
           <p
             style={{
               fontFamily: fonts.sans,

@@ -2,14 +2,18 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, space, formatDateRange } from './tokens';
+import { fonts, palette, space } from './tokens';
+import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.default;
 
-export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
+export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   const accent = (colorScheme || getColorScheme('rose')).primary;
+  const labels = getTemplateLabels(locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+  const formatDateRange = (s: string, e: string, current: boolean) =>
+    formatDateRangeLocalized(s, e, current, locale);
 
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
@@ -69,7 +73,7 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* HEADER */}
       <header style={{ marginBottom: '20pt' }}>
         <div style={{ fontFamily: fonts.sans, fontSize: '8.5pt', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: accent, marginBottom: '6pt' }}>
-          Curriculum Vitae
+          {labels.cvHeader}
         </div>
         <h1
           style={{
@@ -119,7 +123,7 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* CONTACT */}
       {contact.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Contact" />
+          <Heading label={labels.contact} />
           <div style={{ fontFamily: fonts.sans, fontSize: '9.5pt', color: c.body, lineHeight: 1.7 }}>
             {contact.map((item, i) => (
               <React.Fragment key={i}>
@@ -134,7 +138,7 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* WERKERVARING */}
       {experience.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Werkervaring" />
+          <Heading label={labels.experience} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.experience ? 0.5 : 1 }}>
             {experience.map((exp) => (
               <article key={exp.id}>
@@ -182,7 +186,7 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* OPLEIDING */}
       {education.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Opleiding" />
+          <Heading label={labels.education} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.education ? 0.5 : 1 }}>
             {education.map((edu) => (
               <article key={edu.id}>
@@ -210,7 +214,7 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       {/* VAARDIGHEDEN */}
       {skills.length > 0 && (
         <section>
-          <Heading label="Vaardigheden" />
+          <Heading label={labels.skills} />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6pt', opacity: isPlaceholder.skills ? 0.6 : 1 }}>
             {skills.map((skill) => (
               <span

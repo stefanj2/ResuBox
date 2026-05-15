@@ -1,0 +1,180 @@
+{
+  "Common": {
+    "download": "Ladda ner",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "add": "Lägg till",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "remove": "Ta bort",
+    "close": "Stäng",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "loading": "Laddar...",
+    "loadingShort": "Vänta...",
+    "saving": "Sparar...",
+    "error": "Något gick fel",
+    "tryAgain": "Försök igen",
+    "yes": "Ja",
+    "no": "Nej",
+    "optional": "valfritt",
+    "required": "obligatoriskt",
+    "and": "och",
+    "or": "eller"
+  },
+  "Header": {
+    "ctaPrimary": "Skapa ditt CV gratis",
+    "ctaMaakBrief": "Skriv ditt personliga brev",
+    "myCvs": "Mina CV:n",
+    "login": "Logga in",
+    "logout": "Logga ut",
+    "dashboard": "Dashboard",
+    "myAccount": "Mitt konto",
+    "createCv": "Skapa CV",
+    "createLetter": "Personligt brev"
+  },
+  "Hero": {
+    "badge": "Inget abonnemang. Engångskostnad 449 kr. Betala först efter nedladdning.",
+    "title": "Bygg ditt professionella CV på 10 minuter",
+    "subtitle": "Mallar i rekryterarklass, ATS-vänligt, riktigt AI-genererade profiler och bullet points — ingen prenumerationsfälla, engångsavgift.",
+    "cta": "Börja gratis",
+    "secondary": "Se exempel",
+    "trust": "Över 1 000 framgångsrikt skapade CV:n"
+  },
+  "Builder": {
+    "sections": {
+      "personal": "Personuppgifter",
+      "work": "Arbetslivserfarenhet",
+      "education": "Utbildning",
+      "skills": "Kompetenser",
+      "profile": "Profil"
+    },
+    "personalSection": {
+      "title": "Personuppgifter",
+      "subtitle": "Fyll i dina kontaktuppgifter så att rekryterare kan nå dig.",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "email": "E-post",
+      "phone": "Telefon",
+      "address": "Adress",
+      "houseNumber": "Nummer",
+      "postalCode": "Postnummer",
+      "city": "Ort",
+      "linkedIn": "LinkedIn",
+      "website": "Webbplats",
+      "photo": "Profilbild",
+      "uploadPhoto": "Ladda upp bild",
+      "removePhoto": "Ta bort bild"
+    },
+    "profileSection": {
+      "title": "Profil",
+      "subtitle": "Skriv en kort sammanfattning om dig själv. Det är det första rekryteraren läser.",
+      "aiTitle": "AI-profil baserat på din erfarenhet",
+      "aiSubtitle": "Claude analyserar din arbetslivserfarenhet, utbildning och kompetenser och skriver en 2-3 meningar lång profil — utan klyschor.",
+      "aiButton": "Skriv åt mig",
+      "aiButtonLoading": "Skriver...",
+      "label": "Din profil",
+      "placeholder": "Beskriv på 2-3 meningar vem du är, vad du kan och vad du söker."
+    },
+    "experienceSection": {
+      "title": "Arbetslivserfarenhet",
+      "subtitle": "Lägg till din relevanta arbetslivserfarenhet, med början från den senaste tjänsten.",
+      "addNew": "Lägg till arbetslivserfarenhet",
+      "jobTitle": "Befattning",
+      "company": "Företag",
+      "location": "Ort",
+      "startDate": "Startdatum",
+      "endDate": "Slutdatum",
+      "currentPosition": "Pågående anställning",
+      "description": "Beskrivning",
+      "tasks": "Ansvar / Prestationer",
+      "addTask": "Lägg till en punkt och tryck Enter...",
+      "improveBullet": "Förbättra denna punkt med AI",
+      "deleteExperience": "Ta bort denna anställning"
+    },
+    "educationSection": {
+      "title": "Utbildning",
+      "subtitle": "Lägg till din utbildning, med början från den senaste / högsta.",
+      "addNew": "Lägg till utbildning",
+      "degree": "Examen / Utbildning",
+      "institution": "Lärosäte",
+      "location": "Ort",
+      "currentEducation": "Pågående studier",
+      "description": "Beskrivning",
+      "deleteEducation": "Ta bort denna utbildning"
+    },
+    "skillsSection": {
+      "title": "Kompetenser",
+      "subtitle": "Lägg till 6-12 relevanta kompetenser.",
+      "addSkill": "Lägg till kompetens",
+      "placeholder": "T.ex. TypeScript",
+      "level": "Nivå"
+    }
+  },
+  "Template": {
+    "profile": "Profil",
+    "experience": "Arbetslivserfarenhet",
+    "education": "Utbildning",
+    "skills": "Kompetenser",
+    "contact": "Kontakt",
+    "present": "Pågående",
+    "executiveSummary": "Executive Summary",
+    "coreCompetencies": "Kärnkompetenser"
+  },
+  "Months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "Maj",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Okt",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "Score": {
+    "label": "CV-poäng",
+    "excellent": "Utmärkt",
+    "good": "Bra",
+    "fair": "Kan förbättras",
+    "poor": "Behöver uppmärksamhet"
+  },
+  "Sync": {
+    "inAccount": "I kontot",
+    "saving": "Sparar...",
+    "syncFailed": "Synk misslyckades",
+    "saveToAccount": "Spara i kontot",
+    "localOnly": "Endast lokalt",
+    "saveDialogTitle": "Spara CV i kontot",
+    "saveDialogSubtitle": "Ge ditt CV ett namn så att du hittar det senare i din dashboard."
+  },
+  "Download": {
+    "title": "Ladda ner ditt CV",
+    "subtitle": "Ditt CV är klart för nedladdning.",
+    "formatLabel": "Filformat",
+    "formatPdf": "PDF",
+    "formatPdfHint": "Rekommenderas — färg, A4",
+    "formatDocx": "Word (.docx)",
+    "formatDocxHint": "Redigerbar i Word",
+    "agreementPrefix": "Ja, jag vill ladda ner mitt CV",
+    "downloadButton": "Ladda ner",
+    "downloading": "Vänta...",
+    "successTitle": "Nedladdning startad!",
+    "successSubtitle": "Ditt professionella CV laddas ner nu. Lycka till med din ansökan!"
+  },
+  "Footer": {
+    "tagline": "Skapa ditt CV gratis. Engångskostnad 449 kr för nedladdningen. Inget abonnemang.",
+    "links": {
+      "faq": "Vanliga frågor",
+      "contact": "Kontakt",
+      "privacy": "Integritet",
+      "terms": "Villkor",
+      "cvExamples": "CV-exempel",
+      "letterExamples": "Personligt brev-exempel",
+      "atsCheck": "ATS-kontroll"
+    }
+  }
+}

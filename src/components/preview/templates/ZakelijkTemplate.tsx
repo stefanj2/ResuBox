@@ -1,13 +1,17 @@
 import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, space, formatDateRange } from './tokens';
+import { fonts, palette, space } from './tokens';
+import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.zakelijk;
 
-export function ZakelijkTemplate({ cvData }: TemplateProps) {
+export function ZakelijkTemplate({ cvData, locale }: TemplateProps) {
+  const labels = getTemplateLabels(locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+  const formatDateRange = (s: string, e: string, current: boolean) =>
+    formatDateRangeLocalized(s, e, current, locale);
 
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
@@ -83,7 +87,7 @@ export function ZakelijkTemplate({ cvData }: TemplateProps) {
       {/* PROFIEL */}
       {profile.summary && (
         <section style={{ marginBottom: '14pt' }}>
-          <Heading label="Profiel" />
+          <Heading label={labels.profile} />
           <p
             style={{
               fontFamily: fonts.serif,
@@ -102,7 +106,7 @@ export function ZakelijkTemplate({ cvData }: TemplateProps) {
       {/* WERKERVARING */}
       {experience.length > 0 && (
         <section style={{ marginBottom: '14pt' }}>
-          <Heading label="Werkervaring" />
+          <Heading label={labels.experience} />
           <div style={{ opacity: isPlaceholder.experience ? 0.5 : 1, paddingTop: '4pt' }}>
             {experience.map((exp, idx) => (
               <article key={exp.id} style={{ marginBottom: idx === experience.length - 1 ? 0 : '10pt' }}>
@@ -158,7 +162,7 @@ export function ZakelijkTemplate({ cvData }: TemplateProps) {
       {/* OPLEIDING */}
       {education.length > 0 && (
         <section style={{ marginBottom: '14pt' }}>
-          <Heading label="Opleiding" />
+          <Heading label={labels.education} />
           <div style={{ opacity: isPlaceholder.education ? 0.5 : 1, paddingTop: '4pt' }}>
             {education.map((edu, idx) => (
               <article key={edu.id} style={{ marginBottom: idx === education.length - 1 ? 0 : '8pt' }}>
@@ -194,7 +198,7 @@ export function ZakelijkTemplate({ cvData }: TemplateProps) {
       {/* VAARDIGHEDEN */}
       {skills.length > 0 && (
         <section>
-          <Heading label="Vaardigheden" />
+          <Heading label={labels.skills} />
           <p
             style={{
               fontFamily: fonts.serif,

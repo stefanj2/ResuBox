@@ -1,0 +1,180 @@
+{
+  "Common": {
+    "download": "Download",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "delete": "Delete",
+    "edit": "Edit",
+    "remove": "Remove",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "loadingShort": "Please wait...",
+    "saving": "Saving...",
+    "error": "Something went wrong",
+    "tryAgain": "Try again",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "optional",
+    "required": "required",
+    "and": "and",
+    "or": "or"
+  },
+  "Header": {
+    "ctaPrimary": "Build your CV for free",
+    "ctaMaakBrief": "Write your cover letter",
+    "myCvs": "My CVs",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "dashboard": "Dashboard",
+    "myAccount": "My account",
+    "createCv": "Create CV",
+    "createLetter": "Cover letter"
+  },
+  "Hero": {
+    "badge": "No subscription. One-off £42. Pay only after download.",
+    "title": "Build your professional CV in 10 minutes",
+    "subtitle": "Recruiter-grade templates, ATS-friendly, real AI-generated summaries and bullets — no trial trap, one-off payment.",
+    "cta": "Start free",
+    "secondary": "View examples",
+    "trust": "1,000+ CVs successfully crafted"
+  },
+  "Builder": {
+    "sections": {
+      "personal": "Personal Details",
+      "work": "Work Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "profile": "Professional Summary"
+    },
+    "personalSection": {
+      "title": "Personal Details",
+      "subtitle": "Add your contact details so recruiters can reach you.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Street",
+      "houseNumber": "Number",
+      "postalCode": "Postcode",
+      "city": "City",
+      "linkedIn": "LinkedIn",
+      "website": "Website",
+      "photo": "Profile photo",
+      "uploadPhoto": "Upload photo",
+      "removePhoto": "Remove photo"
+    },
+    "profileSection": {
+      "title": "Professional Summary",
+      "subtitle": "Write a brief summary about yourself. This is what recruiters read first.",
+      "aiTitle": "AI summary based on your experience",
+      "aiSubtitle": "Claude analyses your work experience, education and skills and writes a 2-3 sentence summary — free of clichés.",
+      "aiButton": "Write it for me",
+      "aiButtonLoading": "Writing...",
+      "label": "Your summary",
+      "placeholder": "Describe in 2-3 sentences who you are, what you do and what you're looking for."
+    },
+    "experienceSection": {
+      "title": "Work Experience",
+      "subtitle": "Add your relevant work experience, starting with your most recent role.",
+      "addNew": "Add work experience",
+      "jobTitle": "Job title",
+      "company": "Company",
+      "location": "Location",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "currentPosition": "I still work here",
+      "description": "Description",
+      "tasks": "Achievements / Responsibilities",
+      "addTask": "Add a bullet and press Enter...",
+      "improveBullet": "Improve this bullet with AI",
+      "deleteExperience": "Delete this work experience"
+    },
+    "educationSection": {
+      "title": "Education",
+      "subtitle": "Add your education, starting with your highest / most recent qualification.",
+      "addNew": "Add education",
+      "degree": "Degree / Programme",
+      "institution": "Institution",
+      "location": "Location",
+      "currentEducation": "I'm still studying here",
+      "description": "Description",
+      "deleteEducation": "Delete this education"
+    },
+    "skillsSection": {
+      "title": "Skills",
+      "subtitle": "Add 6-12 relevant skills.",
+      "addSkill": "Add skill",
+      "placeholder": "e.g. TypeScript",
+      "level": "Level"
+    }
+  },
+  "Template": {
+    "profile": "Summary",
+    "experience": "Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "contact": "Contact",
+    "present": "Present",
+    "executiveSummary": "Executive Summary",
+    "coreCompetencies": "Core Competencies"
+  },
+  "Months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "Score": {
+    "label": "CV score",
+    "excellent": "Excellent",
+    "good": "Good",
+    "fair": "Needs work",
+    "poor": "Attention"
+  },
+  "Sync": {
+    "inAccount": "In account",
+    "saving": "Saving...",
+    "syncFailed": "Sync failed",
+    "saveToAccount": "Save to account",
+    "localOnly": "Local only",
+    "saveDialogTitle": "Save CV to account",
+    "saveDialogSubtitle": "Give your CV a name so you can find it later in your dashboard."
+  },
+  "Download": {
+    "title": "Download your CV",
+    "subtitle": "Your CV is ready to download.",
+    "formatLabel": "File format",
+    "formatPdf": "PDF",
+    "formatPdfHint": "Recommended — styled, A4",
+    "formatDocx": "Word (.docx)",
+    "formatDocxHint": "Editable in Word",
+    "agreementPrefix": "Yes, I want to download my CV",
+    "downloadButton": "Download",
+    "downloading": "Please wait...",
+    "successTitle": "Download started!",
+    "successSubtitle": "Your professional CV is downloading now. Good luck with your application!"
+  },
+  "Footer": {
+    "tagline": "Build your CV for free. One-off £42 for the download. No subscription.",
+    "links": {
+      "faq": "FAQ",
+      "contact": "Contact",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "cvExamples": "CV examples",
+      "letterExamples": "Cover letter examples",
+      "atsCheck": "ATS check"
+    }
+  }
+}

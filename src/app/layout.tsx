@@ -113,13 +113,16 @@ export const metadata: Metadata = {
   category: 'technology',
 };
 
-export default function RootLayout({
+import { getLocale } from 'next-intl/server';
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
-    <html lang="nl">
+    <html lang={locale}>
       <head>
         <OrganizationSchema />
         <WebApplicationSchema />

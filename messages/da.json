@@ -1,0 +1,180 @@
+{
+  "Common": {
+    "download": "Download",
+    "save": "Gem",
+    "cancel": "Annuller",
+    "add": "Tilføj",
+    "delete": "Slet",
+    "edit": "Rediger",
+    "remove": "Fjern",
+    "close": "Luk",
+    "back": "Tilbage",
+    "next": "Næste",
+    "loading": "Indlæser...",
+    "loadingShort": "Vent venligst...",
+    "saving": "Gemmer...",
+    "error": "Noget gik galt",
+    "tryAgain": "Prøv igen",
+    "yes": "Ja",
+    "no": "Nej",
+    "optional": "valgfri",
+    "required": "obligatorisk",
+    "and": "og",
+    "or": "eller"
+  },
+  "Header": {
+    "ctaPrimary": "Lav dit CV gratis",
+    "ctaMaakBrief": "Skriv din ansøgning",
+    "myCvs": "Mine CV'er",
+    "login": "Log ind",
+    "logout": "Log ud",
+    "dashboard": "Dashboard",
+    "myAccount": "Min konto",
+    "createCv": "Lav CV",
+    "createLetter": "Ansøgning"
+  },
+  "Hero": {
+    "badge": "Intet abonnement. Engangsbetaling 315 kr. Betal først efter download.",
+    "title": "Lav dit professionelle CV på 10 minutter",
+    "subtitle": "Rekruttørvenlige skabeloner, ATS-egnet, ægte AI-genererede profiler og bullet points — ingen abonnementsfælde, engangsbetaling.",
+    "cta": "Start gratis",
+    "secondary": "Se eksempler",
+    "trust": "Over 1.000 succesfuldt udarbejdede CV'er"
+  },
+  "Builder": {
+    "sections": {
+      "personal": "Personlige oplysninger",
+      "work": "Erhvervserfaring",
+      "education": "Uddannelse",
+      "skills": "Færdigheder",
+      "profile": "Profil"
+    },
+    "personalSection": {
+      "title": "Personlige oplysninger",
+      "subtitle": "Udfyld dine kontaktoplysninger, så rekruttører kan nå dig.",
+      "firstName": "Fornavn",
+      "lastName": "Efternavn",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "address": "Adresse",
+      "houseNumber": "Nummer",
+      "postalCode": "Postnummer",
+      "city": "By",
+      "linkedIn": "LinkedIn",
+      "website": "Hjemmeside",
+      "photo": "Profilbillede",
+      "uploadPhoto": "Upload billede",
+      "removePhoto": "Fjern billede"
+    },
+    "profileSection": {
+      "title": "Profil",
+      "subtitle": "Skriv en kort opsummering om dig selv. Det er det første, rekruttøren læser.",
+      "aiTitle": "AI-profil baseret på din erfaring",
+      "aiSubtitle": "Claude analyserer din erhvervserfaring, uddannelse og færdigheder og skriver en 2-3 sætningers profil — uden klicheer.",
+      "aiButton": "Skriv for mig",
+      "aiButtonLoading": "Skriver...",
+      "label": "Din profil",
+      "placeholder": "Beskriv i 2-3 sætninger, hvem du er, hvad du kan, og hvad du søger."
+    },
+    "experienceSection": {
+      "title": "Erhvervserfaring",
+      "subtitle": "Tilføj din relevante erhvervserfaring, startende med den seneste stilling.",
+      "addNew": "Tilføj erhvervserfaring",
+      "jobTitle": "Stillingsbetegnelse",
+      "company": "Virksomhed",
+      "location": "By",
+      "startDate": "Startdato",
+      "endDate": "Slutdato",
+      "currentPosition": "Nuværende stilling",
+      "description": "Beskrivelse",
+      "tasks": "Ansvar / Resultater",
+      "addTask": "Tilføj en punkt og tryk Enter...",
+      "improveBullet": "Forbedr dette punkt med AI",
+      "deleteExperience": "Slet denne stilling"
+    },
+    "educationSection": {
+      "title": "Uddannelse",
+      "subtitle": "Tilføj din uddannelse, startende med den højeste / seneste.",
+      "addNew": "Tilføj uddannelse",
+      "degree": "Eksamen / Uddannelse",
+      "institution": "Institution",
+      "location": "By",
+      "currentEducation": "Igangværende studier",
+      "description": "Beskrivelse",
+      "deleteEducation": "Slet denne uddannelse"
+    },
+    "skillsSection": {
+      "title": "Færdigheder",
+      "subtitle": "Tilføj 6-12 relevante færdigheder.",
+      "addSkill": "Tilføj færdighed",
+      "placeholder": "F.eks. TypeScript",
+      "level": "Niveau"
+    }
+  },
+  "Template": {
+    "profile": "Profil",
+    "experience": "Erhvervserfaring",
+    "education": "Uddannelse",
+    "skills": "Færdigheder",
+    "contact": "Kontakt",
+    "present": "Nu",
+    "executiveSummary": "Executive Summary",
+    "coreCompetencies": "Kernekompetencer"
+  },
+  "Months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "Maj",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Okt",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "Score": {
+    "label": "CV-score",
+    "excellent": "Fremragende",
+    "good": "Godt",
+    "fair": "Kan forbedres",
+    "poor": "Opmærksomhed"
+  },
+  "Sync": {
+    "inAccount": "I kontoen",
+    "saving": "Gemmer...",
+    "syncFailed": "Synk mislykkedes",
+    "saveToAccount": "Gem i kontoen",
+    "localOnly": "Kun lokalt",
+    "saveDialogTitle": "Gem CV i kontoen",
+    "saveDialogSubtitle": "Giv dit CV et navn, så du kan finde det senere i dit dashboard."
+  },
+  "Download": {
+    "title": "Download dit CV",
+    "subtitle": "Dit CV er klar til download.",
+    "formatLabel": "Filformat",
+    "formatPdf": "PDF",
+    "formatPdfHint": "Anbefalet — farver, A4",
+    "formatDocx": "Word (.docx)",
+    "formatDocxHint": "Kan redigeres i Word",
+    "agreementPrefix": "Ja, jeg vil downloade mit CV",
+    "downloadButton": "Download",
+    "downloading": "Vent venligst...",
+    "successTitle": "Download startet!",
+    "successSubtitle": "Dit professionelle CV downloades nu. Held og lykke med din ansøgning!"
+  },
+  "Footer": {
+    "tagline": "Lav dit CV gratis. Engangsbetaling 315 kr for download. Intet abonnement.",
+    "links": {
+      "faq": "FAQ",
+      "contact": "Kontakt",
+      "privacy": "Privatliv",
+      "terms": "Betingelser",
+      "cvExamples": "CV-eksempler",
+      "letterExamples": "Ansøgningseksempler",
+      "atsCheck": "ATS-tjek"
+    }
+  }
+}

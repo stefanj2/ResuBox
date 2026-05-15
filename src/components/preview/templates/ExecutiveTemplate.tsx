@@ -2,12 +2,16 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, space, formatYearRange } from './tokens';
+import { getTemplateLabels } from './labels';
 
 const c = palette.executive;
 
-export function ExecutiveTemplate({ cvData }: TemplateProps) {
+export function ExecutiveTemplate({ cvData, locale }: TemplateProps) {
+  const labels = getTemplateLabels(locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+  const yearRange = (s: string, e: string, current: boolean) =>
+    formatYearRange(s, e, current, labels.present);
 
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
@@ -139,7 +143,7 @@ export function ExecutiveTemplate({ cvData }: TemplateProps) {
 
       {profile.summary && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Executive Summary" />
+          <Heading label={labels.executiveSummary} />
           <p
             style={{
               fontFamily: fonts.serif,
@@ -157,12 +161,12 @@ export function ExecutiveTemplate({ cvData }: TemplateProps) {
 
       {experience.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Experience" />
+          <Heading label={labels.experience} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16pt', marginTop: '14pt', opacity: isPlaceholder.experience ? 0.5 : 1 }}>
             {experience.map((exp) => (
               <ItemRow
                 key={exp.id}
-                date={formatYearRange(exp.startDate, exp.endDate, exp.current)}
+                date={yearRange(exp.startDate, exp.endDate, exp.current)}
                 title={exp.jobTitle}
                 subtitle={
                   <>
@@ -180,12 +184,12 @@ export function ExecutiveTemplate({ cvData }: TemplateProps) {
 
       {education.length > 0 && (
         <section style={{ marginBottom: space.sectionGap }}>
-          <Heading label="Education" />
+          <Heading label={labels.education} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12pt', marginTop: '14pt', opacity: isPlaceholder.education ? 0.5 : 1 }}>
             {education.map((edu) => (
               <ItemRow
                 key={edu.id}
-                date={formatYearRange(edu.startDate, edu.endDate, edu.current)}
+                date={yearRange(edu.startDate, edu.endDate, edu.current)}
                 title={edu.degree}
                 subtitle={
                   <>
@@ -202,7 +206,7 @@ export function ExecutiveTemplate({ cvData }: TemplateProps) {
 
       {skills.length > 0 && (
         <section>
-          <Heading label="Core Competencies" />
+          <Heading label={labels.coreCompetencies} />
           <div
             style={{
               display: 'grid',

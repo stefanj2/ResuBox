@@ -1,0 +1,180 @@
+{
+  "Common": {
+    "download": "Herunterladen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "add": "Hinzufügen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "loading": "Wird geladen...",
+    "loadingShort": "Bitte warten...",
+    "saving": "Wird gespeichert...",
+    "error": "Etwas ist schiefgelaufen",
+    "tryAgain": "Erneut versuchen",
+    "yes": "Ja",
+    "no": "Nein",
+    "optional": "optional",
+    "required": "erforderlich",
+    "and": "und",
+    "or": "oder"
+  },
+  "Header": {
+    "ctaPrimary": "Kostenlosen Lebenslauf erstellen",
+    "ctaMaakBrief": "Anschreiben erstellen",
+    "myCvs": "Meine Lebensläufe",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "dashboard": "Dashboard",
+    "myAccount": "Mein Konto",
+    "createCv": "Lebenslauf erstellen",
+    "createLetter": "Anschreiben"
+  },
+  "Hero": {
+    "badge": "Kein Abo. Einmalig 42 €. Erst nach Download bezahlen.",
+    "title": "Erstellen Sie Ihren professionellen Lebenslauf in 10 Minuten",
+    "subtitle": "Recruiter-taugliche Vorlagen, ATS-freundlich, echte KI-generierte Profile und Bullets — keine Abofalle, einmalig 42 €.",
+    "cta": "Kostenlos starten",
+    "secondary": "Beispiele ansehen",
+    "trust": "Über 1.000 erfolgreich erstellte Lebensläufe"
+  },
+  "Builder": {
+    "sections": {
+      "personal": "Persönliche Daten",
+      "work": "Berufserfahrung",
+      "education": "Ausbildung",
+      "skills": "Kenntnisse",
+      "profile": "Kurzprofil"
+    },
+    "personalSection": {
+      "title": "Persönliche Daten",
+      "subtitle": "Tragen Sie Ihre Kontaktdaten ein, damit Recruiter Sie erreichen können.",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "address": "Straße",
+      "houseNumber": "Hausnummer",
+      "postalCode": "PLZ",
+      "city": "Wohnort",
+      "linkedIn": "LinkedIn",
+      "website": "Website",
+      "photo": "Bewerbungsfoto",
+      "uploadPhoto": "Foto hochladen",
+      "removePhoto": "Foto entfernen"
+    },
+    "profileSection": {
+      "title": "Kurzprofil",
+      "subtitle": "Schreiben Sie eine kurze Zusammenfassung über sich. Das lesen Recruiter zuerst.",
+      "aiTitle": "KI-Profil auf Basis Ihrer Berufserfahrung",
+      "aiSubtitle": "Claude analysiert Ihre Erfahrung, Ausbildung und Kenntnisse und schreibt ein 2-3 Sätze umfassendes Profil — ohne Floskeln.",
+      "aiButton": "Für mich schreiben",
+      "aiButtonLoading": "Wird geschrieben...",
+      "label": "Ihr Kurzprofil",
+      "placeholder": "Beschreiben Sie in 2-3 Sätzen, wer Sie sind, was Sie können und was Sie suchen."
+    },
+    "experienceSection": {
+      "title": "Berufserfahrung",
+      "subtitle": "Fügen Sie Ihre relevante Berufserfahrung hinzu — beginnend mit der jüngsten Position.",
+      "addNew": "Berufserfahrung hinzufügen",
+      "jobTitle": "Stellenbezeichnung",
+      "company": "Unternehmen",
+      "location": "Standort",
+      "startDate": "Beginn",
+      "endDate": "Ende",
+      "currentPosition": "Aktuelle Position",
+      "description": "Beschreibung",
+      "tasks": "Aufgaben / Erfolge",
+      "addTask": "Bullet hinzufügen und Enter drücken...",
+      "improveBullet": "Diesen Bullet mit KI verbessern",
+      "deleteExperience": "Diese Position löschen"
+    },
+    "educationSection": {
+      "title": "Ausbildung",
+      "subtitle": "Fügen Sie Ihre Ausbildung hinzu — beginnend mit der höchsten / jüngsten.",
+      "addNew": "Ausbildung hinzufügen",
+      "degree": "Abschluss / Studiengang",
+      "institution": "Einrichtung",
+      "location": "Standort",
+      "currentEducation": "Aktuell in Ausbildung",
+      "description": "Beschreibung",
+      "deleteEducation": "Diese Ausbildung löschen"
+    },
+    "skillsSection": {
+      "title": "Kenntnisse",
+      "subtitle": "Fügen Sie 6-12 relevante Kenntnisse hinzu.",
+      "addSkill": "Kenntnis hinzufügen",
+      "placeholder": "z. B. TypeScript",
+      "level": "Niveau"
+    }
+  },
+  "Template": {
+    "profile": "Kurzprofil",
+    "experience": "Berufserfahrung",
+    "education": "Ausbildung",
+    "skills": "Kenntnisse",
+    "contact": "Kontakt",
+    "present": "Heute",
+    "executiveSummary": "Executive Summary",
+    "coreCompetencies": "Kernkompetenzen"
+  },
+  "Months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mär",
+    "apr": "Apr",
+    "may": "Mai",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Okt",
+    "nov": "Nov",
+    "dec": "Dez"
+  },
+  "Score": {
+    "label": "Lebenslauf-Score",
+    "excellent": "Ausgezeichnet",
+    "good": "Gut",
+    "fair": "Verbesserungswürdig",
+    "poor": "Aufmerksamkeit"
+  },
+  "Sync": {
+    "inAccount": "Im Konto",
+    "saving": "Wird gespeichert...",
+    "syncFailed": "Sync fehlgeschlagen",
+    "saveToAccount": "Im Konto speichern",
+    "localOnly": "Nur lokal",
+    "saveDialogTitle": "Lebenslauf im Konto speichern",
+    "saveDialogSubtitle": "Geben Sie Ihrem Lebenslauf einen Namen, damit Sie ihn später im Dashboard wiederfinden."
+  },
+  "Download": {
+    "title": "Lebenslauf herunterladen",
+    "subtitle": "Ihr Lebenslauf ist bereit zum Download.",
+    "formatLabel": "Dateiformat",
+    "formatPdf": "PDF",
+    "formatPdfHint": "Empfohlen — farbig, A4",
+    "formatDocx": "Word (.docx)",
+    "formatDocxHint": "In Word bearbeitbar",
+    "agreementPrefix": "Ja, ich möchte meinen Lebenslauf herunterladen",
+    "downloadButton": "Herunterladen",
+    "downloading": "Bitte warten...",
+    "successTitle": "Download gestartet!",
+    "successSubtitle": "Ihr professioneller Lebenslauf wird jetzt heruntergeladen. Viel Erfolg bei Ihrer Bewerbung!"
+  },
+  "Footer": {
+    "tagline": "Erstellen Sie Ihren Lebenslauf kostenlos. Einmalig 42 € für den Download. Kein Abo.",
+    "links": {
+      "faq": "FAQ",
+      "contact": "Kontakt",
+      "privacy": "Datenschutz",
+      "terms": "AGB",
+      "cvExamples": "Lebenslauf-Beispiele",
+      "letterExamples": "Anschreiben-Beispiele",
+      "atsCheck": "ATS-Check"
+    }
+  }
+}

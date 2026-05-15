@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLocale } from 'next-intl';
 import { Download, CheckCircle, AlertCircle, FileText, Loader2, FileType } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
@@ -16,6 +17,7 @@ interface DownloadModalProps {
 
 export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const { cvData } = useCVData();
+  const locale = useLocale();
   const [agreed, setAgreed] = useState(false);
   const [format, setFormat] = useState<Format>('pdf');
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
@@ -40,11 +42,13 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               templateId: cvData.meta.selectedTemplate,
               colorSchemeId: cvData.meta.selectedColorScheme,
               filename,
+              locale,
             }
           : {
               cvData,
               colorSchemeId: cvData.meta.selectedColorScheme,
               filename,
+              locale,
             };
 
       const response = await fetch(endpoint, {

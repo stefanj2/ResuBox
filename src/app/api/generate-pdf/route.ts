@@ -14,6 +14,7 @@ interface GeneratePdfBody {
   templateId?: TemplateId;
   colorSchemeId?: ColorSchemeId;
   filename?: string;
+  locale?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { cvData, templateId, colorSchemeId, filename } = body;
+  const { cvData, templateId, colorSchemeId, filename, locale } = body;
   if (!cvData?.personal) {
     return NextResponse.json({ error: 'cvData ontbreekt' }, { status: 400 });
   }
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
   const resolvedColor: ColorSchemeId = colorSchemeId ?? cvData.meta?.selectedColorScheme ?? 'emerald';
 
   try {
-    const html = await renderTemplateToHtml(cvData, resolvedTemplate, resolvedColor);
+    const html = await renderTemplateToHtml(cvData, resolvedTemplate, resolvedColor, locale ?? 'nl');
     const pdf = await generatePdfBuffer(html);
 
     const safeName = (filename ?? `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}`).replace(/[^a-zA-Z0-9_\-]/g, '_');

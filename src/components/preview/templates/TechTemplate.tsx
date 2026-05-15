@@ -2,12 +2,15 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, space, formatDateRange } from './tokens';
+import { fonts, palette, space } from './tokens';
+import { formatDateRangeLocalized } from './labels';
 
 const c = palette.default;
 
-export function TechTemplate({ cvData, colorScheme }: TemplateProps) {
+export function TechTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   const accent = (colorScheme || getColorScheme('teal')).primary;
+  const formatDateRange = (s: string, e: string, current: boolean) =>
+    formatDateRangeLocalized(s, e, current, locale);
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
 

@@ -1,0 +1,180 @@
+{
+  "Common": {
+    "download": "Downloaden",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "add": "Toevoegen",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "remove": "Verwijderen",
+    "close": "Sluiten",
+    "back": "Terug",
+    "next": "Volgende",
+    "loading": "Laden...",
+    "loadingShort": "Even geduld...",
+    "saving": "Opslaan...",
+    "error": "Er ging iets mis",
+    "tryAgain": "Probeer opnieuw",
+    "yes": "Ja",
+    "no": "Nee",
+    "optional": "optioneel",
+    "required": "verplicht",
+    "and": "en",
+    "or": "of"
+  },
+  "Header": {
+    "ctaPrimary": "Maak gratis je CV",
+    "ctaMaakBrief": "Maak gratis je motivatiebrief",
+    "myCvs": "Mijn CV's",
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "dashboard": "Dashboard",
+    "myAccount": "Mijn account",
+    "createCv": "CV maken",
+    "createLetter": "Motivatiebrief"
+  },
+  "Hero": {
+    "badge": "Geen abo. Eenmalig €42. Betaal pas na download.",
+    "title": "Maak je professionele CV in 10 minuten",
+    "subtitle": "Recruiter-gerichte templates, ATS-vriendelijk, écht AI-gegenereerde profielen en bullets — geen trial-trap, eenmalig €42.",
+    "cta": "Start gratis",
+    "secondary": "Bekijk voorbeelden",
+    "trust": "1.000+ CV's succesvol opgemaakt"
+  },
+  "Builder": {
+    "sections": {
+      "personal": "Persoonsgegevens",
+      "work": "Werkervaring",
+      "education": "Opleiding",
+      "skills": "Vaardigheden",
+      "profile": "Profielschets"
+    },
+    "personalSection": {
+      "title": "Persoonsgegevens",
+      "subtitle": "Vul je contactgegevens in zodat recruiters je kunnen bereiken.",
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "E-mail",
+      "phone": "Telefoon",
+      "address": "Adres",
+      "houseNumber": "Huisnummer",
+      "postalCode": "Postcode",
+      "city": "Woonplaats",
+      "linkedIn": "LinkedIn",
+      "website": "Website",
+      "photo": "Profielfoto",
+      "uploadPhoto": "Upload foto",
+      "removePhoto": "Verwijder foto"
+    },
+    "profileSection": {
+      "title": "Profielschets",
+      "subtitle": "Schrijf een korte samenvatting over jezelf. Dit is het eerste wat recruiters lezen.",
+      "aiTitle": "AI-profiel op basis van jouw werkervaring",
+      "aiSubtitle": "Claude analyseert je werkervaring, opleiding en skills en schrijft een 2-3 zinnen profiel zonder clichés.",
+      "aiButton": "Schrijf voor mij",
+      "aiButtonLoading": "Schrijven...",
+      "label": "Jouw profielschets",
+      "placeholder": "Beschrijf in 2-3 zinnen wie je bent, wat je kunt en wat je zoekt."
+    },
+    "experienceSection": {
+      "title": "Werkervaring",
+      "subtitle": "Voeg je relevante werkervaring toe, beginnend met je meest recente baan.",
+      "addNew": "Werkervaring toevoegen",
+      "jobTitle": "Functietitel",
+      "company": "Bedrijf",
+      "location": "Locatie",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "currentPosition": "Ik werk hier nog",
+      "description": "Omschrijving",
+      "tasks": "Taken / Verantwoordelijkheden",
+      "addTask": "Voeg een taak toe en druk Enter...",
+      "improveBullet": "Verbeter deze bullet met AI",
+      "deleteExperience": "Verwijder deze werkervaring"
+    },
+    "educationSection": {
+      "title": "Opleiding",
+      "subtitle": "Voeg je opleidingen toe, beginnend met je hoogste / meest recente.",
+      "addNew": "Opleiding toevoegen",
+      "degree": "Diploma / Opleiding",
+      "institution": "Instituut",
+      "location": "Locatie",
+      "currentEducation": "Ik studeer hier nog",
+      "description": "Omschrijving",
+      "deleteEducation": "Verwijder deze opleiding"
+    },
+    "skillsSection": {
+      "title": "Vaardigheden",
+      "subtitle": "Voeg 6-12 relevante vaardigheden toe.",
+      "addSkill": "Vaardigheid toevoegen",
+      "placeholder": "Bijv. TypeScript",
+      "level": "Niveau"
+    }
+  },
+  "Template": {
+    "profile": "Profiel",
+    "experience": "Werkervaring",
+    "education": "Opleiding",
+    "skills": "Vaardigheden",
+    "contact": "Contact",
+    "present": "Heden",
+    "executiveSummary": "Executive Summary",
+    "coreCompetencies": "Kerncompetenties"
+  },
+  "Months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mrt",
+    "apr": "Apr",
+    "may": "Mei",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Okt",
+    "nov": "Nov",
+    "dec": "Dec"
+  },
+  "Score": {
+    "label": "CV-score",
+    "excellent": "Uitstekend",
+    "good": "Goed",
+    "fair": "Kan beter",
+    "poor": "Aandacht"
+  },
+  "Sync": {
+    "inAccount": "In account",
+    "saving": "Opslaan...",
+    "syncFailed": "Sync mislukt",
+    "saveToAccount": "Opslaan in account",
+    "localOnly": "Lokaal opgeslagen",
+    "saveDialogTitle": "Sla CV op in account",
+    "saveDialogSubtitle": "Geef je CV een naam zodat je hem later kunt vinden in je dashboard."
+  },
+  "Download": {
+    "title": "Download je CV",
+    "subtitle": "Je CV is klaar om te downloaden.",
+    "formatLabel": "Bestandsformaat",
+    "formatPdf": "PDF",
+    "formatPdfHint": "Aanbevolen — gekleurd, A4",
+    "formatDocx": "Word (.docx)",
+    "formatDocxHint": "Bewerkbaar in Word",
+    "agreementPrefix": "Ja, ik wil mijn CV downloaden",
+    "downloadButton": "Downloaden",
+    "downloading": "Even geduld...",
+    "successTitle": "Download gestart!",
+    "successSubtitle": "Je professionele CV wordt nu gedownload. Veel succes met je sollicitatie!"
+  },
+  "Footer": {
+    "tagline": "Maak gratis je CV. Eenmalig €42 voor de download. Geen abonnement.",
+    "links": {
+      "faq": "FAQ",
+      "contact": "Contact",
+      "privacy": "Privacybeleid",
+      "terms": "Voorwaarden",
+      "cvExamples": "CV voorbeelden",
+      "letterExamples": "Motivatiebrief voorbeelden",
+      "atsCheck": "ATS check"
+    }
+  }
+}

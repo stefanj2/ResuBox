@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from 'next-intl';
 import { useCVData } from '@/context/CVContext';
 import { CVData, TemplateId, ColorSchemeId } from '@/types/cv';
 import { getColorScheme } from '@/lib/colorSchemes';
@@ -38,12 +39,13 @@ function CVPreviewContent({
   templateOverride?: TemplateId;
   colorSchemeOverride?: ColorSchemeId;
 }) {
+  const locale = useLocale();
   const templateId = templateOverride ?? data.meta.selectedTemplate ?? 'modern';
   const colorSchemeId = colorSchemeOverride ?? data.meta.selectedColorScheme ?? 'emerald';
   const colorScheme = getColorScheme(colorSchemeId);
   const TemplateComponent = TEMPLATE_COMPONENTS[templateId];
 
-  return <TemplateComponent cvData={data} colorScheme={colorScheme} />;
+  return <TemplateComponent cvData={data} colorScheme={colorScheme} locale={locale} />;
 }
 
 // Wrapper that uses context data
