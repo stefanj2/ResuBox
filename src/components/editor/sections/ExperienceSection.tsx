@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Check } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Check, Wand2, Loader2 } from 'lucide-react';
 import { Input, TextArea, Button, Card } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { createEmptyExperience, Experience } from '@/types/cv';
@@ -44,6 +44,39 @@ export function ExperienceSection() {
     cvData.experience.length > 0 ? cvData.experience[0].id : null
   );
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set());
+  const [improvingKey, setImprovingKey] = useState<string | null>(null);
+
+  const handleImproveTask = async (experienceId: string, taskIndex: number) => {
+    const exp = cvData.experience.find((e) => e.id === experienceId);
+    if (!exp) return;
+    const current = exp.tasks[taskIndex];
+    if (!current) return;
+
+    const key = `${experienceId}:${taskIndex}`;
+    setImprovingKey(key);
+    try {
+      const res = await fetch('/api/ai/bullet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bullet: current,
+          jobTitle: exp.jobTitle,
+          company: exp.company,
+          description: exp.description,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.bullet) {
+        const newTasks = [...exp.tasks];
+        newTasks[taskIndex] = json.bullet;
+        updateExperience(experienceId, { tasks: newTasks });
+      }
+    } catch (err) {
+      console.error('Improve bullet failed:', err);
+    } finally {
+      setImprovingKey(null);
+    }
+  };
 
   const handleAddExperience = () => {
     const newExp = createEmptyExperience();
@@ -259,21 +292,37 @@ export function ExperienceSection() {
 
                   {/* Added tasks */}
                   <div className="space-y-2">
-                    {exp.tasks.map((task, taskIndex) => (
-                      <div
-                        key={taskIndex}
-                        className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg group"
-                      >
-                        <span className="text-emerald-500 mt-0.5">•</span>
-                        <span className="flex-1 text-sm text-slate-700">{task}</span>
-                        <button
-                          onClick={() => handleRemoveTask(exp.id, taskIndex)}
-                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all"
+                    {exp.tasks.map((task, taskIndex) => {
+                      const key = `${exp.id}:${taskIndex}`;
+                      const isImproving = improvingKey === key;
+                      return (
+                        <div
+                          key={taskIndex}
+                          className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg group"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+                          <span className="text-emerald-500 mt-0.5">•</span>
+                          <span className="flex-1 text-sm text-slate-700">{task}</span>
+                          <button
+                            onClick={() => handleImproveTask(exp.id, taskIndex)}
+                            disabled={isImproving}
+                            title="Verbeter deze bullet met AI"
+                            className="opacity-0 group-hover:opacity-100 disabled:opacity-100 text-slate-400 hover:text-violet-600 transition-all disabled:text-violet-600"
+                          >
+                            {isImproving ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Wand2 className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleRemoveTask(exp.id, taskIndex)}
+                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Add custom task */}
