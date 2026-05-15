@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseServerClient } from '@/lib/supabase';
+import { addOrderAction, getOrder, markEmailSent } from '@/lib/orders';
 import { sendEmail } from '@/lib/resend';
 import { getEmailTemplate, EmailType } from '@/lib/emailTemplates';
-import { CVOrder } from '@/types/admin';
 import { rateLimiter } from '@/lib/rate-limit';
 
 const fromEmailIncasso = process.env.FROM_EMAIL_INCASSO || 'Incasso Afdeling <incasso@resubox.nl>';
 
 const limiter = rateLimiter({ limit: 10, windowMs: 60_000 });
+
+const TIMESTAMP_FIELDS: Record<string, 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'incasso'> = {
+  confirmation: 'confirmation',
+  invoice: 'invoice',
+  reminder_1: 'reminder_1',
+  reminder_2: 'reminder_2',
+  incasso: 'incasso',
+};
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
@@ -24,34 +31,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get order from database
-    const supabase = getSupabaseServerClient();
-    let order: CVOrder | null = null;
-
-    if (supabase) {
-      const { data, error } = await supabase
-        .from('cv_orders')
-        .select('*')
-        .eq('id', orderId)
-        .single();
-
-      if (error || !data) {
-        return NextResponse.json(
-          { error: 'Order niet gevonden' },
-          { status: 404 }
-        );
-      }
-
-      order = data as CVOrder;
-    } else {
-      // For development without Supabase, try to get from request body
-      return NextResponse.json(
-        { error: 'Database niet geconfigureerd' },
-        { status: 500 }
-      );
-    }
-
-    // Get email template
     const validTypes = ['confirmation', 'invoice', 'reminder_1', 'reminder_2', 'incasso', 'payment_received'];
     if (!validTypes.includes(emailType)) {
       return NextResponse.json(
@@ -60,9 +39,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const order = await getOrder(orderId);
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order niet gevonden' },
+        { status: 404 }
+      );
+    }
+
     const template = getEmailTemplate(order, emailType as EmailType);
 
-    // Send email (use incasso from address for incasso emails)
     const result = await sendEmail({
       to: order.customer_email,
       subject: template.subject,
@@ -77,23 +63,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update order with email sent timestamp
-    const timestampField = `${emailType}_sent_at`;
-    if (supabase) {
-      await supabase
-        .from('cv_orders')
-        .update({ [timestampField]: new Date().toISOString() })
-        .eq('id', orderId);
-
-      // Add action to history
-      await supabase.from('order_actions').insert({
-        order_id: orderId,
-        action_type: 'email_sent',
-        action_description: `${emailType} email verstuurd`,
-        performed_by: 'system',
-        metadata: { messageId: result.messageId },
-      });
+    const markType = TIMESTAMP_FIELDS[emailType];
+    if (markType) {
+      await markEmailSent(orderId, markType);
     }
+
+    await addOrderAction(orderId, 'email_sent', `${emailType} email verstuurd`, 'system', {
+      messageId: result.messageId,
+    });
 
     return NextResponse.json({
       success: true,

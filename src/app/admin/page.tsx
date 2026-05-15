@@ -11,7 +11,7 @@ import {
   updateOrderStatus,
   getOrderStatistics,
   addOrderAction,
-} from '@/lib/orders';
+} from '@/lib/api/orders';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { ViewTabs, ViewMode } from '@/components/admin/ViewTabs';
 import { StatisticsGrid } from '@/components/admin/StatisticsGrid';

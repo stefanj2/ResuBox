@@ -8,7 +8,7 @@ import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
-import { createOrder } from '@/lib/orders';
+import { createOrder } from '@/lib/api/orders';
 
 interface DownloadModalProps {
   isOpen: boolean;

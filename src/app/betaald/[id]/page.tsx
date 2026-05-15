@@ -2,8 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle, ArrowRight, FileText, Mail } from 'lucide-react';
-import { getSupabaseServerClient } from '@/lib/supabase';
-import { CVOrder } from '@/types/admin';
+import { getOrder } from '@/lib/orders';
 
 export const metadata: Metadata = {
   title: 'Betaling Geslaagd - ResuBox',
@@ -12,26 +11,6 @@ export const metadata: Metadata = {
 
 interface PageProps {
   params: Promise<{ id: string }>;
-}
-
-async function getOrder(id: string): Promise<CVOrder | null> {
-  const supabase = getSupabaseServerClient();
-
-  if (!supabase) {
-    return null;
-  }
-
-  const { data, error } = await supabase
-    .from('cv_orders')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data as CVOrder;
 }
 
 export default async function BetaaldPage({ params }: PageProps) {

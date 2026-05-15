@@ -7,7 +7,7 @@ import {
   getOrderWithActions,
   updateOrderStatus,
   addOrderAction,
-} from '@/lib/orders';
+} from '@/lib/api/orders';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { TestModePanel } from '@/components/admin/TestModePanel';
 import { EmailFlowBanner } from '@/components/admin/EmailFlowBanner';

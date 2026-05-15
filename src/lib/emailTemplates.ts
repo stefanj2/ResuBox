@@ -1,391 +1,489 @@
 import { CVOrder } from '@/types/admin';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://resubox.com';
+// ─── Config ────────────────────────────────────────────────────────────────
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://resubox.com';
+const BRAND_NAME = 'ResuBox';
+const CONTACT_EMAIL = 'info@resubox.nl';
+const LOGO_URL = `${SITE_URL}/resubox-logo.jpeg`;
+// ────────────────────────────────────────────────────────────────────────────
 
-// Base email template wrapper
-function emailWrapper(content: string): string {
-  return `
-<!DOCTYPE html>
+const EMAIL_STYLES = {
+  container: 'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;',
+  body: 'background: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none;',
+  footer: 'background: #f9fafb; padding: 20px 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px; text-align: center; color: #6b7280; font-size: 13px;',
+  infoBox: 'background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin: 20px 0;',
+  warningBox: 'background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 20px; margin: 20px 0;',
+  dangerBox: 'background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin: 20px 0;',
+  btnGreen: 'display: inline-block; background: #059669; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;',
+  btnOrange: 'display: inline-block; background: #f59e0b; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;',
+  btnRed: 'display: inline-block; background: #dc2626; color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;',
+};
+
+// Witte logo-header (betere deliverability: logo op eigen domein)
+const LOGO_HEADER = `
+<div style="background: #ffffff; padding: 20px 30px; border-radius: 12px 12px 0 0; border: 1px solid #e5e7eb; border-bottom: none; text-align: center;">
+  <img src="${LOGO_URL}" alt="${BRAND_NAME}" style="height: 44px; width: auto; display: block; margin: 0 auto;">
+</div>`;
+
+// Verborgen preheader-tekst voor inbox-preview
+function preheader(text: string) {
+  return `<span style="display:none;font-size:1px;color:#ffffff;max-height:0;overflow:hidden;opacity:0;">${text}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</span>`;
+}
+
+// Voetnoot footer
+const FOOTER = `
+<div style="${EMAIL_STYLES.footer}">
+  <p style="margin: 0; font-weight: 600;">${BRAND_NAME}</p>
+  <p style="margin: 6px 0 0;">Keurenplein 41, 1069 CD Amsterdam</p>
+  <p style="margin: 4px 0 0; font-size: 11px; color: #9ca3af;">KvK 67332706 &middot; BTW NL224452794B01 &middot; ${SITE_URL.replace('https://', '')}</p>
+  <p style="margin: 8px 0 0; font-size: 11px;">
+    <a href="${SITE_URL}/privacy" style="color: #059669; text-decoration: none;">Privacybeleid</a>
+    &nbsp;&middot;&nbsp;
+    <a href="${SITE_URL}/voorwaarden" style="color: #059669; text-decoration: none;">Algemene voorwaarden</a>
+  </p>
+</div>`;
+
+function wrap(html: string) {
+  return `<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResuBox</title>
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 40px 20px;">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin: 0; padding: 20px; background: #f3f4f6;">
+  <div style="${EMAIL_STYLES.container}">
+    ${LOGO_HEADER}
+    <div style="${EMAIL_STYLES.body}">${html}</div>
+    ${FOOTER}
+  </div>
+</body>
+</html>`;
+}
+
+// ─── Shared helper: factuurgegevens tabel ────────────────────────────────────
+function factuurTabel(order: CVOrder, boxStyle: string, color: string) {
+  return `
+<div style="${boxStyle}">
+  <table style="width: 100%; border-collapse: collapse;">
     <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-          <!-- Header -->
-          <tr>
-            <td style="padding: 32px; text-align: center; background-color: #059669;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">ResuBox</h1>
-            </td>
-          </tr>
-          <!-- Content -->
-          <tr>
-            <td style="padding: 32px;">
-              ${content}
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 24px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
-              <p style="margin: 0; font-size: 12px; color: #64748b; text-align: center;">
-                © ${new Date().getFullYear()} ResuBox. Alle rechten voorbehouden.<br>
-                <a href="${siteUrl}/privacy" style="color: #059669;">Privacybeleid</a> |
-                <a href="${siteUrl}/voorwaarden" style="color: #059669;">Algemene voorwaarden</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
+      <td style="color: ${color}; padding: 5px 0;">Dossiernummer:</td>
+      <td style="color: ${color}; text-align: right;">${order.dossier_number}</td>
+    </tr>
+    <tr>
+      <td style="color: ${color}; padding: 5px 0;">Omschrijving:</td>
+      <td style="color: ${color}; text-align: right;">CV download via ResuBox</td>
+    </tr>
+    <tr style="border-top: 2px solid rgba(0,0,0,0.08);">
+      <td style="color: ${color}; padding: 10px 0 5px; font-size: 17px;"><strong>Openstaand bedrag:</strong></td>
+      <td style="color: ${color}; text-align: right; font-size: 17px;"><strong>&euro;${order.amount.toFixed(2)}</strong></td>
     </tr>
   </table>
-</body>
-</html>
+</div>`;
+}
+
+// ─── Email 1: Bevestiging (4u na bestelling) ─────────────────────────────────
+export function getConfirmationEmail(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
+
+  const html = wrap(`
+    ${preheader(`Je CV is klaar — dossiernummer ${order.dossier_number}`)}
+    <h2 style="color: #111827; margin-top: 0;">Je CV is succesvol aangemaakt ✓</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Beste ${firstName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Goed nieuws! Je CV is succesvol opgemaakt en gedownload via ResuBox.
+    </p>
+    <div style="${EMAIL_STYLES.infoBox}">
+      <p style="margin: 0; color: #166534;"><strong>Dossiernummer:</strong> ${order.dossier_number}</p>
+      <p style="margin: 8px 0 0; color: #166534;"><strong>Status:</strong> CV succesvol gedownload</p>
+    </div>
+    <h3 style="color: #111827;">Wat gebeurt er nu?</h3>
+    <ul style="color: #4b5563; font-size: 16px; line-height: 1.8; padding-left: 20px;">
+      <li>Je ontvangt binnenkort een factuur per e-mail</li>
+      <li>Betaal eenvoudig via iDEAL — betaaltermijn 14 dagen</li>
+      <li>Na betaling is je dossier volledig afgerond</li>
+    </ul>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Vragen? Stuur een e-mail naar <a href="mailto:${CONTACT_EMAIL}" style="color: #059669;">${CONTACT_EMAIL}</a>.
+    </p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Met vriendelijke groet,<br><strong>Team ${BRAND_NAME}</strong>
+    </p>
+  `);
+
+  const text = `
+Je CV is succesvol aangemaakt!
+
+Beste ${firstName},
+
+Goed nieuws! Je CV is succesvol opgemaakt en gedownload via ResuBox.
+
+Dossiernummer: ${order.dossier_number}
+Status: CV succesvol gedownload
+
+Wat gebeurt er nu?
+- Je ontvangt binnenkort een factuur per e-mail
+- Betaal eenvoudig via iDEAL — betaaltermijn 14 dagen
+- Na betaling is je dossier volledig afgerond
+
+Vragen? Mail naar ${CONTACT_EMAIL}.
+
+Met vriendelijke groet,
+Team ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
   `.trim();
+
+  return {
+    subject: `✓ Je CV is klaar — dossiernummer ${order.dossier_number}`,
+    html,
+    text,
+  };
 }
 
-// Bevestigingsmail (4 uur na bestelling)
-export function getConfirmationEmail(order: CVOrder): { subject: string; html: string } {
-  const subject = `Bevestiging van je CV download - ${order.dossier_number}`;
+// ─── Email 2: Factuur (24u na bestelling) ────────────────────────────────────
+export function getInvoiceEmail(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
+  const paymentUrl = `${SITE_URL}/betalen/${order.id}`;
 
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Bedankt voor het gebruiken van ResuBox! Je CV is succesvol gegenereerd en gedownload.
+  const html = wrap(`
+    ${preheader(`Factuur ${order.dossier_number} — €${order.amount.toFixed(2)} — betaaltermijn 14 dagen`)}
+    <h2 style="color: #111827; margin-top: 0;">Factuur voor je CV download</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Beste ${firstName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Bedankt voor het gebruiken van ${BRAND_NAME}. Hierbij ontvang je de factuur voor je CV download.
     </p>
-
-    <div style="background-color: #f0fdf4; border-radius: 8px; padding: 20px; margin: 24px 0;">
-      <h3 style="margin: 0 0 12px; color: #166534; font-size: 16px;">Ordergegevens</h3>
-      <table style="width: 100%;">
+    <div style="${EMAIL_STYLES.infoBox}">
+      <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 4px 0; color: #475569;">Dossiernummer:</td>
-          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">${order.dossier_number}</td>
+          <td style="color: #166534; padding: 5px 0;">Factuurnummer:</td>
+          <td style="color: #166534; text-align: right;">${order.dossier_number}</td>
         </tr>
         <tr>
-          <td style="padding: 4px 0; color: #475569;">Bedrag:</td>
-          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">€${order.amount.toFixed(2)}</td>
+          <td style="color: #166534; padding: 5px 0;">Omschrijving:</td>
+          <td style="color: #166534; text-align: right;">CV download via ResuBox</td>
+        </tr>
+        <tr>
+          <td style="color: #166534; padding: 5px 0;">Excl. BTW:</td>
+          <td style="color: #166534; text-align: right;">&euro;${(order.amount / 1.21).toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="color: #166534; padding: 5px 0;">BTW (21%):</td>
+          <td style="color: #166534; text-align: right;">&euro;${(order.amount - order.amount / 1.21).toFixed(2)}</td>
+        </tr>
+        <tr style="border-top: 2px solid #bbf7d0;">
+          <td style="color: #166534; padding: 10px 0 5px; font-size: 18px;"><strong>Totaal:</strong></td>
+          <td style="color: #166534; text-align: right; font-size: 18px;"><strong>&euro;${order.amount.toFixed(2)}</strong></td>
         </tr>
       </table>
     </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Je ontvangt binnen 24 uur een factuur met een betaallink. Na betaling wordt je dossier gesloten.
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Betaal eenvoudig en veilig via iDEAL:</p>
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="${paymentUrl}" style="${EMAIL_STYLES.btnGreen}">Betaal nu &euro;${order.amount.toFixed(2)}</a>
     </p>
-
-    <p style="margin: 0; color: #475569; line-height: 1.6;">
-      Heb je vragen? Neem dan contact met ons op via <a href="mailto:support@resubox.com" style="color: #059669;">support@resubox.com</a>.
+    <p style="color: #6b7280; font-size: 14px; text-align: center;">Betaaltermijn: 14 dagen na factuurdatum</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Met vriendelijke groet,<br><strong>Team ${BRAND_NAME}</strong>
     </p>
+  `);
 
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Het ResuBox Team</strong>
-    </p>
-  `;
+  const text = `
+Factuur voor je CV download
+
+Beste ${firstName},
+
+Hierbij ontvang je de factuur voor je CV download via ${BRAND_NAME}.
+
+Factuurnummer: ${order.dossier_number}
+Omschrijving: CV download via ResuBox
+Totaal: €${order.amount.toFixed(2)} incl. BTW
+Betaaltermijn: 14 dagen
+
+Betaal via: ${paymentUrl}
+
+Met vriendelijke groet,
+Team ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
+  `.trim();
 
   return {
-    subject,
-    html: emailWrapper(content),
+    subject: `Factuur ${order.dossier_number} — €${order.amount.toFixed(2)} — ${BRAND_NAME}`,
+    html,
+    text,
   };
 }
 
-// Factuur email (24 uur na bestelling)
-export function getInvoiceEmail(order: CVOrder): { subject: string; html: string } {
-  const subject = `Factuur voor je CV download - ${order.dossier_number}`;
-  const paymentUrl = order.payment_link || `${siteUrl}/betalen/${order.id}`;
+// ─── Email 3: 1e Herinnering (7 dagen na bestelling) ─────────────────────────
+export function getReminder1Email(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
+  const paymentUrl = `${SITE_URL}/betalen/${order.id}`;
 
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Hierbij ontvang je de factuur voor je CV download via ResuBox.
+  const html = wrap(`
+    ${preheader(`Herinnering: openstaande factuur ${order.dossier_number} — €${order.amount.toFixed(2)}`)}
+    <h2 style="color: #92400e; margin-top: 0;">Herinnering: openstaande factuur</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Beste ${firstName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Wij hebben nog geen betaling ontvangen voor onderstaande factuur. Mogelijk is dit aan uw aandacht ontsnapt.
     </p>
-
-    <div style="background-color: #faf5ff; border-radius: 8px; padding: 20px; margin: 24px 0;">
-      <h3 style="margin: 0 0 12px; color: #7e22ce; font-size: 16px;">Factuurgegevens</h3>
-      <table style="width: 100%;">
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">Factuurnummer:</td>
-          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">${order.dossier_number}</td>
-        </tr>
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">Omschrijving:</td>
-          <td style="padding: 4px 0; color: #1e293b; text-align: right;">CV Download Service</td>
-        </tr>
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">Bedrag (excl. BTW):</td>
-          <td style="padding: 4px 0; color: #1e293b; text-align: right;">€${(order.amount / 1.21).toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">BTW (21%):</td>
-          <td style="padding: 4px 0; color: #1e293b; text-align: right;">€${(order.amount - order.amount / 1.21).toFixed(2)}</td>
-        </tr>
-        <tr style="border-top: 2px solid #e9d5ff;">
-          <td style="padding: 12px 0 4px; color: #475569; font-weight: 600;">Totaal te betalen:</td>
-          <td style="padding: 12px 0 4px; color: #7e22ce; font-weight: 700; font-size: 18px; text-align: right;">€${order.amount.toFixed(2)}</td>
-        </tr>
-      </table>
-    </div>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${paymentUrl}" style="display: inline-block; padding: 14px 32px; background-color: #059669; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Nu betalen
-      </a>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #64748b; font-size: 14px; text-align: center;">
-      Betaaltermijn: 14 dagen na factuurdatum
+    ${factuurTabel(order, EMAIL_STYLES.warningBox, '#92400e')}
+    <p style="color: #4b5563; font-size: 15px; line-height: 1.6; background: #fffbeb; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+      Wij verzoeken u vriendelijk het openstaande bedrag te voldoen om verdere stappen te voorkomen.
     </p>
-
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Het ResuBox Team</strong>
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="${paymentUrl}" style="${EMAIL_STYLES.btnOrange}">Betaal nu &euro;${order.amount.toFixed(2)}</a>
     </p>
-  `;
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Heeft u al betaald? Dan kunt u dit bericht als niet verzonden beschouwen.
+    </p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Met vriendelijke groet,<br><strong>Team ${BRAND_NAME}</strong>
+    </p>
+  `);
+
+  const text = `
+Herinnering: openstaande factuur
+
+Beste ${firstName},
+
+Wij hebben nog geen betaling ontvangen voor factuur ${order.dossier_number} (€${order.amount.toFixed(2)}).
+
+Betaal via: ${paymentUrl}
+
+Heeft u al betaald? Dan kunt u dit bericht als niet verzonden beschouwen.
+
+Met vriendelijke groet,
+Team ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
+  `.trim();
 
   return {
-    subject,
-    html: emailWrapper(content),
+    subject: `Herinnering: dossier ${order.dossier_number} — betaling nog openstaand`,
+    html,
+    text,
   };
 }
 
-// 1e Herinnering (7 dagen na bestelling)
-export function getReminder1Email(order: CVOrder): { subject: string; html: string } {
-  const subject = `Herinnering: Openstaande factuur ${order.dossier_number}`;
-  const paymentUrl = order.payment_link || `${siteUrl}/betalen/${order.id}`;
+// ─── Email 4: 2e Herinnering / WIK-brief (14 dagen na bestelling) ────────────
+export function getReminder2Email(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
+  const lastName = order.cv_data?.personal?.lastName || '';
+  const paymentUrl = `${SITE_URL}/betalen/${order.id}`;
 
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Onze administratie laat zien dat de factuur met nummer <strong>${order.dossier_number}</strong> nog niet is betaald. Mogelijk is dit aan je aandacht ontsnapt.
+  const html = wrap(`
+    ${preheader(`Aanmaning dossier ${order.dossier_number} — betaal binnen 14 dagen om incassokosten te voorkomen`)}
+    <h2 style="color: #991b1b; margin-top: 0;">Aanmaning: openstaande vordering dossier ${order.dossier_number}</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Geachte ${firstName} ${lastName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Wij hebben geconstateerd dat ondanks ons eerdere betalingsverzoek het openstaande bedrag voor
+      dossiernummer <strong>${order.dossier_number}</strong> tot op heden niet is voldaan.
     </p>
-
-    <div style="background-color: #fff7ed; border-radius: 8px; padding: 20px; margin: 24px 0; border-left: 4px solid #f97316;">
-      <h3 style="margin: 0 0 12px; color: #c2410c; font-size: 16px;">Openstaand bedrag</h3>
-      <p style="margin: 0; color: #c2410c; font-size: 24px; font-weight: 700;">€${order.amount.toFixed(2)}</p>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Wij verzoeken je vriendelijk om het openstaande bedrag zo spoedig mogelijk te voldoen via onderstaande knop.
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Wij sommeren u hierbij het openstaande bedrag <strong>binnen 14 dagen</strong> te voldoen.
     </p>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${paymentUrl}" style="display: inline-block; padding: 14px 32px; background-color: #f97316; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Direct betalen
-      </a>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Heb je al betaald? Dan kun je deze email als niet verzonden beschouwen. Het kan even duren voordat de betaling in ons systeem is verwerkt.
-    </p>
-
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Het ResuBox Team</strong>
-    </p>
-  `;
-
-  return {
-    subject,
-    html: emailWrapper(content),
-  };
-}
-
-// 2e Herinnering / WIK-brief (14 dagen na bestelling)
-export function getReminder2Email(order: CVOrder): { subject: string; html: string } {
-  const subject = `LAATSTE AANMANING: Factuur ${order.dossier_number} - Direct actie vereist`;
-  const paymentUrl = order.payment_link || `${siteUrl}/betalen/${order.id}`;
-
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <div style="background-color: #fef2f2; border-radius: 8px; padding: 20px; margin: 0 0 24px; border: 2px solid #ef4444;">
-      <h3 style="margin: 0 0 8px; color: #dc2626; font-size: 18px;">⚠️ LAATSTE AANMANING</h3>
-      <p style="margin: 0; color: #7f1d1d; line-height: 1.6;">
-        Dit is een veertiendagenbrief conform artikel 6:96 BW (Wet Incassokosten).
+    <div style="${EMAIL_STYLES.dangerBox}">
+      <p style="margin: 0 0 12px; color: #991b1b; font-weight: 600; font-size: 15px;">
+        Consequenties bij niet-tijdige betaling
+      </p>
+      <p style="color: #7f1d1d; font-size: 15px; line-height: 1.7; margin: 0;">
+        Indien wij binnen 14 dagen geen volledige betaling ontvangen, zijn wij genoodzaakt uw dossier
+        over te dragen aan een incassobureau. Op grond van de Wet Incassokosten (WIK) worden in dat geval
+        buitengerechtelijke incassokosten van <strong>&euro;40,00</strong> in rekening gebracht, bovenop het
+        reeds openstaande bedrag.
       </p>
     </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Ondanks eerdere herinneringen hebben wij nog geen betaling ontvangen voor factuur <strong>${order.dossier_number}</strong>.
+    ${factuurTabel(order, EMAIL_STYLES.infoBox, '#166534')}
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="${paymentUrl}" style="${EMAIL_STYLES.btnRed}">Betaal nu &euro;${order.amount.toFixed(2)}</a>
     </p>
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+      Heeft u al betaald? Dan verzoeken wij u dit bericht te negeren. Het is mogelijk dat onze
+      administratie en uw betaling elkaar hebben gekruist.
+    </p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Hoogachtend,<br><strong>Team ${BRAND_NAME}</strong>
+    </p>
+  `);
 
-    <div style="background-color: #fef2f2; border-radius: 8px; padding: 20px; margin: 24px 0;">
-      <table style="width: 100%;">
+  const text = `
+Aanmaning: openstaande vordering dossier ${order.dossier_number}
+
+Geachte ${firstName} ${lastName},
+
+Wij hebben geconstateerd dat het openstaande bedrag voor dossiernummer ${order.dossier_number} niet is voldaan.
+
+Openstaand bedrag: €${order.amount.toFixed(2)}
+
+Wij sommeren u het bedrag binnen 14 dagen te voldoen. Bij niet-betaling worden wettelijke incassokosten (€40,00) in rekening gebracht.
+
+Betaal via: ${paymentUrl}
+
+Heeft u al betaald? Dan kunt u dit bericht negeren.
+
+Hoogachtend,
+Team ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
+  `.trim();
+
+  return {
+    subject: `Aanmaning: dossier ${order.dossier_number} — betaal binnen 14 dagen`,
+    html,
+    text,
+  };
+}
+
+// ─── Email 5: Incasso overdracht (28 dagen na bestelling) ────────────────────
+export function getIncassoEmail(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
+  const lastName = order.cv_data?.personal?.lastName || '';
+  const paymentUrl = `${SITE_URL}/betalen/${order.id}`;
+
+  const html = wrap(`
+    ${preheader(`Dossier ${order.dossier_number} overgedragen aan incassobureau`)}
+    <h2 style="color: #92400e; margin-top: 0;">Dossier overgedragen aan incassobureau</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Geachte ${firstName} ${lastName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Ondanks eerdere herinneringen en een aanmaning hebben wij geen betaling ontvangen voor
+      dossiernummer <strong>${order.dossier_number}</strong>. Uw dossier is daarom overgedragen aan
+      <strong>Justus Collect</strong> voor verdere incasso.
+    </p>
+    <div style="${EMAIL_STYLES.warningBox}">
+      <p style="margin: 0 0 15px; color: #92400e; font-weight: bold; font-size: 17px;">Incasso-overzicht</p>
+      <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 4px 0; color: #475569;">Oorspronkelijk bedrag:</td>
-          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">€${order.amount.toFixed(2)}</td>
+          <td style="color: #92400e; padding: 5px 0;">Ons dossiernummer:</td>
+          <td style="color: #92400e; text-align: right;">${order.dossier_number}</td>
         </tr>
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">Incassokosten (bij niet-betaling):</td>
-          <td style="padding: 4px 0; color: #dc2626; text-align: right;">€40,00</td>
-        </tr>
-        <tr style="border-top: 2px solid #fecaca;">
-          <td style="padding: 12px 0 4px; color: #475569; font-weight: 600;">Nu te betalen:</td>
-          <td style="padding: 12px 0 4px; color: #dc2626; font-weight: 700; font-size: 18px; text-align: right;">€${order.amount.toFixed(2)}</td>
+        ${order.justus_case_number ? `<tr>
+          <td style="color: #92400e; padding: 5px 0;">Justus zaaknummer:</td>
+          <td style="color: #92400e; text-align: right;">${order.justus_case_number}</td>
+        </tr>` : ''}
+        <tr style="border-top: 2px solid #fcd34d;">
+          <td style="color: #92400e; padding: 10px 0 5px; font-size: 19px;"><strong>Verschuldigd bedrag:</strong></td>
+          <td style="color: #92400e; text-align: right; font-size: 19px;"><strong>&euro;${order.amount.toFixed(2)}</strong></td>
         </tr>
       </table>
     </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      <strong>Betaal binnen 14 dagen</strong> om extra kosten te voorkomen. Na deze termijn zijn wij genoodzaakt de vordering uit handen te geven aan een incassobureau, waarbij de wettelijke incassokosten (minimaal €40) in rekening worden gebracht.
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      U kunt nog steeds betalen om verdere kosten te voorkomen. Na ontvangst van uw betaling wordt het
+      incassodossier onmiddellijk gesloten.
     </p>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${paymentUrl}" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Nu betalen en kosten voorkomen
-      </a>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.6;">
-      Als je van mening bent dat deze vordering onterecht is, neem dan binnen 7 dagen contact met ons op via <a href="mailto:support@resubox.com" style="color: #059669;">support@resubox.com</a>.
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="${paymentUrl}" style="${EMAIL_STYLES.btnOrange}">Betaal nu &euro;${order.amount.toFixed(2)}</a>
     </p>
-
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Het ResuBox Team</strong>
+    <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+      Voor vragen kunt u contact opnemen via <a href="mailto:incasso@resubox.nl" style="color: #059669;">incasso@resubox.nl</a>.
     </p>
-  `;
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Met vriendelijke groet,<br><strong>Incasso Afdeling — ${BRAND_NAME}</strong>
+    </p>
+  `);
+
+  const text = `
+Dossier overgedragen aan incassobureau
+
+Geachte ${firstName} ${lastName},
+
+Ondanks eerdere herinneringen hebben wij geen betaling ontvangen voor dossiernummer ${order.dossier_number}.
+Uw dossier is overgedragen aan Justus Collect voor verdere incasso.
+
+Dossiernummer: ${order.dossier_number}
+${order.justus_case_number ? `Justus zaaknummer: ${order.justus_case_number}\n` : ''}Verschuldigd bedrag: €${order.amount.toFixed(2)}
+
+Betaal via: ${paymentUrl}
+
+Voor vragen: incasso@resubox.nl
+
+Met vriendelijke groet,
+Incasso Afdeling — ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
+  `.trim();
 
   return {
-    subject,
-    html: emailWrapper(content),
+    subject: `Dossier ${order.dossier_number} overgedragen aan incassobureau`,
+    html,
+    text,
   };
 }
 
-// Incasso-notificatie email (28 dagen na bestelling)
-export function getIncassoEmail(order: CVOrder): { subject: string; html: string } {
-  const subject = `INCASSO: Vordering ${order.dossier_number} overgedragen aan incassobureau`;
-  const paymentUrl = order.payment_link || `${siteUrl}/betalen/${order.id}`;
+// ─── Email 6: Betaling ontvangen ─────────────────────────────────────────────
+export function getPaymentReceivedEmail(order: CVOrder): { subject: string; html: string; text: string } {
+  const firstName = order.cv_data?.personal?.firstName || order.customer_name.split(' ')[0];
 
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <div style="background-color: #450a0a; border-radius: 8px; padding: 20px; margin: 0 0 24px;">
-      <h3 style="margin: 0 0 8px; color: #fecaca; font-size: 18px;">INCASSO-OVERDRACHT</h3>
-      <p style="margin: 0; color: #fca5a5; line-height: 1.6;">
-        Uw dossier is overgedragen aan de Incasso Afdeling. De vordering wordt nu behandeld door Justus Collect.
-      </p>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Ondanks meerdere herinneringen en een laatste aanmaning (WIK-brief) hebben wij geen betaling ontvangen voor factuur <strong>${order.dossier_number}</strong>.
+  const html = wrap(`
+    ${preheader(`Betaling ontvangen voor dossier ${order.dossier_number} — bedankt!`)}
+    <h2 style="color: #111827; margin-top: 0;">✓ Betaling ontvangen!</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">Beste ${firstName},</p>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Bedankt voor je betaling! Wij hebben deze in goede orde ontvangen.
     </p>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Conform de Wet Incassokosten (WIK) zijn de wettelijke incassokosten nu aan de vordering toegevoegd.
-    </p>
-
-    <div style="background-color: #fef2f2; border-radius: 8px; padding: 20px; margin: 24px 0; border: 2px solid #dc2626;">
-      <table style="width: 100%;">
+    <div style="${EMAIL_STYLES.infoBox}">
+      <table style="width: 100%; border-collapse: collapse;">
         <tr>
-          <td style="padding: 4px 0; color: #475569;">Oorspronkelijk bedrag:</td>
-          <td style="padding: 4px 0; color: #1e293b; font-weight: 600; text-align: right;">&euro;42,00</td>
+          <td style="color: #166534; padding: 5px 0;">Dossiernummer:</td>
+          <td style="color: #166534; text-align: right;">${order.dossier_number}</td>
         </tr>
-        <tr>
-          <td style="padding: 4px 0; color: #475569;">Wettelijke incassokosten:</td>
-          <td style="padding: 4px 0; color: #dc2626; font-weight: 600; text-align: right;">&euro;40,00</td>
-        </tr>
-        <tr style="border-top: 2px solid #fecaca;">
-          <td style="padding: 12px 0 4px; color: #475569; font-weight: 600;">Totaal te betalen:</td>
-          <td style="padding: 12px 0 4px; color: #dc2626; font-weight: 700; font-size: 24px; text-align: right;">&euro;82,00</td>
+        <tr style="border-top: 2px solid #bbf7d0;">
+          <td style="color: #166534; padding: 10px 0 5px; font-size: 18px;"><strong>Betaald:</strong></td>
+          <td style="color: #166534; text-align: right; font-size: 18px;"><strong>&euro;${order.amount.toFixed(2)}</strong></td>
         </tr>
       </table>
     </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      U kunt <strong>verdere kosten voorkomen</strong> door het volledige bedrag direct te betalen via onderstaande knop. Na ontvangst van uw betaling wordt het incassodossier onmiddellijk gesloten.
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
+      Je dossier is hiermee volledig afgerond. We wensen je veel succes met je sollicitaties!
     </p>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${paymentUrl}" style="display: inline-block; padding: 14px 32px; background-color: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Nu betalen - &euro;82,00
-      </a>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #64748b; font-size: 14px; line-height: 1.6;">
-      Bij vragen over deze vordering kunt u contact opnemen via <a href="mailto:incasso@resubox.nl" style="color: #dc2626;">incasso@resubox.nl</a>.
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="${SITE_URL}/builder" style="${EMAIL_STYLES.btnGreen}">Maak nog een CV</a>
     </p>
-
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Incasso Afdeling - ResuBox</strong>
+    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+      Met vriendelijke groet,<br><strong>Team ${BRAND_NAME}</strong>
     </p>
-  `;
+  `);
+
+  const text = `
+Betaling ontvangen!
+
+Beste ${firstName},
+
+Bedankt voor je betaling! Wij hebben deze in goede orde ontvangen.
+
+Dossiernummer: ${order.dossier_number}
+Betaald: €${order.amount.toFixed(2)}
+
+Je dossier is hiermee volledig afgerond. Veel succes met je sollicitaties!
+
+Met vriendelijke groet,
+Team ${BRAND_NAME}
+
+---
+${BRAND_NAME} | Keurenplein 41, 1069 CD Amsterdam | KvK 67332706
+  `.trim();
 
   return {
-    subject,
-    html: emailWrapper(content),
+    subject: `✓ Betaling ontvangen — dossier ${order.dossier_number}`,
+    html,
+    text,
   };
 }
 
-// Betaling ontvangen bevestiging
-export function getPaymentReceivedEmail(order: CVOrder): { subject: string; html: string } {
-  const subject = `Betaling ontvangen - ${order.dossier_number}`;
-
-  const content = `
-    <h2 style="margin: 0 0 16px; color: #1e293b; font-size: 20px;">Beste ${order.customer_name},</h2>
-
-    <div style="background-color: #f0fdf4; border-radius: 8px; padding: 20px; margin: 0 0 24px; text-align: center;">
-      <div style="width: 48px; height: 48px; background-color: #059669; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-        <span style="color: white; font-size: 24px;">✓</span>
-      </div>
-      <h3 style="margin: 0 0 8px; color: #166534; font-size: 18px;">Betaling ontvangen!</h3>
-      <p style="margin: 0; color: #166534; font-size: 24px; font-weight: 700;">€${order.amount.toFixed(2)}</p>
-    </div>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Wij hebben je betaling voor factuur <strong>${order.dossier_number}</strong> in goede orde ontvangen. Je dossier is hiermee gesloten.
-    </p>
-
-    <p style="margin: 0 0 16px; color: #475569; line-height: 1.6;">
-      Bedankt voor het gebruiken van ResuBox. We wensen je veel succes met je sollicitaties!
-    </p>
-
-    <div style="text-align: center; margin: 32px 0;">
-      <a href="${siteUrl}/builder" style="display: inline-block; padding: 14px 32px; background-color: #059669; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-        Maak nog een CV
-      </a>
-    </div>
-
-    <p style="margin: 24px 0 0; color: #475569;">
-      Met vriendelijke groet,<br>
-      <strong>Het ResuBox Team</strong>
-    </p>
-  `;
-
-  return {
-    subject,
-    html: emailWrapper(content),
-  };
-}
-
-// Get email template by type
+// ─── Router ──────────────────────────────────────────────────────────────────
 export type EmailType = 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'incasso' | 'payment_received';
 
 export function getEmailTemplate(
   order: CVOrder,
   type: EmailType
-): { subject: string; html: string } {
+): { subject: string; html: string; text?: string } {
   switch (type) {
-    case 'confirmation':
-      return getConfirmationEmail(order);
-    case 'invoice':
-      return getInvoiceEmail(order);
-    case 'reminder_1':
-      return getReminder1Email(order);
-    case 'reminder_2':
-      return getReminder2Email(order);
-    case 'incasso':
-      return getIncassoEmail(order);
-    case 'payment_received':
-      return getPaymentReceivedEmail(order);
-    default:
-      throw new Error(`Unknown email type: ${type}`);
+    case 'confirmation':    return getConfirmationEmail(order);
+    case 'invoice':         return getInvoiceEmail(order);
+    case 'reminder_1':      return getReminder1Email(order);
+    case 'reminder_2':      return getReminder2Email(order);
+    case 'incasso':         return getIncassoEmail(order);
+    case 'payment_received': return getPaymentReceivedEmail(order);
+    default: throw new Error(`Unknown email type: ${type}`);
   }
 }

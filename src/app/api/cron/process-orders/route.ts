@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseServerClient } from '@/lib/supabase';
+import {
+  addOrderAction,
+  getOrdersDueForAction,
+  updateOrder,
+} from '@/lib/orders';
 import { sendEmail } from '@/lib/resend';
 import { getEmailTemplate } from '@/lib/emailTemplates';
-import { createPayment } from '@/lib/bunq';
+import { createCheckoutSession } from '@/lib/stripe';
 import { createCase } from '@/lib/justusCollect';
-import { CVOrder, OrderStatus } from '@/types/admin';
 import { EMAIL_FLOW_TIMING, EMAIL_FLOW_TIMING_TEST } from '@/lib/orderStatusConfig';
 
 const fromEmailIncasso = process.env.FROM_EMAIL_INCASSO || 'Incasso Afdeling <incasso@resubox.nl>';
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export async function GET(request: NextRequest) {
-  // Verify cron secret via Authorization header (Vercel Cron) or query param (manual)
   const authHeader = request.headers.get('Authorization');
   const secretFromQuery = request.nextUrl.searchParams.get('secret');
   const testMode = request.nextUrl.searchParams.get('testMode') === 'true';
@@ -23,15 +24,6 @@ export async function GET(request: NextRequest) {
 
   if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const supabase = getSupabaseServerClient();
-
-  if (!supabase) {
-    return NextResponse.json(
-      { error: 'Database niet geconfigureerd' },
-      { status: 500 }
-    );
   }
 
   const timing = testMode ? EMAIL_FLOW_TIMING_TEST : EMAIL_FLOW_TIMING;
@@ -47,56 +39,34 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    // Get all orders that are not paid or afgeboekt (exclude cv_data to reduce bandwidth)
-    const { data: orders, error } = await supabase
-      .from('cv_orders')
-      .select(`
-        id, status, customer_name, customer_email, customer_phone,
-        customer_address, customer_house_number, customer_postal_code, customer_city,
-        amount, dossier_number,
-        bunq_payment_id, bunq_payment_status, payment_link,
-        invoice_sent_at, reminder_1_sent_at, reminder_2_sent_at, incasso_sent_at,
-        justus_case_id, justus_case_number,
-        created_at, updated_at
-      `)
-      .not('status', 'in', '("betaald","afgeboekt")');
+    const orders = await getOrdersDueForAction();
 
-    if (error || !orders) {
-      return NextResponse.json({ error: 'Fout bij ophalen orders' }, { status: 500 });
-    }
-
-    for (const orderData of orders) {
-      const order = orderData as CVOrder;
+    for (const order of orders) {
       const orderAge = now - new Date(order.created_at).getTime();
 
       try {
-        // Process based on current status
         switch (order.status) {
           case 'nieuw':
-            // Send invoice with payment link after 4 hours (or 10s in test mode)
             if (orderAge >= timing.invoice && !order.invoice_sent_at) {
-              // Create bunq payment if not exists
-              if (!order.bunq_payment_id) {
-                const paymentResult = await createPayment({
+              if (!order.stripe_session_id) {
+                const paymentResult = await createCheckoutSession({
                   orderId: order.id,
                   amount: order.amount,
                   description: `ResuBox by Dune Legal - ${order.dossier_number}`,
                   customerEmail: order.customer_email,
                   customerName: order.customer_name,
-                  redirectUrl: `${siteUrl}/betaald/${order.id}`,
+                  dossierNumber: order.dossier_number || order.id,
+                  successUrl: `${siteUrl}/betaald/${order.id}`,
+                  cancelUrl: `${siteUrl}/betalen/${order.id}`,
                 });
 
-                if (paymentResult.success && paymentResult.paymentId && paymentResult.paymentUrl) {
-                  await supabase
-                    .from('cv_orders')
-                    .update({
-                      bunq_payment_id: paymentResult.paymentId,
-                      payment_link: paymentResult.paymentUrl,
-                    })
-                    .eq('id', order.id);
-
-                  order.payment_link = paymentResult.paymentUrl;
-                  await logAction(supabase, order.id, 'payment_created', 'Betaallink aangemaakt via bunq');
+                if (paymentResult.success && paymentResult.sessionId && paymentResult.checkoutUrl) {
+                  await updateOrder(order.id, {
+                    stripe_session_id: paymentResult.sessionId,
+                    payment_link: paymentResult.checkoutUrl,
+                  });
+                  order.payment_link = paymentResult.checkoutUrl;
+                  await addOrderAction(order.id, 'payment_created', 'Betaallink aangemaakt via Stripe', 'cron');
                 }
               }
 
@@ -108,16 +78,11 @@ export async function GET(request: NextRequest) {
               });
 
               if (result.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    status: 'factuur_verstuurd' as OrderStatus,
-                    invoice_sent_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'email_sent', 'Factuur met betaallink automatisch verstuurd');
+                await updateOrder(order.id, {
+                  status: 'factuur_verstuurd',
+                  invoice_sent_at: new Date().toISOString(),
+                });
+                await addOrderAction(order.id, 'email_sent', 'Factuur met betaallink automatisch verstuurd', 'cron');
                 results.actions.push(`${order.dossier_number}: Factuur verstuurd`);
               } else {
                 results.errors.push(`${order.dossier_number}: Fout bij versturen factuur`);
@@ -126,7 +91,6 @@ export async function GET(request: NextRequest) {
             break;
 
           case 'factuur_verstuurd':
-            // Send reminder 1 after 7 days (or 1m in test mode)
             if (orderAge >= timing.reminder_1 && !order.reminder_1_sent_at) {
               const template = getEmailTemplate(order, 'reminder_1');
               const result = await sendEmail({
@@ -136,16 +100,11 @@ export async function GET(request: NextRequest) {
               });
 
               if (result.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    status: 'herinnering_1' as OrderStatus,
-                    reminder_1_sent_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'email_sent', '1e herinnering automatisch verstuurd');
+                await updateOrder(order.id, {
+                  status: 'herinnering_1',
+                  reminder_1_sent_at: new Date().toISOString(),
+                });
+                await addOrderAction(order.id, 'email_sent', '1e herinnering automatisch verstuurd', 'cron');
                 results.actions.push(`${order.dossier_number}: 1e herinnering verstuurd`);
               } else {
                 results.errors.push(`${order.dossier_number}: Fout bij versturen 1e herinnering`);
@@ -154,7 +113,6 @@ export async function GET(request: NextRequest) {
             break;
 
           case 'herinnering_1':
-            // Send reminder 2 (WIK) after 14 days (or 2m in test mode)
             if (orderAge >= timing.reminder_2 && !order.reminder_2_sent_at) {
               const template = getEmailTemplate(order, 'reminder_2');
               const result = await sendEmail({
@@ -164,16 +122,11 @@ export async function GET(request: NextRequest) {
               });
 
               if (result.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    status: 'herinnering_2' as OrderStatus,
-                    reminder_2_sent_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'email_sent', 'WIK-brief (2e herinnering) automatisch verstuurd');
+                await updateOrder(order.id, {
+                  status: 'herinnering_2',
+                  reminder_2_sent_at: new Date().toISOString(),
+                });
+                await addOrderAction(order.id, 'email_sent', 'WIK-brief (2e herinnering) automatisch verstuurd', 'cron');
                 results.actions.push(`${order.dossier_number}: WIK-brief verstuurd`);
               } else {
                 results.errors.push(`${order.dossier_number}: Fout bij versturen WIK-brief`);
@@ -182,59 +135,49 @@ export async function GET(request: NextRequest) {
             break;
 
           case 'herinnering_2':
-            // Transfer to incasso after 28 days (or 90s in test mode)
             if (orderAge >= timing.incasso && !order.incasso_sent_at) {
-              // Update amount to €82 (original €42 + €40 incassokosten)
-              await supabase
-                .from('cv_orders')
-                .update({ amount: 82.0 })
-                .eq('id', order.id);
-              order.amount = 82.0;
-
-              // Create new bunq.me tab for €82 (old one was €42)
-              const incassoPayment = await createPayment({
+              const incassoPayment = await createCheckoutSession({
                 orderId: order.id,
-                amount: 82.0,
+                amount: 42.0,
                 description: `ResuBox by Dune Legal - ${order.dossier_number}`,
                 customerEmail: order.customer_email,
                 customerName: order.customer_name,
-                redirectUrl: `${siteUrl}/betaald/${order.id}`,
+                dossierNumber: order.dossier_number || order.id,
+                successUrl: `${siteUrl}/betaald/${order.id}`,
+                cancelUrl: `${siteUrl}/betalen/${order.id}`,
               });
 
-              if (incassoPayment.success && incassoPayment.paymentId && incassoPayment.paymentUrl) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    bunq_payment_id: incassoPayment.paymentId,
-                    payment_link: incassoPayment.paymentUrl,
-                  })
-                  .eq('id', order.id);
-
-                order.payment_link = incassoPayment.paymentUrl;
-                await logAction(supabase, order.id, 'payment_created',
-                  `Nieuwe betaallink aangemaakt voor incassobedrag €82,00`);
+              if (incassoPayment.success && incassoPayment.sessionId && incassoPayment.checkoutUrl) {
+                await updateOrder(order.id, {
+                  stripe_session_id: incassoPayment.sessionId,
+                  payment_link: incassoPayment.checkoutUrl,
+                });
+                order.payment_link = incassoPayment.checkoutUrl;
+                await addOrderAction(order.id, 'payment_created', 'Nieuwe betaallink aangemaakt voor €42,00', 'cron');
               }
 
-              // Create Justus Collect case
               const justusResult = await createCase(order);
 
               if (justusResult.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    justus_case_id: justusResult.caseId,
-                    justus_case_number: justusResult.caseNumber,
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'manual_action',
-                  `Incassodossier aangemaakt bij Justus Collect (${justusResult.caseNumber})`);
+                await updateOrder(order.id, {
+                  justus_case_id: justusResult.caseId,
+                  justus_case_number: justusResult.caseNumber,
+                });
+                await addOrderAction(
+                  order.id,
+                  'manual_action',
+                  `Incassodossier aangemaakt bij Justus Collect (${justusResult.caseNumber})`,
+                  'cron'
+                );
               } else {
-                await logAction(supabase, order.id, 'manual_action',
-                  `Justus Collect aanmelding mislukt: ${justusResult.error}`);
+                await addOrderAction(
+                  order.id,
+                  'manual_action',
+                  `Justus Collect aanmelding mislukt: ${justusResult.error}`,
+                  'cron'
+                );
               }
 
-              // Send incasso notification email (uses updated payment_link for €82)
               const template = getEmailTemplate(order, 'incasso');
               const result = await sendEmail({
                 to: order.customer_email,
@@ -244,26 +187,23 @@ export async function GET(request: NextRequest) {
               });
 
               if (result.success) {
-                await supabase
-                  .from('cv_orders')
-                  .update({
-                    status: 'incasso_overgedragen' as OrderStatus,
-                    incasso_sent_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                  })
-                  .eq('id', order.id);
-
-                await logAction(supabase, order.id, 'email_sent', 'Incasso-notificatie email verstuurd');
-                await logAction(supabase, order.id, 'status_changed',
-                  'Status gewijzigd naar incasso_overgedragen - dossier overgedragen aan Justus Collect');
+                await updateOrder(order.id, {
+                  status: 'incasso_overgedragen',
+                  incasso_sent_at: new Date().toISOString(),
+                });
+                await addOrderAction(order.id, 'email_sent', 'Incasso-notificatie email verstuurd', 'cron');
+                await addOrderAction(
+                  order.id,
+                  'status_changed',
+                  'Status gewijzigd naar incasso_overgedragen - dossier overgedragen aan Justus Collect',
+                  'cron'
+                );
                 results.actions.push(`${order.dossier_number}: Incasso overgedragen`);
               } else {
                 results.errors.push(`${order.dossier_number}: Fout bij versturen incasso-notificatie`);
               }
             }
             break;
-
-          // incasso_overgedragen status: Handled by Justus webhook or direct payment via bunq
         }
 
         results.processed++;
@@ -285,20 +225,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-async function logAction(
-  supabase: ReturnType<typeof getSupabaseServerClient>,
-  orderId: string,
-  actionType: string,
-  description: string
-) {
-  if (!supabase) return;
-
-  await supabase.from('order_actions').insert({
-    order_id: orderId,
-    action_type: actionType,
-    action_description: description,
-    performed_by: 'cron',
-  });
 }

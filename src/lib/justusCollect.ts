@@ -51,7 +51,7 @@ export async function createCase(order: CVOrder): Promise<JustusCreateCaseResult
           },
         },
         claim: {
-          amount: 82.0,
+          amount: 42.0,
           currency: 'EUR',
           description: `CV Download Service - ${order.dossier_number}`,
           original_amount: order.amount,

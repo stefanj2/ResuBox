@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { FlaskConical, Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui';
-import { createOrder } from '@/lib/orders';
+import { createOrder } from '@/lib/api/orders';
 
 interface TestModePanelProps {
   enabled: boolean;

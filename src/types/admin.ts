@@ -36,9 +36,9 @@ export interface CVOrder {
   amount: number;
   dossier_number?: string;
 
-  // bunq payment
-  bunq_payment_id?: string;
-  bunq_payment_status?: string;
+  // Stripe payment
+  stripe_session_id?: string;
+  stripe_payment_status?: string;
   payment_link?: string;
   paid_at?: string;
 

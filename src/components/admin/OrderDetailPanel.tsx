@@ -242,11 +242,11 @@ export function OrderDetailPanel({
                 </div>
                 <div className="text-sm text-emerald-600 space-y-1">
                   <p>Betaald op: {formatDate(order.paid_at)}</p>
-                  {order.bunq_payment_id && (
-                    <p className="font-mono text-xs">bunq ID: {order.bunq_payment_id}</p>
+                  {order.stripe_session_id && (
+                    <p className="font-mono text-xs">Stripe ID: {order.stripe_session_id}</p>
                   )}
-                  {order.bunq_payment_status && (
-                    <p>Status: <span className="capitalize font-medium">{order.bunq_payment_status}</span></p>
+                  {order.stripe_payment_status && (
+                    <p>Status: <span className="capitalize font-medium">{order.stripe_payment_status}</span></p>
                   )}
                 </div>
               </div>
