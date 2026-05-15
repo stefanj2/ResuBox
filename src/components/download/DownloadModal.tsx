@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState } from 'react';
 import { Download, CheckCircle, AlertCircle, FileText, Loader2 } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
-import { toPng } from 'html-to-image';
-import { jsPDF } from 'jspdf';
 import { createOrder } from '@/lib/api/orders';
 
 interface DownloadModalProps {
@@ -20,103 +17,6 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const [agreed, setAgreed] = useState(false);
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
-
-  // Ensure we're mounted on client for portal
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const generatePDF = useCallback(async () => {
-    if (!pdfContainerRef.current) {
-      console.error('PDF container ref is null');
-      return;
-    }
-
-    // Wait for template to fully render
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const element = pdfContainerRef.current;
-
-    // Debug: log element dimensions and content
-    console.log('PDF container dimensions:', element.offsetWidth, element.offsetHeight);
-    console.log('PDF container innerHTML length:', element.innerHTML.length);
-    console.log('cvData being used:', JSON.stringify({
-      firstName: cvData.personal.firstName,
-      lastName: cvData.personal.lastName,
-      template: cvData.meta.selectedTemplate,
-      experienceCount: cvData.experience.length,
-    }));
-
-    // Temporarily make element visible for capture
-    const originalStyle = element.style.cssText;
-    element.style.cssText = `
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 210mm;
-      min-height: 297mm;
-      background-color: white;
-      z-index: 9999;
-      overflow: visible;
-    `;
-
-    // Wait a bit for styles to apply
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Create PNG from the template using html-to-image
-    const imgData = await toPng(element, {
-      quality: 0.95,
-      pixelRatio: 2,
-      backgroundColor: '#ffffff',
-      cacheBust: true,
-      skipFonts: true,
-    });
-
-    // Restore original positioning
-    element.style.cssText = originalStyle;
-
-    // A4 dimensions in mm
-    const a4Width = 210;
-    const a4Height = 297;
-
-    // Create PDF
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    // Create image to get dimensions
-    const img = new Image();
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = reject;
-      img.src = imgData;
-    });
-
-    // Calculate scaling to fit A4
-    const imgWidth = a4Width;
-    const imgHeight = (img.height * a4Width) / img.width;
-
-    // If content is longer than one page, we need to handle pagination
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= a4Height;
-
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= a4Height;
-    }
-
-    return pdf;
-  }, [cvData]);
 
   const handleDownload = async () => {
     if (!agreed) {
@@ -128,64 +28,82 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     setErrorMessage('');
 
     try {
-      // Generate PDF
-      const pdf = await generatePDF();
+      const filename = `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}`;
 
-      if (!pdf) {
-        throw new Error('PDF generation failed');
+      // Server-side PDF generation — produces a real text-selectable PDF
+      // (ATS-parseable, recruiter-friendly) instead of a rasterised image.
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cvData,
+          templateId: cvData.meta.selectedTemplate,
+          colorSchemeId: cvData.meta.selectedColorScheme,
+          filename,
+        }),
+      });
+
+      if (!response.ok) {
+        let detail = '';
+        try {
+          const j = await response.json();
+          detail = j?.error || j?.details || '';
+        } catch {
+          // ignore
+        }
+        throw new Error(detail || `PDF generatie mislukt (${response.status})`);
       }
 
-      // Download PDF
-      const fileName = `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}.pdf`;
-      pdf.save(fileName);
+      // Trigger browser download from the returned PDF blob
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filename}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-      // Create order in the system
+      // Create order in the system (non-blocking)
       const customerName = `${cvData.personal.firstName || ''} ${cvData.personal.lastName || ''}`.trim() || 'Onbekend';
       const customerEmail = cvData.personal.email || 'onbekend@email.nl';
-      const customerPhone = cvData.personal.phone;
 
       try {
         await createOrder({
           customer_name: customerName,
           customer_email: customerEmail,
-          customer_phone: customerPhone,
+          customer_phone: cvData.personal.phone,
           customer_address: cvData.personal.address,
           customer_house_number: cvData.personal.houseNumber,
           customer_postal_code: cvData.personal.postalCode,
           customer_city: cvData.personal.city,
           cv_id: cvData.id,
           template_used: cvData.meta.selectedTemplate,
-          cv_data: cvData, // Store full CV data for admin download
+          cv_data: cvData,
         });
-        console.log('📦 Order aangemaakt voor:', customerEmail);
       } catch (orderError) {
-        // Don't block download if order creation fails
         console.error('Order creation error:', orderError);
       }
 
-      // Log download
-      console.log('📥 CV gedownload voor:', cvData.personal.email);
-
-      // Track conversion in Google Analytics & Google Ads
+      // Conversion tracking
       if (typeof window !== 'undefined' && 'gtag' in window) {
         const gtag = (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag;
-
-        // Google Analytics 4 purchase event
         gtag('event', 'purchase', {
           transaction_id: cvData.id,
-          value: 42.00,
+          value: 42.0,
           currency: 'EUR',
-          items: [{
-            item_name: 'CV Download',
-            item_category: cvData.meta.selectedTemplate,
-            price: 42.00,
-            quantity: 1,
-          }],
+          items: [
+            {
+              item_name: 'CV Download',
+              item_category: cvData.meta.selectedTemplate,
+              price: 42.0,
+              quantity: 1,
+            },
+          ],
         });
-
-        // Google Ads conversion event
         gtag('event', 'manual_event_PURCHASE', {
-          value: 42.00,
+          value: 42.0,
           currency: 'EUR',
           transaction_id: cvData.id,
         });
@@ -194,13 +112,13 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       setStatus('success');
     } catch (error) {
       console.error('Download error:', error);
-      setErrorMessage('Er ging iets mis bij het downloaden. Probeer het opnieuw.');
+      setErrorMessage(error instanceof Error ? error.message : 'Er ging iets mis bij het downloaden. Probeer het opnieuw.');
       setStatus('error');
     }
   };
 
   const handleClose = () => {
-    if (status === 'processing') return; // Prevent closing while processing
+    if (status === 'processing') return;
     setStatus('idle');
     setAgreed(false);
     setErrorMessage('');
@@ -208,7 +126,6 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   };
 
   return (
-    <>
     <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title="Download CV">
       <div className="p-4 sm:p-6">
         {status === 'success' ? (
@@ -216,9 +133,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              Download gestart!
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Download gestart!</h2>
             <p className="text-slate-600 mb-6">
               Je professionele CV wordt nu gedownload. Veel succes met je sollicitatie!
             </p>
@@ -236,41 +151,26 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           </div>
         ) : (
           <>
-            {/* Header - compact on mobile */}
             <div className="text-center mb-3 sm:mb-6">
               <div className="w-10 h-10 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
                 <FileText className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-2">
-                Download je CV
-              </h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-2">Download je CV</h2>
               <p className="text-slate-600 text-sm sm:text-base hidden sm:block">
-                Je CV is klaar om te downloaden. Je ontvangt de PDF ook per e-mail op <strong>{cvData.personal.email || 'je opgegeven e-mailadres'}</strong>.
+                Je CV is klaar om te downloaden. Je ontvangt de PDF ook per e-mail op{' '}
+                <strong>{cvData.personal.email || 'je opgegeven e-mailadres'}</strong>.
               </p>
             </div>
 
-            {/* CV Preview - scaled version of actual template */}
-            <div
-              ref={previewRef}
-              className="flex justify-center bg-slate-50 rounded-xl p-2 pb-1 sm:p-4 sm:pb-2 mb-2 sm:mb-6"
-            >
-              {/* Responsive wrapper - smaller on mobile (0.55 * 0.25 = 0.1375 effective scale) */}
-              {/* Negative margin compensates for scale transform not reducing layout height */}
+            <div className="flex justify-center bg-slate-50 rounded-xl p-2 pb-1 sm:p-4 sm:pb-2 mb-2 sm:mb-6">
               <div className="origin-top scale-[0.55] sm:scale-100 -mb-[126px] sm:mb-0">
                 <div
                   className="relative overflow-hidden bg-white rounded-lg shadow-md border border-slate-200"
-                  style={{
-                    width: '52.5mm', // 210mm * 0.25
-                    height: '74.25mm', // 297mm * 0.25
-                  }}
+                  style={{ width: '52.5mm', height: '74.25mm' }}
                 >
                   <div
                     className="pointer-events-none origin-top-left"
-                    style={{
-                      transform: 'scale(0.25)',
-                      width: '210mm',
-                      height: '297mm',
-                    }}
+                    style={{ transform: 'scale(0.25)', width: '210mm', height: '297mm' }}
                   >
                     <CVPreview dataOverride={cvData} />
                   </div>
@@ -278,7 +178,6 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </div>
             </div>
 
-            {/* Checkbox */}
             <div className="mb-3 sm:mb-6">
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div className="relative flex-shrink-0 mt-0.5">
@@ -291,11 +190,13 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     }}
                     className="sr-only"
                   />
-                  <div className={`w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
-                    agreed
-                      ? 'bg-emerald-600 border-emerald-600'
-                      : 'border-slate-300 group-hover:border-slate-400'
-                  }`}>
+                  <div
+                    className={`w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
+                      agreed
+                        ? 'bg-emerald-600 border-emerald-600'
+                        : 'border-slate-300 group-hover:border-slate-400'
+                    }`}
+                  >
                     {agreed && (
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -317,7 +218,6 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </label>
             </div>
 
-            {/* Error message */}
             {errorMessage && (
               <div className="flex items-center gap-2 text-red-600 text-sm mb-4 p-3 bg-red-50 rounded-lg">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -325,7 +225,6 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </div>
             )}
 
-            {/* Button */}
             <button
               onClick={handleDownload}
               disabled={!agreed || status === 'processing'}
@@ -336,27 +235,30 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               }`}
             >
               <span className="flex items-center gap-2">
-                {status === 'processing' ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Download className="w-5 h-5" />
-                )}
+                {status === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                 {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
               </span>
               <span className="text-[10px] font-normal opacity-40">betaalverplichting</span>
             </button>
 
-            {/* Trust badges */}
             <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-6 text-xs text-slate-500">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Beveiligde verbinding
               </span>
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 100% veilig
               </span>
@@ -365,27 +267,5 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
         )}
       </div>
     </Modal>
-
-      {/* Hidden container for PDF generation - rendered via portal outside modal */}
-      {mounted && isOpen && createPortal(
-        <div
-          ref={pdfContainerRef}
-          id="pdf-export-container"
-          style={{
-            position: 'fixed',
-            left: '-9999px',
-            top: 0,
-            width: '210mm',
-            minHeight: '297mm',
-            backgroundColor: 'white',
-            overflow: 'visible',
-            zIndex: -1,
-          }}
-        >
-          <CVPreview dataOverride={cvData} />
-        </div>,
-        document.body
-      )}
-    </>
   );
 }
