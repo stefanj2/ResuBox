@@ -2,21 +2,43 @@
 
 import React from 'react';
 import { TemplateProps } from './types';
-import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
+import { fonts, palette, space, formatDateRange } from './tokens';
 
-// Format datum helper
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '';
-  const [year, month] = dateStr.split('-');
-  const months = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-  return `${months[parseInt(month) - 1]} ${year}`;
-};
+const c = palette.zakelijk;
 
-export function ZakelijkTemplate({ cvData, colorScheme }: TemplateProps) {
-  const colors = colorScheme || getColorScheme('slate');
+export function ZakelijkTemplate({ cvData }: TemplateProps) {
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+
+  const contact: string[] = [];
+  if (personal.email) contact.push(personal.email);
+  if (personal.phone) contact.push(personal.phone);
+  const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
+  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  const addr = [street, cityLine].filter(Boolean).join(', ');
+  if (addr) contact.push(addr);
+  if (personal.linkedIn) contact.push(personal.linkedIn);
+  if (personal.website) contact.push(personal.website);
+
+  // Harvard-style section header: small-caps + hairline rule beneath
+  const Heading = ({ label }: { label: string }) => (
+    <h2
+      style={{
+        fontFamily: fonts.serif,
+        fontSize: '11pt',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.12em',
+        color: c.ink,
+        margin: '0 0 6pt 0',
+        paddingBottom: '4pt',
+        borderBottom: `0.75pt solid ${c.ink}`,
+      }}
+    >
+      {label}
+    </h2>
+  );
 
   return (
     <div
@@ -24,196 +46,169 @@ export function ZakelijkTemplate({ cvData, colorScheme }: TemplateProps) {
       style={{
         width: '210mm',
         minHeight: '297mm',
-        padding: '20mm 18mm',
-        fontFamily: 'Georgia, Times New Roman, serif',
+        padding: space.pagePaddingTight,
+        fontFamily: fonts.serif,
+        color: c.body,
+        backgroundColor: c.page,
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
-      {/* Header */}
-      <header
-        className="border-b-2 pb-4 mb-5"
-        style={{ borderColor: colors.primary }}
-      >
-        <div className="flex items-start gap-4">
-          {/* Profile Photo */}
-          <div
-            className="w-20 h-20 rounded-sm overflow-hidden flex-shrink-0"
-            style={{ border: `1px solid ${colors.primaryLight}` }}
-          >
-            {personal.profilePhoto ? (
-              <img
-                src={personal.profilePhoto}
-                alt="Profielfoto"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-              </div>
-            )}
+      {/* HEADER — centered, classic */}
+      <header style={{ textAlign: 'center', marginBottom: '14pt' }}>
+        <h1
+          style={{
+            fontFamily: fonts.serif,
+            fontSize: '20pt',
+            fontWeight: 700,
+            color: c.ink,
+            margin: 0,
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+          }}
+        >
+          <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
+          {personal.firstName && personal.lastName ? ' ' : ''}
+          <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
+        </h1>
+        {contact.length > 0 && (
+          <div style={{ fontFamily: fonts.serif, fontSize: '10pt', color: c.body, marginTop: '6pt', lineHeight: 1.5 }}>
+            {contact.map((item, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span style={{ color: c.muted, margin: '0 6pt' }}>·</span>}
+                <span>{item}</span>
+              </React.Fragment>
+            ))}
           </div>
-
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold tracking-wide">
-              <span className={isPlaceholder.firstName ? 'text-slate-400' : 'text-slate-900'}>{personal.firstName}</span>{' '}
-              <span className={isPlaceholder.lastName ? 'text-slate-400' : 'text-slate-900'}>{personal.lastName}</span>
-            </h1>
-
-            {/* Contact info - compact single line */}
-            <div
-              className="flex flex-wrap gap-x-4 gap-y-1 text-xs mt-2"
-              style={{ fontFamily: 'system-ui, sans-serif' }}
-            >
-              <span className="text-slate-600">{personal.email}</span>
-              {personal.phone && <span className="text-slate-600">{personal.phone}</span>}
-              {(personal.address || personal.city) && (
-                <span className="text-slate-600">
-                  {personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}{personal.city}
-                </span>
-              )}
-              {personal.linkedIn && <span className="text-slate-600">{personal.linkedIn}</span>}
-              {personal.website && <span className="text-slate-600">{personal.website}</span>}
-              {personal.dateOfBirth && <span className="text-slate-600">Geb. {personal.dateOfBirth}</span>}
-            </div>
-          </div>
-        </div>
+        )}
       </header>
 
-      {/* Profile Summary */}
+      {/* PROFIEL */}
       {profile.summary && (
-        <section className="mb-5">
-          <h2
-            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-            style={{
-              color: colors.primaryDark,
-              borderBottom: `1px solid ${colors.primaryLight}`,
-            }}
-          >
-            Profiel
-          </h2>
+        <section style={{ marginBottom: '14pt' }}>
+          <Heading label="Profiel" />
           <p
-            className={`leading-relaxed text-xs ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-700'}`}
-            style={{ fontFamily: 'system-ui, sans-serif' }}
+            style={{
+              fontFamily: fonts.serif,
+              fontSize: '10.5pt',
+              lineHeight: 1.5,
+              margin: '4pt 0 0 0',
+              color: isPlaceholder.summary ? c.placeholder : c.body,
+              textAlign: 'justify',
+            }}
           >
             {profile.summary}
           </p>
         </section>
       )}
 
-      {/* Work Experience */}
+      {/* WERKERVARING */}
       {experience.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-            style={{
-              color: colors.primaryDark,
-              borderBottom: `1px solid ${colors.primaryLight}`,
-            }}
-          >
-            Werkervaring
-          </h2>
-          <div className={`space-y-3 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-            {experience.map((exp) => (
-              <div key={exp.id} style={{ fontFamily: 'system-ui, sans-serif' }}>
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <span className={`font-semibold text-sm ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                      {exp.jobTitle}
-                    </span>
-                    <span className="text-slate-600 text-xs ml-2">
-                      | {exp.company}
-                      {exp.location && `, ${exp.location}`}
-                    </span>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    {formatDate(exp.startDate)} – {exp.current ? 'Heden' : formatDate(exp.endDate)}
+        <section style={{ marginBottom: '14pt' }}>
+          <Heading label="Werkervaring" />
+          <div style={{ opacity: isPlaceholder.experience ? 0.5 : 1, paddingTop: '4pt' }}>
+            {experience.map((exp, idx) => (
+              <article key={exp.id} style={{ marginBottom: idx === experience.length - 1 ? 0 : '10pt' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '11pt', fontWeight: 700, color: c.ink }}>
+                    {exp.company}
+                  </span>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '10pt', color: c.body, fontVariantNumeric: 'tabular-nums' }}>
+                    {formatDateRange(exp.startDate, exp.endDate, exp.current)}
                   </span>
                 </div>
-
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4pt' }}>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '10.5pt', fontStyle: 'italic', color: c.body }}>
+                    {exp.jobTitle}
+                  </span>
+                  {exp.location && (
+                    <span style={{ fontFamily: fonts.serif, fontSize: '10pt', fontStyle: 'italic', color: c.muted }}>
+                      {exp.location}
+                    </span>
+                  )}
+                </div>
                 {exp.description && (
-                  <p className={`text-xs mt-1 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
+                  <p style={{ fontFamily: fonts.serif, fontSize: '10pt', lineHeight: 1.5, color: c.body, margin: '0 0 4pt 0' }}>
+                    {exp.description}
+                  </p>
                 )}
-
                 {exp.tasks.length > 0 && (
-                  <ul className="mt-1 space-y-0.5">
+                  <ul style={{ margin: '2pt 0 0 0', paddingLeft: '14pt', listStyle: 'none' }}>
                     {exp.tasks.map((task, i) => (
-                      <li key={i} className={`text-xs flex items-start gap-1.5 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                        <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>–</span>
+                      <li
+                        key={i}
+                        style={{
+                          fontFamily: fonts.serif,
+                          fontSize: '10pt',
+                          lineHeight: 1.5,
+                          color: c.body,
+                          position: 'relative',
+                          marginTop: i === 0 ? 0 : '2pt',
+                        }}
+                      >
+                        <span style={{ position: 'absolute', left: '-12pt' }} aria-hidden>•</span>
                         {task}
                       </li>
                     ))}
                   </ul>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         </section>
       )}
 
-      {/* Education */}
+      {/* OPLEIDING */}
       {education.length > 0 && (
-        <section className="mb-5">
-          <h2
-            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
-            style={{
-              color: colors.primaryDark,
-              borderBottom: `1px solid ${colors.primaryLight}`,
-            }}
-          >
-            Opleiding
-          </h2>
-          <div className={`space-y-2 ${isPlaceholder.education ? 'opacity-50' : ''}`} style={{ fontFamily: 'system-ui, sans-serif' }}>
-            {education.map((edu) => (
-              <div key={edu.id}>
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <span className={`font-semibold text-sm ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                      {edu.degree}
-                    </span>
-                    <span className="text-slate-600 text-xs ml-2">
-                      | {edu.institution}
-                      {edu.location && `, ${edu.location}`}
-                    </span>
-                  </div>
-                  <span className="text-xs text-slate-500">
-                    {formatDate(edu.startDate)} – {edu.current ? 'Heden' : formatDate(edu.endDate)}
+        <section style={{ marginBottom: '14pt' }}>
+          <Heading label="Opleiding" />
+          <div style={{ opacity: isPlaceholder.education ? 0.5 : 1, paddingTop: '4pt' }}>
+            {education.map((edu, idx) => (
+              <article key={edu.id} style={{ marginBottom: idx === education.length - 1 ? 0 : '8pt' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '11pt', fontWeight: 700, color: c.ink }}>
+                    {edu.institution}
+                  </span>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '10pt', color: c.body, fontVariantNumeric: 'tabular-nums' }}>
+                    {formatDateRange(edu.startDate, edu.endDate, edu.current)}
                   </span>
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <span style={{ fontFamily: fonts.serif, fontSize: '10.5pt', fontStyle: 'italic', color: c.body }}>
+                    {edu.degree}
+                  </span>
+                  {edu.location && (
+                    <span style={{ fontFamily: fonts.serif, fontSize: '10pt', fontStyle: 'italic', color: c.muted }}>
+                      {edu.location}
+                    </span>
+                  )}
+                </div>
                 {edu.description && (
-                  <p className={`text-xs mt-0.5 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
+                  <p style={{ fontFamily: fonts.serif, fontSize: '10pt', lineHeight: 1.5, color: c.body, margin: '4pt 0 0 0' }}>
+                    {edu.description}
+                  </p>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         </section>
       )}
 
-      {/* Skills */}
+      {/* VAARDIGHEDEN */}
       {skills.length > 0 && (
         <section>
-          <h2
-            className="text-sm font-bold uppercase tracking-wider pb-1 mb-2"
+          <Heading label="Vaardigheden" />
+          <p
             style={{
-              color: colors.primaryDark,
-              borderBottom: `1px solid ${colors.primaryLight}`,
+              fontFamily: fonts.serif,
+              fontSize: '10pt',
+              lineHeight: 1.6,
+              color: isPlaceholder.skills ? c.placeholder : c.body,
+              margin: '4pt 0 0 0',
+              opacity: isPlaceholder.skills ? 0.6 : 1,
             }}
           >
-            Vaardigheden
-          </h2>
-          <div
-            className={`flex flex-wrap gap-x-3 gap-y-1 text-xs ${isPlaceholder.skills ? 'text-slate-400' : 'text-slate-700'}`}
-            style={{ fontFamily: 'system-ui, sans-serif' }}
-          >
-            {skills.map((skill, index) => (
-              <span key={skill.id}>
-                {skill.name}
-                {index < skills.length - 1 && (
-                  <span className="ml-3" style={{ color: isPlaceholder.skills ? '#94a3b8' : colors.primary }}>|</span>
-                )}
-              </span>
-            ))}
-          </div>
+            {skills.map((s) => s.name).join(', ')}
+          </p>
         </section>
       )}
     </div>

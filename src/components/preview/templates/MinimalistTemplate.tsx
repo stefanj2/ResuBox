@@ -2,21 +2,91 @@
 
 import React from 'react';
 import { TemplateProps } from './types';
-import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
+import { fonts, palette, space, formatDateRange } from './tokens';
 
-// Format datum helper
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '';
-  const [year, month] = dateStr.split('-');
-  const months = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-  return `${months[parseInt(month) - 1]} ${year}`;
-};
+// Minimalist uses absolutely no accent color — typography is the only voice.
+const c = palette.default;
 
-export function MinimalistTemplate({ cvData, colorScheme }: TemplateProps) {
-  const colors = colorScheme || getColorScheme('rose');
+export function MinimalistTemplate({ cvData }: TemplateProps) {
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+
+  const contact: string[] = [];
+  if (personal.email) contact.push(personal.email);
+  if (personal.phone) contact.push(personal.phone);
+  if (personal.city) contact.push(personal.city);
+  if (personal.linkedIn) contact.push(personal.linkedIn);
+  if (personal.website) contact.push(personal.website);
+
+  const Heading = ({ label }: { label: string }) => (
+    <h2
+      style={{
+        fontFamily: fonts.sans,
+        fontSize: '8.5pt',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.24em',
+        color: c.ink,
+        margin: '0 0 14pt 0',
+      }}
+    >
+      {label}
+    </h2>
+  );
+
+  const Item = ({
+    title,
+    subtitle,
+    date,
+    description,
+    bullets,
+  }: {
+    title: string;
+    subtitle?: React.ReactNode;
+    date: string;
+    description?: string;
+    bullets?: string[];
+  }) => (
+    <article>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12pt' }}>
+        <h3 style={{ fontFamily: fonts.sans, fontSize: '11pt', fontWeight: 600, color: c.ink, margin: 0, lineHeight: 1.3 }}>
+          {title}
+        </h3>
+        <span style={{ fontFamily: fonts.sans, fontSize: '9pt', color: c.muted, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+          {date}
+        </span>
+      </div>
+      {subtitle && (
+        <div style={{ fontFamily: fonts.sans, fontSize: '10pt', color: c.muted, marginTop: '2pt' }}>{subtitle}</div>
+      )}
+      {description && (
+        <p style={{ fontFamily: fonts.sans, fontSize: '9.5pt', lineHeight: 1.55, color: c.body, margin: '6pt 0 0 0' }}>
+          {description}
+        </p>
+      )}
+      {bullets && bullets.length > 0 && (
+        <ul style={{ margin: '4pt 0 0 0', paddingLeft: '14pt', listStyle: 'none' }}>
+          {bullets.map((b, i) => (
+            <li
+              key={i}
+              style={{
+                fontFamily: fonts.sans,
+                fontSize: '9.5pt',
+                lineHeight: 1.55,
+                color: c.body,
+                position: 'relative',
+                marginTop: i === 0 ? 0 : '2pt',
+              }}
+            >
+              <span style={{ position: 'absolute', left: '-12pt', color: c.muted }} aria-hidden>·</span>
+              {b}
+            </li>
+          ))}
+        </ul>
+      )}
+    </article>
+  );
 
   return (
     <div
@@ -24,176 +94,119 @@ export function MinimalistTemplate({ cvData, colorScheme }: TemplateProps) {
       style={{
         width: '210mm',
         minHeight: '297mm',
-        padding: '28mm 24mm',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        padding: space.pagePaddingWide,
+        fontFamily: fonts.sans,
+        color: c.body,
+        backgroundColor: c.page,
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
-      {/* Header - Clean and elegant */}
-      <header className="mb-10">
-        <div className="flex items-center gap-6">
-          {/* Profile Photo */}
-          <div
-            className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0"
-            style={{ boxShadow: `0 0 0 2px ${colors.primaryLight}` }}
-          >
-            {personal.profilePhoto ? (
-              <img
-                src={personal.profilePhoto}
-                alt="Profielfoto"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                <svg className="w-10 h-10 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-              </div>
-            )}
+      <header style={{ marginBottom: '32pt' }}>
+        <h1
+          style={{
+            fontFamily: fonts.sans,
+            fontSize: '22pt',
+            fontWeight: 600,
+            letterSpacing: '-0.015em',
+            color: c.ink,
+            margin: 0,
+            lineHeight: 1.1,
+          }}
+        >
+          <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
+          {personal.firstName && personal.lastName ? ' ' : ''}
+          <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
+        </h1>
+        {contact.length > 0 && (
+          <div style={{ fontFamily: fonts.sans, fontSize: '9.5pt', color: c.muted, marginTop: '8pt', lineHeight: 1.6 }}>
+            {contact.map((item, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span style={{ color: c.faint, margin: '0 8pt' }}>·</span>}
+                <span>{item}</span>
+              </React.Fragment>
+            ))}
           </div>
-
-          <div className="flex-1">
-            <h1 className="text-4xl font-light text-slate-900 tracking-tight leading-tight">
-              <span className={isPlaceholder.firstName ? 'text-slate-400' : ''}>{personal.firstName}</span>{' '}
-              <span className={`font-semibold ${isPlaceholder.lastName ? 'text-slate-400' : ''}`}>{personal.lastName}</span>
-            </h1>
-
-            {/* Contact - elegant single line */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-4 text-sm text-slate-500">
-              <span className="text-slate-700">{personal.email}</span>
-              {personal.phone && (
-                <>
-                  <span style={{ color: colors.primary }}>•</span>
-                  <span className="text-slate-700">{personal.phone}</span>
-                </>
-              )}
-              {personal.city && (
-                <>
-                  <span style={{ color: colors.primary }}>•</span>
-                  <span className="text-slate-700">{personal.city}</span>
-                </>
-              )}
-              {personal.linkedIn && (
-                <>
-                  <span style={{ color: colors.primary }}>•</span>
-                  <span className="text-slate-700">{personal.linkedIn}</span>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+        )}
       </header>
 
-      {/* Elegant divider */}
-      <div className="flex items-center gap-4 mb-10">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.primary }}></div>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      </div>
-
-      {/* Profile Summary */}
       {profile.summary && (
-        <section className="mb-10">
-          <p className={`leading-relaxed text-base text-center max-w-2xl mx-auto italic ${isPlaceholder.summary ? 'text-slate-400' : 'text-slate-600'}`}>
-            "{profile.summary}"
+        <section style={{ marginBottom: '28pt' }}>
+          <Heading label="Profiel" />
+          <p
+            style={{
+              fontFamily: fonts.sans,
+              fontSize: '10.5pt',
+              lineHeight: 1.6,
+              color: isPlaceholder.summary ? c.placeholder : c.body,
+              margin: 0,
+              maxWidth: '155mm',
+            }}
+          >
+            {profile.summary}
           </p>
         </section>
       )}
 
-      {/* Work Experience */}
       {experience.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-xs uppercase tracking-[0.25em] font-medium mb-6 text-center" style={{ color: colors.primary }}>
-            Werkervaring
-          </h2>
-          <div className={`space-y-6 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
+        <section style={{ marginBottom: '28pt' }}>
+          <Heading label="Werkervaring" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16pt', opacity: isPlaceholder.experience ? 0.5 : 1 }}>
             {experience.map((exp) => (
-              <div key={exp.id} className="relative">
-                <div className="absolute left-0 top-2 w-2 h-2 rounded-full" style={{ backgroundColor: colors.primary }}></div>
-                <div className="absolute left-[3px] top-5 w-0.5 h-[calc(100%-12px)]"
-                  style={{ background: `linear-gradient(to bottom, ${colors.primaryLight}, transparent)` }}></div>
-
-                <div className="pl-6">
-                  <div className="flex justify-between items-baseline mb-2">
-                    <div>
-                      <h3 className={`font-semibold text-base ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {exp.jobTitle}
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        {exp.company}{exp.location && ` · ${exp.location}`}
-                      </p>
-                    </div>
-                    <span className="text-xs text-slate-400 font-medium tabular-nums">
-                      {formatDate(exp.startDate)} — {exp.current ? 'heden' : formatDate(exp.endDate)}
-                    </span>
-                  </div>
-                  {exp.description && (
-                    <p className={`text-sm mb-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-                  )}
-                  {exp.tasks.length > 0 && (
-                    <ul className="space-y-1">
-                      {exp.tasks.map((task, i) => (
-                        <li key={i} className={`text-sm flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>
-                          <span style={{ color: colors.primary }} className="mt-1">→</span>
-                          {task}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
+              <Item
+                key={exp.id}
+                title={exp.jobTitle}
+                subtitle={
+                  <>
+                    <span style={{ color: c.body }}>{exp.company}</span>
+                    {exp.location && <span style={{ color: c.faint }}>{' · '}{exp.location}</span>}
+                  </>
+                }
+                date={formatDateRange(exp.startDate, exp.endDate, exp.current)}
+                description={exp.description}
+                bullets={exp.tasks}
+              />
             ))}
           </div>
         </section>
       )}
 
-      {/* Education */}
       {education.length > 0 && (
-        <section className="mb-10">
-          <h2 className="text-xs uppercase tracking-[0.25em] font-medium mb-6 text-center" style={{ color: colors.primary }}>
-            Opleiding
-          </h2>
-          <div className={`space-y-5 ${isPlaceholder.education ? 'opacity-50' : ''}`}>
+        <section style={{ marginBottom: '28pt' }}>
+          <Heading label="Opleiding" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12pt', opacity: isPlaceholder.education ? 0.5 : 1 }}>
             {education.map((edu) => (
-              <div key={edu.id} className="relative">
-                <div className="absolute left-0 top-2 w-2 h-2 rounded-full" style={{ backgroundColor: colors.primary }}></div>
-                <div className="pl-6">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <div>
-                      <h3 className={`font-semibold ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {edu.degree}
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        {edu.institution}{edu.location && ` · ${edu.location}`}
-                      </p>
-                    </div>
-                    <span className="text-xs text-slate-400 font-medium tabular-nums">
-                      {formatDate(edu.startDate)} — {edu.current ? 'heden' : formatDate(edu.endDate)}
-                    </span>
-                  </div>
-                  {edu.description && (
-                    <p className={`text-sm mt-1 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-                  )}
-                </div>
-              </div>
+              <Item
+                key={edu.id}
+                title={edu.degree}
+                subtitle={
+                  <>
+                    <span style={{ color: c.body }}>{edu.institution}</span>
+                    {edu.location && <span style={{ color: c.faint }}>{' · '}{edu.location}</span>}
+                  </>
+                }
+                date={formatDateRange(edu.startDate, edu.endDate, edu.current)}
+                description={edu.description}
+              />
             ))}
           </div>
         </section>
       )}
 
-      {/* Skills */}
       {skills.length > 0 && (
         <section>
-          <h2 className="text-xs uppercase tracking-[0.25em] font-medium mb-6 text-center" style={{ color: colors.primary }}>
-            Vaardigheden
-          </h2>
-          <div className={`flex flex-wrap justify-center gap-2 ${isPlaceholder.skills ? 'opacity-50' : ''}`}>
-            {skills.map((skill) => (
-              <span key={skill.id} className="px-4 py-2 text-sm text-slate-600 border rounded-full bg-white"
-                style={{ borderColor: colors.primaryLight }}>
-                {skill.name}
-              </span>
-            ))}
-          </div>
+          <Heading label="Vaardigheden" />
+          <p
+            style={{
+              fontFamily: fonts.sans,
+              fontSize: '10pt',
+              lineHeight: 1.7,
+              color: isPlaceholder.skills ? c.placeholder : c.body,
+              margin: 0,
+              opacity: isPlaceholder.skills ? 0.6 : 1,
+            }}
+          >
+            {skills.map((s) => s.name).join('  ·  ')}
+          </p>
         </section>
       )}
     </div>

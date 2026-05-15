@@ -1,23 +1,59 @@
 'use client';
 
 import React from 'react';
-import { Mail, Phone, MapPin, Linkedin, Globe, User, Briefcase, GraduationCap, Sparkles } from 'lucide-react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
+import { fonts, palette, space, formatDateRange } from './tokens';
 
-// Format datum helper
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '';
-  const [year, month] = dateStr.split('-');
-  const months = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-  return `${months[parseInt(month) - 1]} ${year}`;
-};
+const c = palette.default;
 
 export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
-  const colors = colorScheme || getColorScheme('violet');
+  const accent = (colorScheme || getColorScheme('rose')).primary;
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
+
+  const contact: string[] = [];
+  if (personal.email) contact.push(personal.email);
+  if (personal.phone) contact.push(personal.phone);
+  if (personal.city) contact.push(personal.city);
+  if (personal.linkedIn) contact.push(personal.linkedIn);
+  if (personal.website) contact.push(personal.website);
+
+  const Heading = ({ label }: { label: string }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10pt', marginBottom: '12pt' }}>
+      <span style={{ width: '6pt', height: '6pt', borderRadius: '50%', backgroundColor: accent, flexShrink: 0 }} />
+      <h2
+        style={{
+          fontFamily: fonts.sans,
+          fontSize: '9pt',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.2em',
+          color: c.ink,
+          margin: 0,
+        }}
+      >
+        {label}
+      </h2>
+      <span style={{ flex: 1, height: '1px', backgroundColor: c.rule }} />
+    </div>
+  );
+
+  const DatePill = ({ children }: { children: React.ReactNode }) => (
+    <span
+      style={{
+        fontFamily: fonts.sans,
+        fontSize: '8.5pt',
+        fontWeight: 500,
+        color: accent,
+        letterSpacing: '0.04em',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </span>
+  );
 
   return (
     <div
@@ -25,206 +61,178 @@ export function CreatiefTemplate({ cvData, colorScheme }: TemplateProps) {
       style={{
         width: '210mm',
         minHeight: '297mm',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        padding: space.pagePadding,
+        fontFamily: fonts.sans,
+        color: c.body,
+        backgroundColor: c.page,
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
-      {/* Hero Header with gradient */}
-      <header
-        className="text-white px-8 py-10 relative overflow-hidden"
-        style={{
-          background: `linear-gradient(135deg, ${colors.gradient.from} 0%, ${colors.gradient.to} 100%)`,
-        }}
-      >
-        {/* Decorative circles */}
-        <div
-          className="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-10"
-          style={{ backgroundColor: colors.primaryLight }}
-        />
-        <div
-          className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10"
-          style={{ backgroundColor: colors.primaryLight }}
-        />
-
-        <div className="relative z-10 flex items-center gap-6">
-          {/* Profile Photo */}
-          <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white/20 flex-shrink-0 shadow-xl">
-            {personal.profilePhoto ? (
-              <img
-                src={personal.profilePhoto}
-                alt="Profielfoto"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-white/20 flex items-center justify-center">
-                <svg className="w-12 h-12 text-white/40" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                </svg>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1">
-            <h1 className={`text-4xl font-bold tracking-tight ${isPlaceholder.firstName ? 'opacity-50' : ''}`}>
-              {personal.firstName}
-            </h1>
-            <h1 className={`text-4xl font-bold tracking-tight opacity-70 ${isPlaceholder.lastName ? 'opacity-50' : ''}`}>
-              {personal.lastName}
-            </h1>
-          </div>
+      {/* HEADER */}
+      <header style={{ marginBottom: '20pt' }}>
+        <div style={{ fontFamily: fonts.sans, fontSize: '8.5pt', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: accent, marginBottom: '6pt' }}>
+          Curriculum Vitae
         </div>
-
-        {/* Contact Grid */}
-        <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 mt-6 text-sm">
-          <div className="flex items-center gap-2 text-white/80">
-            <Mail className="w-4 h-4" />
-            <span className="truncate">{personal.email}</span>
-          </div>
-          {personal.phone && (
-            <div className="flex items-center gap-2 text-white/80">
-              <Phone className="w-4 h-4" />
-              <span>{personal.phone}</span>
-            </div>
-          )}
-          {(personal.address || personal.city) && (
-            <div className="flex items-center gap-2 text-white/80">
-              <MapPin className="w-4 h-4" />
-              <span>{personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}{personal.city}</span>
-            </div>
-          )}
-          {personal.linkedIn && (
-            <div className="flex items-center gap-2 text-white/80">
-              <Linkedin className="w-4 h-4" />
-              <span className="truncate">{personal.linkedIn}</span>
-            </div>
-          )}
-          {personal.website && (
-            <div className="flex items-center gap-2 text-white/80">
-              <Globe className="w-4 h-4" />
-              <span className="truncate">{personal.website}</span>
-            </div>
-          )}
-        </div>
+        <h1
+          style={{
+            fontFamily: fonts.serif,
+            fontSize: '36pt',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            color: c.ink,
+            margin: 0,
+            lineHeight: 1.02,
+          }}
+        >
+          <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
+          {personal.firstName && personal.lastName ? <br /> : null}
+          <span
+            style={{
+              color: isPlaceholder.lastName ? c.placeholder : c.ink,
+              fontStyle: 'italic',
+              fontWeight: 400,
+            }}
+          >
+            {personal.lastName}
+          </span>
+        </h1>
       </header>
 
-      {/* Main Content */}
-      <div className="p-8">
-        {/* Profile Summary */}
-        {profile.summary && (
-          <section className="mb-7">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="p-2 rounded-xl" style={{ backgroundColor: colors.primaryLight }}>
-                <User className="w-4 h-4" style={{ color: colors.primary }} />
-              </div>
-              <h2 className="text-lg font-bold text-slate-900">Profiel</h2>
-            </div>
-            <p className={`leading-relaxed text-sm pl-10 ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-600'}`}>
-              {profile.summary}
-            </p>
-          </section>
-        )}
+      {/* POSITIONING STATEMENT — Pender-style oversized lead */}
+      {profile.summary && (
+        <section style={{ marginBottom: space.sectionGap, paddingTop: '8pt', borderTop: `1pt solid ${c.rule}` }}>
+          <p
+            style={{
+              fontFamily: fonts.serif,
+              fontSize: '15pt',
+              fontStyle: 'italic',
+              fontWeight: 400,
+              lineHeight: 1.4,
+              color: isPlaceholder.summary ? c.placeholder : c.ink,
+              margin: '14pt 0 0 0',
+              maxWidth: '155mm',
+            }}
+          >
+            {profile.summary}
+          </p>
+        </section>
+      )}
 
-        {/* Work Experience */}
-        {experience.length > 0 && (
-          <section className="mb-7">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-xl" style={{ backgroundColor: colors.primaryLight }}>
-                <Briefcase className="w-4 h-4" style={{ color: colors.primary }} />
-              </div>
-              <h2 className="text-lg font-bold text-slate-900">Werkervaring</h2>
-            </div>
-            <div className={`space-y-4 pl-10 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-              {experience.map((exp) => (
-                <div key={exp.id} className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className={`font-semibold text-base ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {exp.jobTitle}
-                      </h3>
-                      <p className="text-sm font-medium" style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>
-                        {exp.company}
-                        {exp.location && <span className="text-slate-400"> • {exp.location}</span>}
-                      </p>
-                    </div>
-                    <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap"
-                      style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark }}>
-                      {formatDate(exp.startDate)} - {exp.current ? 'Heden' : formatDate(exp.endDate)}
-                    </span>
-                  </div>
-                  {exp.description && (
-                    <p className={`text-sm mt-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-                  )}
-                  {exp.tasks.length > 0 && (
-                    <ul className="mt-3 space-y-1.5">
-                      {exp.tasks.map((task, i) => (
-                        <li key={i} className={`text-sm flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                          <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }} className="mt-0.5">•</span>
-                          {task}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+      {/* CONTACT */}
+      {contact.length > 0 && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          <Heading label="Contact" />
+          <div style={{ fontFamily: fonts.sans, fontSize: '9.5pt', color: c.body, lineHeight: 1.7 }}>
+            {contact.map((item, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <span style={{ color: c.faint, margin: '0 8pt' }}>·</span>}
+                <span>{item}</span>
+              </React.Fragment>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* WERKERVARING */}
+      {experience.length > 0 && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          <Heading label="Werkervaring" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.experience ? 0.5 : 1 }}>
+            {experience.map((exp) => (
+              <article key={exp.id}>
+                <div style={{ marginBottom: '4pt' }}>
+                  <DatePill>{formatDateRange(exp.startDate, exp.endDate, exp.current)}</DatePill>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Education */}
-        {education.length > 0 && (
-          <section className="mb-7">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-xl" style={{ backgroundColor: colors.primaryLight }}>
-                <GraduationCap className="w-4 h-4" style={{ color: colors.primary }} />
-              </div>
-              <h2 className="text-lg font-bold text-slate-900">Opleiding</h2>
-            </div>
-            <div className={`space-y-4 pl-10 ${isPlaceholder.education ? 'opacity-50' : ''}`}>
-              {education.map((edu) => (
-                <div key={edu.id} className="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className={`font-semibold ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                        {edu.degree}
-                      </h3>
-                      <p className="text-sm font-medium" style={{ color: isPlaceholder.education ? '#94a3b8' : colors.primary }}>
-                        {edu.institution}
-                        {edu.location && <span className="text-slate-400"> • {edu.location}</span>}
-                      </p>
-                    </div>
-                    <span className="text-xs px-3 py-1 rounded-full font-medium whitespace-nowrap"
-                      style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark }}>
-                      {formatDate(edu.startDate)} - {edu.current ? 'Heden' : formatDate(edu.endDate)}
-                    </span>
-                  </div>
-                  {edu.description && (
-                    <p className={`text-sm mt-2 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-                  )}
+                <h3 style={{ fontFamily: fonts.serif, fontSize: '14pt', fontWeight: 500, color: c.ink, margin: 0, lineHeight: 1.25, letterSpacing: '-0.01em' }}>
+                  {exp.jobTitle}
+                </h3>
+                <div style={{ fontFamily: fonts.sans, fontSize: '10pt', color: c.muted, marginTop: '2pt', marginBottom: exp.description || exp.tasks.length > 0 ? '6pt' : 0 }}>
+                  <span style={{ color: c.body, fontWeight: 500 }}>{exp.company}</span>
+                  {exp.location && <span style={{ color: c.faint }}>{' · '}{exp.location}</span>}
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                {exp.description && (
+                  <p style={{ fontFamily: fonts.sans, fontSize: '9.5pt', lineHeight: 1.55, color: c.body, margin: 0, marginBottom: exp.tasks.length > 0 ? '6pt' : 0 }}>
+                    {exp.description}
+                  </p>
+                )}
+                {exp.tasks.length > 0 && (
+                  <ul style={{ margin: 0, paddingLeft: '14pt', listStyle: 'none' }}>
+                    {exp.tasks.map((task, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          fontFamily: fonts.sans,
+                          fontSize: '9.5pt',
+                          lineHeight: 1.55,
+                          color: c.body,
+                          position: 'relative',
+                          marginTop: i === 0 ? 0 : '3pt',
+                        }}
+                      >
+                        <span style={{ position: 'absolute', left: '-12pt', color: accent }} aria-hidden>—</span>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
-        {/* Skills */}
-        {skills.length > 0 && (
-          <section>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 rounded-xl" style={{ backgroundColor: colors.primaryLight }}>
-                <Sparkles className="w-4 h-4" style={{ color: colors.primary }} />
-              </div>
-              <h2 className="text-lg font-bold text-slate-900">Vaardigheden</h2>
-            </div>
-            <div className={`grid grid-cols-2 gap-2 pl-10 ${isPlaceholder.skills ? 'opacity-50' : ''}`}>
-              {skills.map((skill) => (
-                <span key={skill.id} className="px-4 py-2.5 rounded-xl text-sm font-medium border"
-                  style={{ backgroundColor: colors.primaryLight, color: colors.primaryDark, borderColor: colors.primaryLight }}>
-                  {skill.name}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      {/* OPLEIDING */}
+      {education.length > 0 && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          <Heading label="Opleiding" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: space.itemGap, opacity: isPlaceholder.education ? 0.5 : 1 }}>
+            {education.map((edu) => (
+              <article key={edu.id}>
+                <div style={{ marginBottom: '4pt' }}>
+                  <DatePill>{formatDateRange(edu.startDate, edu.endDate, edu.current)}</DatePill>
+                </div>
+                <h3 style={{ fontFamily: fonts.serif, fontSize: '13pt', fontWeight: 500, color: c.ink, margin: 0, lineHeight: 1.25 }}>
+                  {edu.degree}
+                </h3>
+                <div style={{ fontFamily: fonts.sans, fontSize: '10pt', color: c.muted, marginTop: '2pt' }}>
+                  <span style={{ color: c.body }}>{edu.institution}</span>
+                  {edu.location && <span style={{ color: c.faint }}>{' · '}{edu.location}</span>}
+                </div>
+                {edu.description && (
+                  <p style={{ fontFamily: fonts.sans, fontSize: '9.5pt', lineHeight: 1.55, color: c.body, margin: '6pt 0 0 0' }}>
+                    {edu.description}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* VAARDIGHEDEN */}
+      {skills.length > 0 && (
+        <section>
+          <Heading label="Vaardigheden" />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6pt', opacity: isPlaceholder.skills ? 0.6 : 1 }}>
+            {skills.map((skill) => (
+              <span
+                key={skill.id}
+                style={{
+                  fontFamily: fonts.sans,
+                  fontSize: '9pt',
+                  color: c.body,
+                  padding: '3pt 9pt',
+                  border: `0.75pt solid ${c.rule}`,
+                  borderRadius: '999px',
+                  letterSpacing: '0.01em',
+                }}
+              >
+                {skill.name}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

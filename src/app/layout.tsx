@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Newsreader } from "next/font/google";
+import { DM_Sans, Newsreader, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { OrganizationSchema, WebApplicationSchema } from "@/components/seo";
 import "./globals.css";
@@ -15,6 +15,20 @@ const newsreader = Newsreader({
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-newsreader",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -110,7 +124,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebApplicationSchema />
       </head>
-      <body className={`${dmSans.variable} ${newsreader.variable} font-sans antialiased`}>
+      <body className={`${dmSans.variable} ${newsreader.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         {children}
 
         {/* Google Analytics */}

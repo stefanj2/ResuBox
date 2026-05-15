@@ -1,21 +1,18 @@
 /**
  * Shared design tokens for CV templates.
  *
- * The goal is a consistent typographic system across all 6 templates so that
- * "Modern", "Zakelijk", "Executive" etc. differ in layout/voice but share the
- * same visual quality — like a single type family with different weights.
- *
- * All sizes are in points (pt) because CVs are designed for print/PDF.
- * 1pt = 1.333px at 96dpi.
+ * Six templates each have a distinct visual voice but share this typographic
+ * system so they feel like one family. All sizes are in points (pt) because
+ * CVs are designed for print/PDF.
  */
 
 export const fonts = {
-  sans: 'var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  sans: 'var(--font-inter), var(--font-dm-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   serif: 'var(--font-newsreader), Georgia, "Times New Roman", serif',
+  mono: 'var(--font-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace',
 } as const;
 
 export const type = {
-  // Display: the candidate's name (hero element)
   display: {
     fontFamily: fonts.serif,
     fontSize: '32pt',
@@ -23,16 +20,20 @@ export const type = {
     lineHeight: 1.05,
     letterSpacing: '-0.02em',
   },
-  // Optional subtitle under the name (job title / one-line headline)
+  displaySans: {
+    fontFamily: fonts.sans,
+    fontSize: '24pt',
+    fontWeight: 600,
+    lineHeight: 1.1,
+    letterSpacing: '-0.02em',
+  },
   headline: {
     fontFamily: fonts.sans,
     fontSize: '11pt',
     fontWeight: 400,
     lineHeight: 1.4,
     letterSpacing: '0.02em',
-    textTransform: 'uppercase' as const,
   },
-  // Section labels: "EXPERIENCE", "EDUCATION"
   sectionLabel: {
     fontFamily: fonts.sans,
     fontSize: '8.5pt',
@@ -41,28 +42,47 @@ export const type = {
     letterSpacing: '0.18em',
     textTransform: 'uppercase' as const,
   },
-  // Item title: job title, degree
+  sectionLabelSerif: {
+    fontFamily: fonts.serif,
+    fontSize: '11pt',
+    fontWeight: 600,
+    lineHeight: 1.2,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+  },
+  // Lead summary — the "positioning statement" treatment used by Pender/Creatief
+  lead: {
+    fontFamily: fonts.serif,
+    fontSize: '14pt',
+    fontWeight: 400,
+    fontStyle: 'normal' as const,
+    lineHeight: 1.45,
+    letterSpacing: '-0.005em',
+  },
   itemTitle: {
     fontFamily: fonts.sans,
     fontSize: '11pt',
     fontWeight: 600,
     lineHeight: 1.3,
   },
-  // Item subtitle: company, institution
+  itemTitleLg: {
+    fontFamily: fonts.sans,
+    fontSize: '12pt',
+    fontWeight: 600,
+    lineHeight: 1.25,
+  },
   itemSubtitle: {
     fontFamily: fonts.sans,
     fontSize: '10pt',
     fontWeight: 400,
     lineHeight: 1.4,
   },
-  // Body text: profile summary, descriptions, bullets
   body: {
     fontFamily: fonts.sans,
     fontSize: '9.5pt',
     fontWeight: 400,
     lineHeight: 1.55,
   },
-  // Date ranges: right-aligned, tabular figures
   date: {
     fontFamily: fonts.sans,
     fontSize: '9pt',
@@ -71,41 +91,78 @@ export const type = {
     fontVariantNumeric: 'tabular-nums' as const,
     letterSpacing: '0.01em',
   },
-  // Meta: small contact info, locations
+  dateMono: {
+    fontFamily: fonts.mono,
+    fontSize: '8.5pt',
+    fontWeight: 400,
+    lineHeight: 1.4,
+    letterSpacing: '0',
+  },
   meta: {
     fontFamily: fonts.sans,
     fontSize: '9pt',
     fontWeight: 400,
     lineHeight: 1.4,
   },
+  monoLabel: {
+    fontFamily: fonts.mono,
+    fontSize: '8.5pt',
+    fontWeight: 500,
+    lineHeight: 1.3,
+    letterSpacing: '0',
+  },
 } as const;
 
-export const colors = {
-  ink: '#0f172a', // slate-900 — name, item titles
-  body: '#334155', // slate-700 — descriptions, bullets
-  muted: '#64748b', // slate-500 — dates, subtitles
-  faint: '#94a3b8', // slate-400 — separators in inline lists
-  rule: '#e2e8f0', // slate-200 — hairline dividers
-  placeholder: '#cbd5e1', // slate-300 — placeholder data
+export const palette = {
+  // Default — used by Modern, Minimalist, Creatief
+  default: {
+    ink: '#0f172a',     // slate-900 — names, titles
+    body: '#334155',    // slate-700 — body text
+    muted: '#64748b',   // slate-500 — dates, subtitles
+    faint: '#94a3b8',   // slate-400 — separators
+    rule: '#e2e8f0',    // slate-200 — hairlines
+    placeholder: '#cbd5e1',
+    page: '#ffffff',
+  },
+  // Executive — corporate navy + warm grey ("consulting deck")
+  executive: {
+    ink: '#0b1733',     // deep navy
+    body: '#1f2937',
+    muted: '#52606d',
+    faint: '#9ca3af',
+    rule: '#d8dde6',
+    placeholder: '#c9cfd9',
+    page: '#fdfcfa',    // warm off-white
+    accent: '#0b1733',  // navy as accent (no color, just deep tone)
+  },
+  // Zakelijk — classic Harvard / Word-doc neutrality
+  zakelijk: {
+    ink: '#000000',
+    body: '#1f2937',
+    muted: '#4b5563',
+    faint: '#9ca3af',
+    rule: '#000000',   // section dividers are full black hairlines
+    placeholder: '#cbd5e1',
+    page: '#ffffff',
+  },
 } as const;
+
+// Backwards-compat — Modern uses this directly
+export const colors = palette.default;
 
 export const space = {
-  // A4 page margins (used as padding on the root container)
   pagePadding: '18mm 20mm',
-  // Vertical rhythm between top-level sections
+  pagePaddingTight: '16mm 18mm',
+  pagePaddingWide: '22mm 22mm',
   sectionGap: '22pt',
-  // Within a section: between the label and the first item
+  sectionGapTight: '16pt',
+  sectionGapWide: '28pt',
   labelToContent: '10pt',
-  // Between items inside one section
   itemGap: '14pt',
-  // Inside an item: between title row and description / bullets
+  itemGapTight: '10pt',
   itemInner: '4pt',
 } as const;
 
-/**
- * Format a YYYY-MM date as "Maa 2024" (Dutch abbreviated month).
- * Returns empty string for empty input.
- */
 export function formatMonthYear(dateStr: string): string {
   if (!dateStr) return '';
   const [year, month] = dateStr.split('-');
@@ -126,5 +183,20 @@ export function formatDateRange(
   if (!s && !e) return '';
   if (!s) return e;
   if (!e) return s;
+  return `${s} — ${e}`;
+}
+
+export function formatYear(dateStr: string): string {
+  if (!dateStr) return '';
+  return dateStr.split('-')[0] ?? '';
+}
+
+export function formatYearRange(start: string, end: string, current: boolean, currentLabel = 'Heden'): string {
+  const s = formatYear(start);
+  const e = current ? currentLabel : formatYear(end);
+  if (!s && !e) return '';
+  if (!s) return e;
+  if (!e) return s;
+  if (s === e) return s;
   return `${s} — ${e}`;
 }
