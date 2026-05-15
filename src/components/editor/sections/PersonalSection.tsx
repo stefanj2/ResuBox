@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, CheckCircle, Camera, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
+import { LinkedInImportButton } from '../LinkedInImportButton';
 
 export function PersonalSection() {
   const { cvData, updatePersonal, triggerMagicLink, magicLinkSent } = useCVData();
@@ -129,6 +130,9 @@ export function PersonalSection() {
           Vul je contactgegevens in zodat recruiters je kunnen bereiken.
         </p>
       </div>
+
+      {/* LinkedIn quick-import — shortcuts the whole form */}
+      <LinkedInImportButton />
 
       {/* Profile Photo Upload */}
       <div className="flex items-center gap-6">
