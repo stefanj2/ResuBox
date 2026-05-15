@@ -103,9 +103,70 @@ export const analyticsEvents = pgTable(
   ]
 );
 
+// ───────────────────────────────────────────────────────────────
+// Accounts + multi-CV
+
+export const users = pgTable(
+  'users',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    email: text('email').notNull().unique(),
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+    last_login_at: timestamp('last_login_at', { withTimezone: true, mode: 'string' }),
+  },
+  (t) => [index('users_email_idx').on(t.email)]
+);
+
+export const userSessions = pgTable(
+  'user_sessions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    user_id: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    token: text('token').notNull().unique(),
+    // Magic-link tokens are short-lived (15 min); session cookies live longer (30 days).
+    kind: text('kind').$type<'magic_link' | 'session'>().notNull(),
+    expires_at: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    used_at: timestamp('used_at', { withTimezone: true, mode: 'string' }),
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    index('user_sessions_token_idx').on(t.token),
+    index('user_sessions_user_id_idx').on(t.user_id),
+  ]
+);
+
+export const userCvs = pgTable(
+  'user_cvs',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    user_id: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    cv_data: jsonb('cv_data').$type<CVData>().notNull(),
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+    updated_at: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [index('user_cvs_user_id_idx').on(t.user_id)]
+);
+
 export type CvOrderRow = typeof cvOrders.$inferSelect;
 export type CvOrderInsert = typeof cvOrders.$inferInsert;
 export type OrderActionRow = typeof orderActions.$inferSelect;
 export type OrderActionInsert = typeof orderActions.$inferInsert;
 export type AnalyticsEventRow = typeof analyticsEvents.$inferSelect;
 export type AnalyticsEventInsert = typeof analyticsEvents.$inferInsert;
+export type UserRow = typeof users.$inferSelect;
+export type UserSessionRow = typeof userSessions.$inferSelect;
+export type UserCvRow = typeof userCvs.$inferSelect;
+export type UserCvInsert = typeof userCvs.$inferInsert;
