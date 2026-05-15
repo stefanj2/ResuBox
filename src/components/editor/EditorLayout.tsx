@@ -16,6 +16,7 @@ import { Eye, Download, Palette, User, FileText, Briefcase, GraduationCap, Wrenc
 import { Button, Modal, StickyMobileCTA, SocialProofToast, PreviewTooltip, shouldShowPreviewTooltip } from '@/components/ui';
 import { TemplateSelector } from '@/components/templateSelector';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { SyncStatusPill } from './SyncStatusPill';
 
 const sections = [
   { id: 0, title: 'Persoonsgegevens', shortTitle: 'Persoon', icon: User, component: PersonalSection },
@@ -125,6 +126,7 @@ export function EditorLayout() {
                 />
               </Link>
               <div className="flex items-center gap-2">
+                <SyncStatusPill />
                 <Button
                   variant="secondary"
                   size="sm"

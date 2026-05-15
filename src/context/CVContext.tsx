@@ -35,6 +35,12 @@ interface CVContextType {
   updateMeta: (updates: Partial<CVData['meta']>) => void;
   // Bulk import (e.g. LinkedIn PDF) — merges parsed fields into current CV
   bulkImport: (data: BulkImportData) => void;
+  // Account sync state — null = working in localStorage only;
+  // string = ID of the user_cvs row this CV is synced to
+  serverCvId: string | null;
+  syncStatus: 'idle' | 'saving' | 'saved' | 'error';
+  /** Save current CV to user's account as a new entry. Returns new cv id. */
+  saveToAccount: (name: string) => Promise<string | null>;
   // Template
   setTemplate: (templateId: TemplateId) => void;
   // Color scheme
@@ -58,16 +64,48 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [serverCvId, setServerCvId] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const serverSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSyncedHashRef = useRef<string>('');
 
-  // Laad data uit LocalStorage bij initialisatie
+  // Laad data uit LocalStorage of server bij initialisatie
   useEffect(() => {
-    const loadFromStorage = () => {
+    const loadFromStorage = async () => {
       try {
-        // Check voor magic link token in URL
         const urlParams = new URLSearchParams(window.location.search);
+        const cvIdParam = urlParams.get('cvId');
         const token = urlParams.get('token');
-        
+
+        // ?cvId=X — load this CV from the user's account (server-side)
+        if (cvIdParam) {
+          try {
+            const res = await fetch(`/api/user/cvs/${cvIdParam}`, { credentials: 'include' });
+            if (res.ok) {
+              const json = await res.json();
+              const cv = json?.cv;
+              if (cv?.cv_data) {
+                const data = cv.cv_data as CVData;
+                // Migration for legacy CVs without template/color
+                if (data.meta && !data.meta.selectedTemplate) data.meta.selectedTemplate = 'modern';
+                if (data.meta && !data.meta.selectedColorScheme) data.meta.selectedColorScheme = 'emerald';
+                setCVData(data);
+                setServerCvId(cv.id);
+                setSyncStatus('saved');
+                lastSyncedHashRef.current = JSON.stringify(data);
+                // Clean cvId out of the URL — keep it tidy
+                window.history.replaceState({}, '', window.location.pathname);
+                setIsInitialized(true);
+                return;
+              }
+            }
+            // 401/404 → fall through to localStorage
+          } catch (err) {
+            console.error('Failed to load CV from account:', err);
+          }
+        }
+
         if (token) {
           const sessions = localStorage.getItem(SESSIONS_KEY);
           if (sessions) {
@@ -140,6 +178,75 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToStorage();
   }, [saveToStorage]);
+
+  // Auto-save to server when this CV is linked to a user_cvs row.
+  // Longer debounce (1.5s) than localStorage to reduce API load.
+  useEffect(() => {
+    if (!isInitialized || !serverCvId) return;
+    const serialized = JSON.stringify(cvData);
+    if (serialized === lastSyncedHashRef.current) return;
+
+    if (serverSaveTimeoutRef.current) clearTimeout(serverSaveTimeoutRef.current);
+    setSyncStatus('saving');
+    serverSaveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/user/cvs/${serverCvId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ cv_data: cvData }),
+        });
+        if (res.ok) {
+          lastSyncedHashRef.current = serialized;
+          setSyncStatus('saved');
+        } else if (res.status === 401) {
+          // Session expired — detach from server, keep localStorage working
+          setServerCvId(null);
+          setSyncStatus('idle');
+        } else {
+          setSyncStatus('error');
+        }
+      } catch (err) {
+        console.error('Server save failed:', err);
+        setSyncStatus('error');
+      }
+    }, 1500);
+
+    return () => {
+      if (serverSaveTimeoutRef.current) clearTimeout(serverSaveTimeoutRef.current);
+    };
+  }, [cvData, serverCvId, isInitialized]);
+
+  // Save current CV to user's account as a new entry.
+  // Subsequent edits will auto-sync because serverCvId is set.
+  const saveToAccount = useCallback(async (name: string): Promise<string | null> => {
+    try {
+      const res = await fetch('/api/user/cvs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name: name.trim() || 'Naamloos CV', cv_data: cvData }),
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          console.warn('Not logged in — cannot save to account');
+        }
+        return null;
+      }
+      const json = await res.json();
+      const newId = json?.cv?.id;
+      if (newId) {
+        setServerCvId(newId);
+        setSyncStatus('saved');
+        lastSyncedHashRef.current = JSON.stringify(cvData);
+        return newId;
+      }
+      return null;
+    } catch (err) {
+      console.error('Save to account failed:', err);
+      return null;
+    }
+  }, [cvData]);
 
   // Update functies
   const updatePersonal = useCallback((field: keyof CVData['personal'], value: string) => {
@@ -386,6 +493,9 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
     removeSkill,
     updateMeta,
     bulkImport,
+    serverCvId,
+    syncStatus,
+    saveToAccount,
     setTemplate,
     setColorScheme,
     saveSession,

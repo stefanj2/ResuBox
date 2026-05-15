@@ -112,32 +112,33 @@ export default function DashboardClient({ cvs: initialCvs }: Props) {
           const fullName = `${cv.cv_data?.personal?.firstName || ''} ${cv.cv_data?.personal?.lastName || ''}`.trim();
           const template = cv.cv_data?.meta?.selectedTemplate || 'modern';
           return (
-            <div key={cv.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col">
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+            <div key={cv.id} className="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col group relative">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleDelete(cv.id);
+                }}
+                disabled={busyId === cv.id}
+                className="absolute top-4 right-4 z-10 p-1.5 text-slate-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                aria-label="Verwijder CV"
+              >
+                {busyId === cv.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              </button>
+              <Link href={`/builder?cvId=${cv.id}`} className="flex-1 flex flex-col">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 mb-3">
                   <FileText className="w-5 h-5 text-emerald-600" />
                 </div>
-                <button
-                  onClick={() => handleDelete(cv.id)}
-                  disabled={busyId === cv.id}
-                  className="p-1.5 text-slate-400 hover:text-red-600 transition-colors"
-                  aria-label="Verwijder CV"
-                >
-                  {busyId === cv.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                </button>
-              </div>
-              <h3 className="font-semibold text-slate-900 mb-1 line-clamp-1">{cv.name}</h3>
-              {fullName && <p className="text-sm text-slate-500 mb-3 line-clamp-1">{fullName}</p>}
-              <div className="flex items-center gap-3 text-xs text-slate-400 mt-auto mb-4">
-                <span className="capitalize">{template}</span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> {formatRelative(cv.updated_at)}
-                </span>
-              </div>
-              <p className="text-xs text-slate-400">
-                CV-editor opent dit CV nog niet automatisch — kopieer naar de builder via &quot;Importeer&quot; (TODO).
-              </p>
+                <h3 className="font-semibold text-slate-900 mb-1 line-clamp-1">{cv.name}</h3>
+                {fullName && <p className="text-sm text-slate-500 mb-3 line-clamp-1">{fullName}</p>}
+                <div className="flex items-center gap-3 text-xs text-slate-400 mt-auto">
+                  <span className="capitalize">{template}</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> {formatRelative(cv.updated_at)}
+                  </span>
+                </div>
+              </Link>
             </div>
           );
         })}
