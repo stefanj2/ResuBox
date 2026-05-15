@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
