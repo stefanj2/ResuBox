@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Newsreader } from "next/font/google";
 import Script from "next/script";
 import { OrganizationSchema, WebApplicationSchema } from "@/components/seo";
 import "./globals.css";
@@ -8,6 +8,14 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-dm-sans",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-newsreader",
+  display: "swap",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://resubox.com';
@@ -102,7 +110,7 @@ export default function RootLayout({
         <OrganizationSchema />
         <WebApplicationSchema />
       </head>
-      <body className={`${dmSans.variable} font-sans antialiased`}>
+      <body className={`${dmSans.variable} ${newsreader.variable} font-sans antialiased`}>
         {children}
 
         {/* Google Analytics */}

@@ -1,290 +1,283 @@
 'use client';
 
 import React from 'react';
-import { Mail, Phone, MapPin, Linkedin, Globe, Calendar } from 'lucide-react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
+import { type, colors, space, formatDateRange } from './tokens';
 
-// Format datum helper
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return '';
-  const [year, month] = dateStr.split('-');
-  const months = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
-  return `${months[parseInt(month) - 1]} ${year}`;
-};
-
-// Placeholder text styling - more transparent/grayed out
-const placeholderClass = 'opacity-50';
+const PLACEHOLDER_STYLE: React.CSSProperties = { color: colors.placeholder };
 
 export function ModernTemplate({ cvData, colorScheme }: TemplateProps) {
-  const colors = colorScheme || getColorScheme('emerald');
+  const accent = (colorScheme || getColorScheme('emerald')).primary;
   const { data, isPlaceholder } = getMergedCVData(cvData);
   const { personal, profile, experience, education, skills } = data;
 
+  // Build a compact, comma-separated contact line — recruiters scan this in 1s.
+  const contactItems: string[] = [];
+  if (personal.email) contactItems.push(personal.email);
+  if (personal.phone) contactItems.push(personal.phone);
+  const addressParts = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
+  const cityPart = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  if (addressParts || cityPart) contactItems.push([addressParts, cityPart].filter(Boolean).join(', '));
+  if (personal.linkedIn) contactItems.push(personal.linkedIn);
+  if (personal.website) contactItems.push(personal.website);
+
+  const renderSectionLabel = (label: string) => (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10pt',
+        marginBottom: space.labelToContent,
+      }}
+    >
+      <span style={{ ...type.sectionLabel, color: accent }}>{label}</span>
+      <span style={{ flex: 1, height: '1px', backgroundColor: colors.rule }} />
+    </div>
+  );
+
   return (
     <div
-      className="a4-preview bg-white shadow-2xl overflow-hidden"
+      className="a4-preview bg-white shadow-2xl"
       style={{
         width: '210mm',
         minHeight: '297mm',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
+        padding: space.pagePadding,
+        fontFamily: type.body.fontFamily,
+        color: colors.body,
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
-      <div className="flex min-h-[297mm]">
-        {/* Sidebar - 35% with gradient */}
-        <div
-          className="w-[35%] text-white p-7 relative"
+      {/* HEADER */}
+      <header style={{ marginBottom: space.sectionGap }}>
+        <h1
           style={{
-            background: `linear-gradient(180deg, ${colors.gradient.from} 0%, ${colors.gradient.via || colors.gradient.to} 50%, ${colors.gradient.to} 100%)`,
+            ...type.display,
+            color: colors.ink,
+            margin: 0,
           }}
         >
-          {/* Subtle pattern overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='1' cy='1' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
+          <span style={isPlaceholder.firstName ? PLACEHOLDER_STYLE : undefined}>
+            {personal.firstName}
+          </span>
+          {personal.firstName && personal.lastName ? ' ' : ''}
+          <span style={isPlaceholder.lastName ? PLACEHOLDER_STYLE : undefined}>
+            {personal.lastName}
+          </span>
+        </h1>
 
-          <div className="relative z-10">
-            {/* Profile Photo Placeholder */}
-            <div className="mb-6 flex justify-center">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/25 shadow-xl ring-4 ring-white/10">
-                {personal.profilePhoto ? (
-                  <img
-                    src={personal.profilePhoto}
-                    alt="Profielfoto"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-white/20 flex items-center justify-center">
-                    <svg className="w-12 h-12 text-white/40" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                  </div>
+        {/* Accent rule under name — sole place color is used boldly */}
+        <div
+          style={{
+            width: '40pt',
+            height: '2pt',
+            backgroundColor: accent,
+            marginTop: '10pt',
+            marginBottom: '14pt',
+          }}
+        />
+
+        {/* Contact: one line, separated by middots */}
+        {contactItems.length > 0 && (
+          <div style={{ ...type.meta, color: colors.muted, lineHeight: 1.6 }}>
+            {contactItems.map((item, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && (
+                  <span style={{ color: colors.faint, margin: '0 8pt' }}>·</span>
                 )}
-              </div>
-            </div>
+                <span>{item}</span>
+              </React.Fragment>
+            ))}
+          </div>
+        )}
+      </header>
 
-            {/* Name */}
-            <div className="text-center mb-8">
-              <h1 className={`text-2xl font-bold leading-tight tracking-tight ${isPlaceholder.firstName ? placeholderClass : ''}`}>
-                {personal.firstName}
-              </h1>
-              <h1 className={`text-2xl font-bold leading-tight tracking-tight opacity-75 ${isPlaceholder.lastName ? placeholderClass : ''}`}>
-                {personal.lastName}
-              </h1>
-            </div>
+      {/* PROFIEL */}
+      {profile.summary && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          {renderSectionLabel('Profiel')}
+          <p
+            style={{
+              ...type.body,
+              color: isPlaceholder.summary ? colors.placeholder : colors.body,
+              margin: 0,
+              maxWidth: '160mm',
+            }}
+          >
+            {profile.summary}
+          </p>
+        </section>
+      )}
 
-            {/* Contact Info */}
-            <div className="space-y-3 text-sm mb-8">
-              <h2 className="text-xs uppercase tracking-[0.2em] font-semibold opacity-70 mb-4 flex items-center gap-2">
-                <span className="w-8 h-px bg-white/30"></span>
-                Contact
-                <span className="flex-1 h-px bg-white/30"></span>
-              </h2>
-
-              <div className={`flex items-center gap-3 group ${isPlaceholder.email ? placeholderClass : ''}`}>
-                <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <Mail className="w-4 h-4 opacity-80" />
-                </div>
-                <span className="break-all opacity-90 text-sm">{personal.email}</span>
-              </div>
-
-              {personal.phone && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Phone className="w-4 h-4 opacity-80" />
-                  </div>
-                  <span className="opacity-90">{personal.phone}</span>
-                </div>
-              )}
-
-              {(personal.address || personal.city) && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <MapPin className="w-4 h-4 opacity-80" />
-                  </div>
-                  <span className="opacity-90">
-                    {personal.address && `${personal.address}${personal.houseNumber ? ' ' + personal.houseNumber : ''}, `}
-                    {personal.city}
+      {/* WERKERVARING */}
+      {experience.length > 0 && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          {renderSectionLabel('Werkervaring')}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: space.itemGap,
+              opacity: isPlaceholder.experience ? 0.5 : 1,
+            }}
+          >
+            {experience.map((exp) => (
+              <article key={exp.id}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    gap: '12pt',
+                    marginBottom: space.itemInner,
+                  }}
+                >
+                  <h3 style={{ ...type.itemTitle, color: colors.ink, margin: 0 }}>
+                    {exp.jobTitle}
+                  </h3>
+                  <span style={{ ...type.date, color: colors.muted, whiteSpace: 'nowrap' }}>
+                    {formatDateRange(exp.startDate, exp.endDate, exp.current)}
                   </span>
                 </div>
-              )}
-
-              {personal.linkedIn && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Linkedin className="w-4 h-4 opacity-80" />
-                  </div>
-                  <span className="break-all opacity-90 text-sm">{personal.linkedIn}</span>
+                <div
+                  style={{
+                    ...type.itemSubtitle,
+                    color: colors.muted,
+                    marginBottom: exp.description || exp.tasks.length > 0 ? '6pt' : 0,
+                  }}
+                >
+                  {exp.company}
+                  {exp.location && (
+                    <span style={{ color: colors.faint }}> · {exp.location}</span>
+                  )}
                 </div>
-              )}
 
-              {personal.website && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Globe className="w-4 h-4 opacity-80" />
-                  </div>
-                  <span className="break-all opacity-90 text-sm">{personal.website}</span>
-                </div>
-              )}
+                {exp.description && (
+                  <p
+                    style={{
+                      ...type.body,
+                      color: colors.body,
+                      margin: 0,
+                      marginBottom: exp.tasks.length > 0 ? '6pt' : 0,
+                    }}
+                  >
+                    {exp.description}
+                  </p>
+                )}
 
-              {personal.dateOfBirth && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                    <Calendar className="w-4 h-4 opacity-80" />
-                  </div>
-                  <span className="opacity-90">{personal.dateOfBirth}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Skills */}
-            {skills.length > 0 && (
-              <div>
-                <h2 className="text-xs uppercase tracking-[0.2em] font-semibold opacity-70 mb-4 flex items-center gap-2">
-                  <span className="w-8 h-px bg-white/30"></span>
-                  Vaardigheden
-                  <span className="flex-1 h-px bg-white/30"></span>
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <span
-                      key={skill.id}
-                      className="px-3 py-1.5 bg-white/15 backdrop-blur-sm text-white rounded-lg text-xs font-medium border border-white/10"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+                {exp.tasks.length > 0 && (
+                  <ul
+                    style={{
+                      margin: 0,
+                      paddingLeft: '14pt',
+                      listStyle: 'none',
+                    }}
+                  >
+                    {exp.tasks.map((task, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          ...type.body,
+                          color: colors.body,
+                          position: 'relative',
+                          marginTop: i === 0 ? 0 : '3pt',
+                        }}
+                      >
+                        <span
+                          style={{
+                            position: 'absolute',
+                            left: '-12pt',
+                            color: colors.muted,
+                          }}
+                          aria-hidden
+                        >
+                          •
+                        </span>
+                        {task}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
           </div>
-        </div>
+        </section>
+      )}
 
-        {/* Main Content - 65% */}
-        <div className="w-[65%] p-7" style={{ backgroundColor: '#fafafa' }}>
-          {/* Profile Summary */}
-          {profile.summary && (
-            <section className="mb-7">
-              <h2 className="text-lg font-bold text-slate-800 mb-3 flex items-center gap-3">
-                <span className="w-1 h-6 rounded-full" style={{ backgroundColor: colors.primary }}></span>
-                Profiel
-              </h2>
-              <p className={`leading-relaxed text-sm pl-4 border-l-2 border-slate-200 ${isPlaceholder.summary ? 'text-slate-400 italic' : 'text-slate-600'}`}>
-                {profile.summary}
-              </p>
-            </section>
-          )}
+      {/* OPLEIDING */}
+      {education.length > 0 && (
+        <section style={{ marginBottom: space.sectionGap }}>
+          {renderSectionLabel('Opleiding')}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: space.itemGap,
+              opacity: isPlaceholder.education ? 0.5 : 1,
+            }}
+          >
+            {education.map((edu) => (
+              <article key={edu.id}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    gap: '12pt',
+                    marginBottom: space.itemInner,
+                  }}
+                >
+                  <h3 style={{ ...type.itemTitle, color: colors.ink, margin: 0 }}>
+                    {edu.degree}
+                  </h3>
+                  <span style={{ ...type.date, color: colors.muted, whiteSpace: 'nowrap' }}>
+                    {formatDateRange(edu.startDate, edu.endDate, edu.current)}
+                  </span>
+                </div>
+                <div style={{ ...type.itemSubtitle, color: colors.muted }}>
+                  {edu.institution}
+                  {edu.location && (
+                    <span style={{ color: colors.faint }}> · {edu.location}</span>
+                  )}
+                </div>
+                {edu.description && (
+                  <p
+                    style={{
+                      ...type.body,
+                      color: colors.body,
+                      margin: '6pt 0 0 0',
+                    }}
+                  >
+                    {edu.description}
+                  </p>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
-          {/* Work Experience */}
-          {experience.length > 0 && (
-            <section className="mb-7">
-              <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-3">
-                <span className="w-1 h-6 rounded-full" style={{ backgroundColor: colors.primary }}></span>
-                Werkervaring
-              </h2>
-              <div className={`space-y-5 ${isPlaceholder.experience ? 'opacity-50' : ''}`}>
-                {experience.map((exp, index) => (
-                  <div key={exp.id} className="relative pl-4">
-                    {/* Timeline dot */}
-                    <div
-                      className="absolute left-0 top-1.5 w-2 h-2 rounded-full"
-                      style={{ backgroundColor: colors.primary }}
-                    ></div>
-                    {index < experience.length - 1 && (
-                      <div
-                        className="absolute left-[3px] top-4 w-0.5 h-full"
-                        style={{ backgroundColor: colors.primaryLight }}
-                      ></div>
-                    )}
-
-                    <div className="ml-4">
-                      <div className="flex justify-between items-start mb-1">
-                        <div>
-                          <h3 className={`font-semibold ${isPlaceholder.experience ? 'text-slate-500' : 'text-slate-900'}`}>
-                            {exp.jobTitle}
-                          </h3>
-                          <p className="text-sm font-medium" style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }}>
-                            {exp.company}
-                            {exp.location && <span className="text-slate-400"> • {exp.location}</span>}
-                          </p>
-                        </div>
-                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md font-medium whitespace-nowrap">
-                          {formatDate(exp.startDate)} - {exp.current ? 'Heden' : formatDate(exp.endDate)}
-                        </span>
-                      </div>
-
-                      {exp.description && (
-                        <p className={`text-sm mt-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-600'}`}>{exp.description}</p>
-                      )}
-
-                      {exp.tasks.length > 0 && (
-                        <ul className="mt-2 space-y-1">
-                          {exp.tasks.map((task, i) => (
-                            <li key={i} className={`text-sm flex items-start gap-2 ${isPlaceholder.experience ? 'text-slate-400' : 'text-slate-700'}`}>
-                              <span style={{ color: isPlaceholder.experience ? '#94a3b8' : colors.primary }} className="mt-1">▸</span>
-                              {task}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Education */}
-          {education.length > 0 && (
-            <section>
-              <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-3">
-                <span className="w-1 h-6 rounded-full" style={{ backgroundColor: colors.primary }}></span>
-                Opleiding
-              </h2>
-              <div className={`space-y-4 ${isPlaceholder.education ? 'opacity-50' : ''}`}>
-                {education.map((edu, index) => (
-                  <div key={edu.id} className="relative pl-4">
-                    <div
-                      className="absolute left-0 top-1.5 w-2 h-2 rounded-full"
-                      style={{ backgroundColor: colors.primary }}
-                    ></div>
-                    {index < education.length - 1 && (
-                      <div
-                        className="absolute left-[3px] top-4 w-0.5 h-full"
-                        style={{ backgroundColor: colors.primaryLight }}
-                      ></div>
-                    )}
-
-                    <div className="ml-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className={`font-semibold ${isPlaceholder.education ? 'text-slate-500' : 'text-slate-900'}`}>
-                            {edu.degree}
-                          </h3>
-                          <p className="text-sm font-medium" style={{ color: isPlaceholder.education ? '#94a3b8' : colors.primary }}>
-                            {edu.institution}
-                            {edu.location && <span className="text-slate-400"> • {edu.location}</span>}
-                          </p>
-                        </div>
-                        <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md font-medium whitespace-nowrap">
-                          {formatDate(edu.startDate)} - {edu.current ? 'Heden' : formatDate(edu.endDate)}
-                        </span>
-                      </div>
-                      {edu.description && (
-                        <p className={`text-sm mt-1 ${isPlaceholder.education ? 'text-slate-400' : 'text-slate-600'}`}>{edu.description}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      </div>
+      {/* VAARDIGHEDEN */}
+      {skills.length > 0 && (
+        <section>
+          {renderSectionLabel('Vaardigheden')}
+          <div
+            style={{
+              ...type.body,
+              color: isPlaceholder.skills ? colors.placeholder : colors.body,
+              opacity: isPlaceholder.skills ? 0.6 : 1,
+            }}
+          >
+            {skills.map((skill, i) => (
+              <React.Fragment key={skill.id}>
+                {i > 0 && <span style={{ color: colors.faint, margin: '0 6pt' }}>·</span>}
+                <span>{skill.name}</span>
+              </React.Fragment>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
