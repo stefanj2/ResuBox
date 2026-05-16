@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Download, CheckCircle, AlertCircle, FileText, Loader2, FileType } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
@@ -15,17 +15,28 @@ interface DownloadModalProps {
   onClose: () => void;
 }
 
+const PRICE_BY_LOCALE: Record<string, { value: number; currency: string; display: string }> = {
+  nl: { value: 42, currency: 'EUR', display: '€42' },
+  de: { value: 42, currency: 'EUR', display: '42 €' },
+  en: { value: 42, currency: 'GBP', display: '£42' },
+  sv: { value: 449, currency: 'SEK', display: '449 kr' },
+  da: { value: 315, currency: 'DKK', display: '315 kr' },
+};
+
 export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const { cvData } = useCVData();
   const locale = useLocale();
+  const t = useTranslations('Download');
   const [agreed, setAgreed] = useState(false);
   const [format, setFormat] = useState<Format>('pdf');
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const price = PRICE_BY_LOCALE[locale] ?? PRICE_BY_LOCALE.nl;
+
   const handleDownload = async () => {
     if (!agreed) {
-      setErrorMessage('Je moet akkoord gaan met de voorwaarden om te downloaden.');
+      setErrorMessage(t('mustAgree'));
       return;
     }
 
@@ -33,7 +44,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     setErrorMessage('');
 
     try {
-      const filename = `CV_${cvData.personal.firstName || 'Naam'}_${cvData.personal.lastName || 'Achternaam'}`;
+      const filename = `CV_${cvData.personal.firstName || 'Name'}_${cvData.personal.lastName || 'Surname'}`;
       const endpoint = format === 'pdf' ? '/api/generate-pdf' : '/api/generate-docx';
       const payload =
         format === 'pdf'
@@ -53,7 +64,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-locale': locale },
         body: JSON.stringify(payload),
       });
 
@@ -65,10 +76,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
         } catch {
           // ignore
         }
-        throw new Error(detail || `${format.toUpperCase()} generatie mislukt (${response.status})`);
+        throw new Error(detail || `${format.toUpperCase()} (${response.status})`);
       }
 
-      // Trigger browser download from the returned PDF blob
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -79,9 +89,15 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      // Create order in the system (non-blocking)
-      const customerName = `${cvData.personal.firstName || ''} ${cvData.personal.lastName || ''}`.trim() || 'Onbekend';
-      const customerEmail = cvData.personal.email || 'onbekend@email.nl';
+      const customerName = `${cvData.personal.firstName || ''} ${cvData.personal.lastName || ''}`.trim() || '—';
+      const customerEmail = cvData.personal.email || 'unknown@email.com';
+
+      // Persist the locale active at download time so emails and follow-ups
+      // are sent in the language the customer was actually using.
+      const cvDataForOrder = {
+        ...cvData,
+        meta: { ...cvData.meta, locale },
+      };
 
       try {
         await createOrder({
@@ -94,7 +110,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           customer_city: cvData.personal.city,
           cv_id: cvData.id,
           template_used: cvData.meta.selectedTemplate,
-          cv_data: cvData,
+          cv_data: cvDataForOrder,
         });
       } catch (orderError) {
         console.error('Order creation error:', orderError);
@@ -105,20 +121,20 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
         const gtag = (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag;
         gtag('event', 'purchase', {
           transaction_id: cvData.id,
-          value: 42.0,
-          currency: 'EUR',
+          value: price.value,
+          currency: price.currency,
           items: [
             {
               item_name: 'CV Download',
               item_category: cvData.meta.selectedTemplate,
-              price: 42.0,
+              price: price.value,
               quantity: 1,
             },
           ],
         });
         gtag('event', 'manual_event_PURCHASE', {
-          value: 42.0,
-          currency: 'EUR',
+          value: price.value,
+          currency: price.currency,
           transaction_id: cvData.id,
         });
       }
@@ -126,7 +142,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
       setStatus('success');
     } catch (error) {
       console.error('Download error:', error);
-      setErrorMessage(error instanceof Error ? error.message : 'Er ging iets mis bij het downloaden. Probeer het opnieuw.');
+      setErrorMessage(error instanceof Error ? error.message : t('errorGeneric'));
       setStatus('error');
     }
   };
@@ -140,27 +156,27 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title="Download CV">
+    <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title={t('modalTitle')}>
       <div className="p-4 sm:p-6">
         {status === 'success' ? (
           <div className="text-center py-8">
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle className="w-10 h-10 text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Download gestart!</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('successTitle')}</h2>
             <p className="text-slate-600 mb-6">
-              Je professionele CV wordt nu gedownload. Veel succes met je sollicitatie!
+              {t('successSubtitle')}
             </p>
             <div className="bg-emerald-50 rounded-lg p-4 text-left mb-6">
-              <h4 className="font-medium text-emerald-800 mb-2">Tips voor je sollicitatie:</h4>
+              <h4 className="font-medium text-emerald-800 mb-2">{t('tipsTitle')}</h4>
               <ul className="text-sm text-emerald-700 space-y-1 list-disc list-inside">
-                <li>Pas je CV aan voor elke vacature</li>
-                <li>Gebruik relevante trefwoorden uit de vacaturetekst</li>
-                <li>Voeg een persoonlijke motivatiebrief toe</li>
+                <li>{t('tip1')}</li>
+                <li>{t('tip2')}</li>
+                <li>{t('tip3')}</li>
               </ul>
             </div>
             <Button variant="primary" onClick={handleClose}>
-              Sluiten
+              {t('close')}
             </Button>
           </div>
         ) : (
@@ -169,10 +185,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               <div className="w-10 h-10 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
                 <FileText className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-2">Download je CV</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1 sm:mb-2">{t('title')}</h2>
               <p className="text-slate-600 text-sm sm:text-base hidden sm:block">
-                Je CV is klaar om te downloaden. Je ontvangt de PDF ook per e-mail op{' '}
-                <strong>{cvData.personal.email || 'je opgegeven e-mailadres'}</strong>.
+                {t('subtitle', { email: cvData.personal.email || '—' })}
               </p>
             </div>
 
@@ -192,10 +207,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </div>
             </div>
 
-            {/* Format selector */}
             <div className="mb-3 sm:mb-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                Bestandsformaat
+                {t('formatLabel')}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -209,8 +223,8 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                 >
                   <FileText className={`w-5 h-5 flex-shrink-0 ${format === 'pdf' ? 'text-emerald-600' : 'text-slate-400'}`} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900">PDF</p>
-                    <p className="text-xs text-slate-500">Aanbevolen — gekleurd, A4</p>
+                    <p className="text-sm font-semibold text-slate-900">{t('formatPdf')}</p>
+                    <p className="text-xs text-slate-500">{t('formatPdfHint')}</p>
                   </div>
                 </button>
                 <button
@@ -224,8 +238,8 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                 >
                   <FileType className={`w-5 h-5 flex-shrink-0 ${format === 'docx' ? 'text-emerald-600' : 'text-slate-400'}`} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-900">Word (.docx)</p>
-                    <p className="text-xs text-slate-500">Bewerkbaar in Word</p>
+                    <p className="text-sm font-semibold text-slate-900">{t('formatDocx')}</p>
+                    <p className="text-xs text-slate-500">{t('formatDocxHint')}</p>
                   </div>
                 </button>
               </div>
@@ -258,15 +272,15 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                   </div>
                 </div>
                 <span className="text-sm text-slate-700 leading-relaxed">
-                  <strong>Ja, ik wil mijn CV downloaden</strong>. Ik ga akkoord met de{' '}
+                  <strong>{t('agreementPrefix')}</strong>.{' '}
                   <a href="/voorwaarden" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
-                    algemene voorwaarden
+                    {t('termsLink')}
                   </a>{' '}
-                  en het{' '}
+                  &amp;{' '}
                   <a href="/privacy" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
-                    privacybeleid
+                    {t('privacyLink')}
                   </a>
-                  . Ik begrijp dat voor het downloaden van mijn CV een vergoeding van tweeënveertig eu in rekening wordt gebracht en dat het CV naar mijn e-mailadres wordt gestuurd.
+                  . {t('agreementSuffix', { price: price.display })}
                 </span>
               </label>
             </div>
@@ -289,9 +303,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
             >
               <span className="flex items-center gap-2">
                 {status === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-                {status === 'processing' ? 'Even geduld...' : 'Downloaden'}
+                {status === 'processing' ? t('downloading') : t('downloadButton')}
               </span>
-              <span className="text-[10px] font-normal opacity-40">betaalverplichting</span>
+              <span className="text-[10px] font-normal opacity-40">{t('paymentObligation')}</span>
             </button>
 
             <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-6 text-xs text-slate-500">
@@ -303,7 +317,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     clipRule="evenodd"
                   />
                 </svg>
-                Beveiligde verbinding
+                {t('secureConnection')}
               </span>
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -313,7 +327,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                     clipRule="evenodd"
                   />
                 </svg>
-                100% veilig
+                {t('secure100')}
               </span>
             </div>
           </>

@@ -40,6 +40,33 @@ export interface CreateCheckoutParams {
   dossierNumber: string;
   successUrl: string;
   cancelUrl: string;
+  /** Locale of the buyer (nl, en, de, sv, da). Drives currency, price, payment methods, Stripe Checkout UI language. */
+  locale?: string;
+}
+
+type Currency = 'eur' | 'gbp' | 'sek' | 'dkk';
+type StripePaymentMethod = NonNullable<
+  Stripe.Checkout.SessionCreateParams['payment_method_types']
+>[number];
+type StripeCheckoutLocale = NonNullable<Stripe.Checkout.SessionCreateParams['locale']>;
+
+interface MarketConfig {
+  currency: Currency;
+  amount: number; // headline price in major currency units
+  paymentMethods: StripePaymentMethod[];
+  stripeLocale: StripeCheckoutLocale;
+}
+
+const MARKET_BY_LOCALE: Record<string, MarketConfig> = {
+  nl: { currency: 'eur', amount: 42, paymentMethods: ['ideal', 'card', 'bancontact'], stripeLocale: 'nl' },
+  de: { currency: 'eur', amount: 42, paymentMethods: ['card', 'klarna', 'sepa_debit', 'sofort'], stripeLocale: 'de' },
+  en: { currency: 'gbp', amount: 42, paymentMethods: ['card'], stripeLocale: 'en-GB' },
+  sv: { currency: 'sek', amount: 449, paymentMethods: ['card', 'klarna'], stripeLocale: 'sv' },
+  da: { currency: 'dkk', amount: 315, paymentMethods: ['card', 'mobilepay'], stripeLocale: 'da' },
+};
+
+export function getMarketConfig(locale?: string): MarketConfig {
+  return MARKET_BY_LOCALE[locale ?? 'nl'] ?? MARKET_BY_LOCALE.nl;
 }
 
 export interface CheckoutResult {
@@ -62,20 +89,23 @@ export async function createCheckoutSession(params: CreateCheckoutParams): Promi
 
   try {
     const stripe = getStripe();
+    const market = getMarketConfig(params.locale);
+    // Caller may pass a market-adjusted amount; otherwise use the market default
+    const unitAmount = Math.round((params.amount || market.amount) * 100);
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['ideal', 'card', 'bancontact'],
+      payment_method_types: market.paymentMethods,
       mode: 'payment',
       customer_email: params.customerEmail,
       line_items: [
         {
           price_data: {
-            currency: 'eur',
+            currency: market.currency,
             product_data: {
               name: 'CV Download — ResuBox',
               description: params.description,
             },
-            unit_amount: Math.round(params.amount * 100), // Stripe uses cents
+            unit_amount: unitAmount,
           },
           quantity: 1,
         },
@@ -84,10 +114,9 @@ export async function createCheckoutSession(params: CreateCheckoutParams): Promi
         orderId: params.orderId,
         dossierNumber: params.dossierNumber,
         customerName: params.customerName,
+        locale: params.locale ?? 'nl',
+        currency: market.currency,
       },
-      // Propagate orderId to the underlying PaymentIntent (and therefore to
-      // every Charge). That way refund / dispute / fraud webhooks can find
-      // the order without an extra Stripe API lookup.
       payment_intent_data: {
         metadata: {
           orderId: params.orderId,
@@ -96,7 +125,7 @@ export async function createCheckoutSession(params: CreateCheckoutParams): Promi
       },
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
-      locale: 'nl',
+      locale: market.stripeLocale,
       expires_at: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours from now
     });
 

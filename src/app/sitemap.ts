@@ -1,54 +1,67 @@
 import { MetadataRoute } from 'next';
 import { EXAMPLE_SLUGS } from '@/lib/cv-examples/data';
 import { hasLetterContext } from '@/lib/cover-letter-examples/data';
-import { routing } from '@/i18n/routing';
+import { routing, localizedPath, type Locale } from '@/i18n/routing';
 
 /**
- * Multilingual sitemap with hreflang alternates.
+ * Multilingual sitemap with hreflang alternates and per-locale slugs.
  *
- * Each user-facing path is emitted once per locale. NL (default) has no
- * URL prefix (e.g. /builder); other locales are prefixed (/en/builder,
- * /de/builder, ...). The `alternates.languages` map gives Google the
- * full hreflang graph per URL.
+ * Each internal path is emitted once per locale with that locale's URL slug.
+ * Example: /cv-voorbeelden → /cv-voorbeelden (nl), /en/cv-examples,
+ * /de/lebenslauf-beispiele, /sv/cv-exempel, /da/cv-eksempler.
  */
+
+type PathName = keyof typeof routing.pathnames;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.resubox.com';
 
-  // Paths that should appear in every locale. Each entry becomes 5 URLs.
-  const localizedPaths: Array<{ path: string; priority: number; changeFrequency: 'weekly' | 'monthly' }> = [
-    { path: '', priority: 1.0, changeFrequency: 'weekly' },
-    { path: '/builder', priority: 0.9, changeFrequency: 'weekly' },
-    { path: '/cv-voorbeelden', priority: 0.85, changeFrequency: 'weekly' },
-    { path: '/motivatiebrief', priority: 0.85, changeFrequency: 'monthly' },
-    { path: '/motivatiebrief-voorbeeld', priority: 0.8, changeFrequency: 'weekly' },
-    { path: '/ats-check', priority: 0.85, changeFrequency: 'monthly' },
-    { path: '/faq', priority: 0.7, changeFrequency: 'monthly' },
-    { path: '/contact', priority: 0.5, changeFrequency: 'monthly' },
-    { path: '/privacy', priority: 0.3, changeFrequency: 'monthly' },
-    { path: '/voorwaarden', priority: 0.3, changeFrequency: 'monthly' },
-    ...EXAMPLE_SLUGS.map((slug) => ({ path: `/cv-voorbeelden/${slug}`, priority: 0.7 as number, changeFrequency: 'monthly' as const })),
+  const staticPaths: Array<{
+    internal: PathName;
+    params?: Record<string, string>;
+    priority: number;
+    changeFrequency: 'weekly' | 'monthly';
+  }> = [
+    { internal: '/', priority: 1.0, changeFrequency: 'weekly' },
+    { internal: '/builder', priority: 0.9, changeFrequency: 'weekly' },
+    { internal: '/cv-voorbeelden', priority: 0.85, changeFrequency: 'weekly' },
+    { internal: '/motivatiebrief', priority: 0.85, changeFrequency: 'monthly' },
+    { internal: '/motivatiebrief-voorbeeld', priority: 0.8, changeFrequency: 'weekly' },
+    { internal: '/ats-check', priority: 0.85, changeFrequency: 'monthly' },
+    { internal: '/faq', priority: 0.7, changeFrequency: 'monthly' },
+    { internal: '/contact', priority: 0.5, changeFrequency: 'monthly' },
+    { internal: '/privacy', priority: 0.3, changeFrequency: 'monthly' },
+    { internal: '/voorwaarden', priority: 0.3, changeFrequency: 'monthly' },
+  ];
+
+  const dynamicPaths = [
+    ...EXAMPLE_SLUGS.map((slug) => ({
+      internal: '/cv-voorbeelden/[functie]' as PathName,
+      params: { functie: slug },
+      priority: 0.7,
+      changeFrequency: 'monthly' as const,
+    })),
     ...EXAMPLE_SLUGS.filter(hasLetterContext).map((slug) => ({
-      path: `/motivatiebrief-voorbeeld/${slug}`,
+      internal: '/motivatiebrief-voorbeeld/[functie]' as PathName,
+      params: { functie: slug },
       priority: 0.65,
       changeFrequency: 'monthly' as const,
     })),
   ];
 
-  const urlFor = (locale: string, path: string) => {
-    if (locale === routing.defaultLocale) return `${baseUrl}${path}`;
-    return `${baseUrl}/${locale}${path}`;
-  };
+  const allPaths = [...staticPaths, ...dynamicPaths];
 
   const entries: MetadataRoute.Sitemap = [];
-  for (const { path, priority, changeFrequency } of localizedPaths) {
-    // alternates.languages maps every locale → its URL, plus x-default for unspecified
-    const languages: Record<string, string> = { 'x-default': urlFor(routing.defaultLocale, path) };
-    for (const loc of routing.locales) languages[loc] = urlFor(loc, path);
+  for (const { internal, params, priority, changeFrequency } of allPaths) {
+    const languages: Record<string, string> = {};
+    for (const loc of routing.locales) {
+      languages[loc] = `${baseUrl}${localizedPath(internal, loc as Locale, params ?? {})}`;
+    }
+    languages['x-default'] = `${baseUrl}${localizedPath(internal, routing.defaultLocale as Locale, params ?? {})}`;
 
     for (const locale of routing.locales) {
       entries.push({
-        url: urlFor(locale, path),
+        url: `${baseUrl}${localizedPath(internal, locale as Locale, params ?? {})}`,
         lastModified: new Date(),
         changeFrequency,
         priority,

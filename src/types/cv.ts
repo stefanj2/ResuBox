@@ -80,6 +80,8 @@ export interface CVMeta {
   magicLinkConfirmed: boolean;
   selectedTemplate: TemplateId;
   selectedColorScheme: ColorSchemeId;
+  /** Locale captured when the CV was created. Drives currency, email language, AI language. */
+  locale?: string;
 }
 
 export interface CVData {

@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Loader2, Mail, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function LoginForm() {
+  const t = useTranslations('Login');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState('');
@@ -21,13 +24,13 @@ export default function LoginForm() {
       const json = await res.json();
       if (!res.ok || !json.success) {
         setStatus('error');
-        setError(json.error || 'Kon link niet versturen');
+        setError(json.error || t('sendError'));
         return;
       }
       setStatus('sent');
     } catch (err) {
       setStatus('error');
-      setError(err instanceof Error ? err.message : 'Onverwachte fout');
+      setError(err instanceof Error ? err.message : t('unexpectedError'));
     }
   };
 
@@ -37,10 +40,9 @@ export default function LoginForm() {
         <div className="w-14 h-14 mx-auto bg-emerald-100 rounded-full flex items-center justify-center mb-4">
           <CheckCircle className="w-7 h-7 text-emerald-600" />
         </div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-2">Check je inbox</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-2">{t('sentTitle')}</h2>
         <p className="text-sm text-slate-600">
-          We hebben een inloglink gestuurd naar <strong>{email}</strong>. Open de mail en klik op de
-          knop om in te loggen. Werkt de link 15 minuten lang.
+          {t('sentBody', { email })}
         </p>
       </div>
     );
@@ -50,7 +52,7 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-          E-mailadres
+          {t('emailLabel')}
         </label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -59,7 +61,7 @@ export default function LoginForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="naam@voorbeeld.nl"
+            placeholder={t('emailPlaceholder')}
             className="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             autoFocus
           />
@@ -84,18 +86,18 @@ export default function LoginForm() {
       >
         {status === 'sending' ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" /> Versturen…
+            <Loader2 className="w-4 h-4 animate-spin" /> {t('sending')}
           </>
         ) : (
-          'Stuur inloglink'
+          t('submitButton')
         )}
       </button>
 
       <p className="text-xs text-slate-500 text-center">
-        Door in te loggen ga je akkoord met onze{' '}
-        <a href="/voorwaarden" className="underline hover:text-slate-700">voorwaarden</a>{' '}
-        en het{' '}
-        <a href="/privacy" className="underline hover:text-slate-700">privacybeleid</a>.
+        {t('agreementPrefix')}{' '}
+        <Link href="/voorwaarden" className="underline hover:text-slate-700">{t('termsLink')}</Link>{' '}
+        {t('agreementAnd')}{' '}
+        <Link href="/privacy" className="underline hover:text-slate-700">{t('privacyLink')}</Link>.
       </p>
     </form>
   );

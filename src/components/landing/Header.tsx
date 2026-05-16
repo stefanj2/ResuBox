@@ -1,13 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, ArrowRight, LogIn } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui';
 import { MagicLinkModal } from './MagicLinkModal';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Header() {
+  const t = useTranslations('Header');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showMagicLinkModal, setShowMagicLinkModal] = useState(false);
@@ -21,11 +24,11 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: '/#templates', label: 'Templates' },
-    { href: '/#hoe-het-werkt', label: 'Hoe het werkt' },
-    { href: '/#reviews', label: 'Reviews' },
-    { href: '/faq', label: 'FAQ' },
+  const navLinks: { href: { pathname: '/' | '/faq'; hash?: string }; label: string }[] = [
+    { href: { pathname: '/', hash: 'templates' }, label: t('templates') },
+    { href: { pathname: '/', hash: 'hoe-het-werkt' }, label: t('howItWorks') },
+    { href: { pathname: '/', hash: 'reviews' }, label: t('reviews') },
+    { href: { pathname: '/faq' }, label: t('faq') },
   ];
 
   return (
@@ -55,7 +58,7 @@ export function Header() {
             <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
                   className="text-slate-600 hover:text-emerald-600 font-medium transition-colors"
                 >
@@ -65,33 +68,37 @@ export function Header() {
             </nav>
 
             {/* Desktop CTA */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2">
+              <LanguageSwitcher />
               <button
                 onClick={() => setShowMagicLinkModal(true)}
                 className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-emerald-600 font-medium transition-colors"
               >
                 <LogIn className="w-4 h-4" />
-                <span>Inloggen</span>
+                <span>{t('login')}</span>
               </button>
               <Link href="/builder" className="flex items-center gap-2">
                 <Button size="md" icon={ArrowRight} iconPosition="right">
-                  Maak gratis mijn CV
+                  {t('ctaPrimary')}
                 </Button>
               </Link>
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"
-              aria-label={isMobileMenuOpen ? 'Sluit menu' : 'Open menu'}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+            <div className="md:hidden flex items-center gap-1">
+              <LanguageSwitcher />
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 text-slate-600 hover:text-slate-900 transition-colors"
+                aria-label={isMobileMenuOpen ? t('closeMenu') : t('openMenu')}
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -104,7 +111,7 @@ export function Header() {
           <div className="bg-white border-t border-slate-100 px-4 py-4 space-y-2">
             {navLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-4 py-3 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg font-medium transition-colors"
@@ -121,7 +128,7 @@ export function Header() {
               className="w-full flex items-center gap-2 px-4 py-3 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg font-medium transition-colors"
             >
               <LogIn className="w-4 h-4" />
-              <span>Inloggen</span>
+              <span>{t('login')}</span>
             </button>
             <Link
               href="/builder"
@@ -129,7 +136,7 @@ export function Header() {
               className="block"
             >
               <Button fullWidth size="md" icon={ArrowRight} iconPosition="right">
-                Maak gratis mijn CV
+                {t('ctaPrimary')}
               </Button>
             </Link>
           </div>

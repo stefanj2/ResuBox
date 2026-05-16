@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Mail, Send, CheckCircle, Loader2, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/landing';
+import { Link } from '@/i18n/navigation';
 import { Button, Input, TextArea } from '@/components/ui';
 
 export default function ContactPage() {
+  const t = useTranslations('Contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,20 +21,10 @@ export default function ContactPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Vul je naam in';
-    }
-    if (!formData.email.trim()) {
-      newErrors.email = 'Vul je emailadres in';
-    } else if (!formData.email.includes('@')) {
-      newErrors.email = 'Vul een geldig emailadres in';
-    }
-    if (!formData.subject.trim()) {
-      newErrors.subject = 'Vul een onderwerp in';
-    }
-    if (!formData.message.trim()) {
-      newErrors.message = 'Vul je bericht in';
-    }
+    if (!formData.name.trim()) newErrors.name = t('errorName');
+    if (!formData.email.trim() || !formData.email.includes('@')) newErrors.email = t('errorEmail');
+    if (!formData.subject.trim()) newErrors.subject = t('errorSubject');
+    if (!formData.message.trim()) newErrors.message = t('errorMessage');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -40,13 +32,10 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setStatus('loading');
-
     try {
-      // Simuleer API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
@@ -60,36 +49,30 @@ export default function ContactPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   return (
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
       <section className="pt-32 pb-16 bg-gradient-to-br from-slate-50 via-white to-emerald-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6">
-            Neem contact op
+            {t('title')}
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Heb je een vraag, feedback, of kun je hulp gebruiken?
-            We helpen je graag verder.
+            {t('subtitle')}
           </p>
         </div>
       </section>
 
-      {/* Contact Content */}
       <section className="py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
             <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
               <h2 className="text-2xl font-bold text-slate-900 mb-6">
-                Stuur ons een bericht
+                {t('formTitle')}
               </h2>
 
               {status === 'success' ? (
@@ -98,25 +81,21 @@ export default function ContactPage() {
                     <CheckCircle className="w-8 h-8 text-emerald-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                    Bericht verzonden!
+                    {t('successTitle')}
                   </h3>
                   <p className="text-slate-600 mb-6">
-                    Bedankt voor je bericht. We reageren zo snel mogelijk,
-                    meestal binnen 24 uur op werkdagen.
+                    {t('successBody')}
                   </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setStatus('idle')}
-                  >
-                    Nieuw bericht sturen
+                  <Button variant="outline" onClick={() => setStatus('idle')}>
+                    {t('newMessageButton')}
                   </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <Input
-                    label="Naam"
+                    label={t('nameLabel')}
                     name="name"
-                    placeholder="Je volledige naam"
+                    placeholder={t('namePlaceholder')}
                     value={formData.name}
                     onChange={handleChange}
                     error={errors.name}
@@ -125,9 +104,9 @@ export default function ContactPage() {
 
                   <Input
                     type="email"
-                    label="Emailadres"
+                    label={t('emailLabel')}
                     name="email"
-                    placeholder="jouw@email.nl"
+                    placeholder={t('emailPlaceholder')}
                     icon={Mail}
                     value={formData.email}
                     onChange={handleChange}
@@ -136,9 +115,9 @@ export default function ContactPage() {
                   />
 
                   <Input
-                    label="Onderwerp"
+                    label={t('subjectLabel')}
                     name="subject"
-                    placeholder="Waar gaat je vraag over?"
+                    placeholder={t('subjectPlaceholder')}
                     value={formData.subject}
                     onChange={handleChange}
                     error={errors.subject}
@@ -146,9 +125,9 @@ export default function ContactPage() {
                   />
 
                   <TextArea
-                    label="Bericht"
+                    label={t('messageLabel')}
                     name="message"
-                    placeholder="Schrijf hier je bericht..."
+                    placeholder={t('messagePlaceholder')}
                     rows={5}
                     value={formData.message}
                     onChange={handleChange}
@@ -164,72 +143,68 @@ export default function ContactPage() {
                     iconPosition="right"
                     loading={status === 'loading'}
                   >
-                    {status === 'loading' ? 'Verzenden...' : 'Verstuur bericht'}
+                    {status === 'loading' ? t('sending') : t('sendButton')}
                   </Button>
 
                   {status === 'error' && (
                     <p className="text-red-600 text-sm text-center">
-                      Er ging iets mis. Probeer het opnieuw of stuur een email.
+                      {t('errorGeneric')}
                     </p>
                   )}
                 </form>
               )}
             </div>
 
-            {/* Contact Info */}
             <div className="space-y-8">
-              {/* Email */}
               <div className="bg-emerald-50 rounded-2xl p-8">
                 <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
                   <Mail className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-2">
-                  Email ons direct
+                  {t('directEmailTitle')}
                 </h3>
                 <p className="text-slate-600 mb-4">
-                  Liever direct een email sturen? Dat kan natuurlijk ook!
+                  {t('directEmailBody')}
                 </p>
                 <a
-                  href="mailto:info@resubox.nl"
+                  href="mailto:info@resubox.com"
                   className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors"
                 >
-                  info@resubox.nl
+                  info@resubox.com
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
 
-              {/* Response Time */}
               <div className="bg-slate-50 rounded-2xl p-8">
                 <h3 className="text-xl font-semibold text-slate-900 mb-4">
-                  Reactietijd
+                  {t('responseTimeTitle')}
                 </h3>
                 <ul className="space-y-3 text-slate-600">
                   <li className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
-                    <span>Werkdagen: binnen 24 uur</span>
+                    <span>{t('responseWeekdays')}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
-                    <span>Weekenden: op de eerstvolgende werkdag</span>
+                    <span>{t('responseWeekends')}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
-                    <span>Dringende vragen worden met voorrang behandeld</span>
+                    <span>{t('responseUrgent')}</span>
                   </li>
                 </ul>
               </div>
 
-              {/* FAQ Link */}
               <div className="bg-white rounded-2xl border border-slate-200 p-8">
                 <h3 className="text-xl font-semibold text-slate-900 mb-4">
-                  Veel gestelde vragen
+                  {t('faqTitle')}
                 </h3>
                 <p className="text-slate-600 mb-4">
-                  Misschien staat het antwoord op je vraag al in onze FAQ.
+                  {t('faqBody')}
                 </p>
                 <Link href="/faq">
                   <Button variant="outline" icon={ArrowRight} iconPosition="right">
-                    Bekijk de FAQ
+                    {t('faqButton')}
                   </Button>
                 </Link>
               </div>

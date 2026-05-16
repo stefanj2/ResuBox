@@ -21,20 +21,26 @@ const PIPELINE_STATUSES: OrderStatus[] = [
   'factuur_verstuurd',
   'herinnering_1',
   'herinnering_2',
+  'herinnering_3',
   'incasso_overgedragen',
+  'incasso_manual_review',
 ];
 
+const EMPTY_BUCKETS: Record<OrderStatus, CVOrder[]> = {
+  nieuw: [],
+  bevestigd: [],
+  factuur_verstuurd: [],
+  herinnering_1: [],
+  herinnering_2: [],
+  herinnering_3: [],
+  incasso_overgedragen: [],
+  incasso_manual_review: [],
+  betaald: [],
+  afgeboekt: [],
+};
+
 export default function DebiteurenbeheerPage() {
-  const [ordersByStatus, setOrdersByStatus] = useState<Record<OrderStatus, CVOrder[]>>({
-    nieuw: [],
-    bevestigd: [],
-    factuur_verstuurd: [],
-    herinnering_1: [],
-    herinnering_2: [],
-    incasso_overgedragen: [],
-    betaald: [],
-    afgeboekt: [],
-  });
+  const [ordersByStatus, setOrdersByStatus] = useState<Record<OrderStatus, CVOrder[]>>({ ...EMPTY_BUCKETS });
   const [selectedOrder, setSelectedOrder] = useState<OrderWithActions | null>(null);
   const [testMode, setTestMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -50,7 +56,9 @@ export default function DebiteurenbeheerPage() {
         factuur_verstuurd: [],
         herinnering_1: [],
         herinnering_2: [],
+        herinnering_3: [],
         incasso_overgedragen: [],
+        incasso_manual_review: [],
         betaald: [],
         afgeboekt: [],
       };

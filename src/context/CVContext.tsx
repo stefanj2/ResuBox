@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useLocale } from 'next-intl';
 import { CVData, createEmptyCVData, Experience, Education, Skill, TemplateId, ColorSchemeId } from '@/types/cv';
 
 const STORAGE_KEY = 'cv-builder-session';
@@ -50,6 +51,7 @@ interface CVContextType {
 const CVContext = createContext<CVContextType | undefined>(undefined);
 
 export function CVProvider({ children }: { children: React.ReactNode }) {
+  const locale = useLocale();
   const [cvData, setCVData] = useState<CVData>(createEmptyCVData);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
@@ -109,6 +111,9 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
               if (sessionData.meta && !sessionData.meta.selectedColorScheme) {
                 sessionData.meta.selectedColorScheme = 'emerald';
               }
+              if (sessionData.meta && !sessionData.meta.locale) {
+                sessionData.meta.locale = locale;
+              }
               setCVData(sessionData);
               // Verwijder token uit URL zonder page reload
               window.history.replaceState({}, '', window.location.pathname);
@@ -122,30 +127,38 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
-          // Migratie: voeg selectedTemplate en selectedColorScheme toe als ze ontbreken (voor bestaande gebruikers)
           if (parsed.meta && !parsed.meta.selectedTemplate) {
             parsed.meta.selectedTemplate = 'modern';
           }
           if (parsed.meta && !parsed.meta.selectedColorScheme) {
             parsed.meta.selectedColorScheme = 'emerald';
           }
+          if (parsed.meta && !parsed.meta.locale) {
+            parsed.meta.locale = locale;
+          }
           setCVData(parsed);
         } else {
-          // Nieuw ID genereren voor nieuwe sessie
+          // Nieuw ID genereren voor nieuwe sessie — vang de huidige locale meteen
           const newData = createEmptyCVData();
           newData.id = crypto.randomUUID();
+          newData.meta.locale = locale;
           setCVData(newData);
         }
       } catch (error) {
         console.error('Fout bij laden sessie:', error);
         const newData = createEmptyCVData();
         newData.id = crypto.randomUUID();
+        newData.meta.locale = locale;
         setCVData(newData);
       }
       setIsInitialized(true);
     };
 
     loadFromStorage();
+    // locale is intentionally not a dep — we only want to capture the
+    // locale at the moment the CV is first created or loaded. Switching
+    // languages mid-session must not silently rewrite the order's locale.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Auto-save naar LocalStorage (debounced)
@@ -394,11 +407,12 @@ export function CVProvider({ children }: { children: React.ReactNode }) {
   const resetCV = useCallback(() => {
     const newData = createEmptyCVData();
     newData.id = crypto.randomUUID();
+    newData.meta.locale = locale;
     setCVData(newData);
     setMagicLinkSent(false);
     setCurrentSection(0);
     localStorage.removeItem(STORAGE_KEY);
-  }, []);
+  }, [locale]);
 
   // Magic Link functionaliteit
   const triggerMagicLink = useCallback(async (email: string): Promise<boolean> => {

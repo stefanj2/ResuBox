@@ -31,6 +31,14 @@ export const cvOrders = pgTable(
     template_used: text('template_used'),
     cv_data: jsonb('cv_data').$type<CVData>(),
 
+    /**
+     * Locale captured at download time. Drives email language, SMS language,
+     * Stripe checkout language, currency, and per-country collections routing.
+     * Mirror of `cv_data.meta.locale` but promoted to a queryable column so
+     * admin can filter and the cron doesn't have to dig into JSONB.
+     */
+    locale: text('locale').notNull().default('nl'),
+
     amount: numeric('amount', { precision: 10, scale: 2 }).notNull().default('42.00'),
     dossier_number: text('dossier_number'),
 
@@ -43,7 +51,10 @@ export const cvOrders = pgTable(
     invoice_sent_at: timestamp('invoice_sent_at', { withTimezone: true, mode: 'string' }),
     reminder_1_sent_at: timestamp('reminder_1_sent_at', { withTimezone: true, mode: 'string' }),
     reminder_2_sent_at: timestamp('reminder_2_sent_at', { withTimezone: true, mode: 'string' }),
+    reminder_3_sent_at: timestamp('reminder_3_sent_at', { withTimezone: true, mode: 'string' }),
     incasso_sent_at: timestamp('incasso_sent_at', { withTimezone: true, mode: 'string' }),
+    sms_1_sent_at: timestamp('sms_1_sent_at', { withTimezone: true, mode: 'string' }),
+    sms_2_sent_at: timestamp('sms_2_sent_at', { withTimezone: true, mode: 'string' }),
 
     justus_case_id: text('justus_case_id'),
     justus_case_number: text('justus_case_number'),

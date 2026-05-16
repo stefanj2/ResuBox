@@ -1,16 +1,30 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Trash2, ChevronDown, ChevronUp, GraduationCap } from 'lucide-react';
 import { Input, TextArea, Button, Card } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { createEmptyEducation } from '@/types/cv';
+import type { Locale } from '@/i18n/routing';
+
+const DEGREE_SUGGESTIONS_BY_LOCALE: Record<Locale, string[]> = {
+  nl: ['HBO Bachelor', 'WO Bachelor', 'WO Master', 'MBO Niveau 4', 'VWO', 'HAVO'],
+  en: ['BA / BSc', 'MA / MSc', 'PhD', 'Diploma', 'A-Levels', 'Foundation degree'],
+  de: ['Bachelor', 'Master', 'Diplom', 'Promotion', 'Abitur', 'Fachabitur'],
+  sv: ['Kandidatexamen', 'Magisterexamen', 'Masterexamen', 'Doktorsexamen', 'Gymnasieexamen', 'Yrkesexamen'],
+  da: ['Bachelor', 'Kandidat', 'Master', 'Ph.d.', 'Studentereksamen', 'HHX'],
+};
 
 export function EducationSection() {
   const { cvData, addEducation, updateEducation, removeEducation } = useCVData();
+  const t = useTranslations('Builder.educationSection');
+  const locale = useLocale() as Locale;
   const [expandedId, setExpandedId] = useState<string | null>(
     cvData.education.length > 0 ? cvData.education[0].id : null
   );
+
+  const degreeSuggestions = DEGREE_SUGGESTIONS_BY_LOCALE[locale] ?? DEGREE_SUGGESTIONS_BY_LOCALE.nl;
 
   const handleAddEducation = () => {
     const newEdu = createEmptyEducation();
@@ -18,29 +32,16 @@ export function EducationSection() {
     setExpandedId(newEdu.id);
   };
 
-  // Suggesties voor opleidingen
-  const degreeSuggestions = [
-    'HBO Bachelor',
-    'WO Bachelor',
-    'WO Master',
-    'MBO Niveau 4',
-    'VWO',
-    'HAVO',
-  ];
-
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Opleiding</h2>
-        <p className="text-slate-600">
-          Voeg je opleidingen toe, beginnend met de hoogste of meest recente.
-        </p>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
+        <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 
-      {/* Quick add suggestions */}
       {cvData.education.length === 0 && (
         <div className="bg-slate-50 rounded-lg p-4">
-          <p className="text-sm font-medium text-slate-700 mb-3">Snel toevoegen:</p>
+          <p className="text-sm font-medium text-slate-700 mb-3">{t('quickAdd')}</p>
           <div className="flex flex-wrap gap-2">
             {degreeSuggestions.map((degree) => (
               <button
@@ -60,11 +61,9 @@ export function EducationSection() {
         </div>
       )}
 
-      {/* Education Cards */}
       <div className="space-y-4">
-        {cvData.education.map((edu, index) => (
+        {cvData.education.map((edu) => (
           <Card key={edu.id} padding="none" className="overflow-hidden">
-            {/* Header - Always visible */}
             <button
               onClick={() => setExpandedId(expandedId === edu.id ? null : edu.id)}
               className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
@@ -75,13 +74,12 @@ export function EducationSection() {
                 </div>
                 <div>
                   <h3 className="font-medium text-slate-900">
-                    {edu.degree || 'Nieuwe opleiding'}
+                    {edu.degree || t('newEntry')}
                   </h3>
                   <p className="text-sm text-slate-500">
-                    {edu.institution || 'Onderwijsinstelling'}
+                    {edu.institution || t('institution')}
                     {edu.startDate && ` • ${edu.startDate}`}
                     {edu.endDate && ` - ${edu.endDate}`}
-                    {edu.current && ' - Heden'}
                   </p>
                 </div>
               </div>
@@ -92,20 +90,17 @@ export function EducationSection() {
               )}
             </button>
 
-            {/* Expanded Content */}
             {expandedId === edu.id && (
               <div className="px-4 pb-4 space-y-4 border-t border-slate-100 pt-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label="Opleiding / Diploma"
-                    placeholder="HBO Bachelor Bedrijfskunde"
+                    label={t('degree')}
                     value={edu.degree}
                     onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
                     required
                   />
                   <Input
-                    label="Onderwijsinstelling"
-                    placeholder="Hogeschool van Amsterdam"
+                    label={t('institution')}
                     value={edu.institution}
                     onChange={(e) => updateEducation(edu.id, { institution: e.target.value })}
                     required
@@ -113,8 +108,7 @@ export function EducationSection() {
                 </div>
 
                 <Input
-                  label="Locatie"
-                  placeholder="Amsterdam"
+                  label={t('location')}
                   value={edu.location}
                   onChange={(e) => updateEducation(edu.id, { location: e.target.value })}
                 />
@@ -122,14 +116,14 @@ export function EducationSection() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     type="month"
-                    label="Startdatum"
+                    label={t('startDate')}
                     value={edu.startDate}
                     onChange={(e) => updateEducation(edu.id, { startDate: e.target.value })}
                   />
                   <div>
                     <Input
                       type="month"
-                      label="Einddatum"
+                      label={t('endDate')}
                       value={edu.endDate}
                       onChange={(e) => updateEducation(edu.id, { endDate: e.target.value })}
                       disabled={edu.current}
@@ -138,26 +132,27 @@ export function EducationSection() {
                       <input
                         type="checkbox"
                         checked={edu.current}
-                        onChange={(e) => updateEducation(edu.id, { 
-                          current: e.target.checked,
-                          endDate: e.target.checked ? '' : edu.endDate
-                        })}
+                        onChange={(e) =>
+                          updateEducation(edu.id, {
+                            current: e.target.checked,
+                            endDate: e.target.checked ? '' : edu.endDate,
+                          })
+                        }
                         className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-slate-600">Ik volg deze opleiding nog</span>
+                      <span className="text-sm text-slate-600">{t('currentEducation')}</span>
                     </label>
                   </div>
                 </div>
 
                 <TextArea
-                  label="Extra informatie (optioneel)"
-                  placeholder="Bijv. specialisatie, minor, gemiddeld cijfer, relevante vakken..."
+                  label={t('description')}
+                  placeholder={t('descriptionPlaceholder')}
                   value={edu.description}
                   onChange={(e) => updateEducation(edu.id, { description: e.target.value })}
                   rows={3}
                 />
 
-                {/* Delete button */}
                 <div className="pt-4 border-t border-slate-100">
                   <Button
                     variant="ghost"
@@ -166,7 +161,7 @@ export function EducationSection() {
                     onClick={() => removeEducation(edu.id)}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
-                    Verwijder deze opleiding
+                    {t('delete')}
                   </Button>
                 </div>
               </div>
@@ -175,14 +170,8 @@ export function EducationSection() {
         ))}
       </div>
 
-      {/* Add Education Button */}
-      <Button
-        variant="outline"
-        icon={Plus}
-        onClick={handleAddEducation}
-        fullWidth
-      >
-        Opleiding toevoegen
+      <Button variant="outline" icon={Plus} onClick={handleAddEducation} fullWidth>
+        {t('addNew')}
       </Button>
     </div>
   );

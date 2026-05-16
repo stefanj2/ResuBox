@@ -13,6 +13,7 @@ interface OptimizeRequest {
   cvData: CVData;
   vacancyUrl?: string;
   vacancyText?: string;
+  locale?: string;
 }
 
 interface Change {
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
   if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
   try {
-    const { cvData, vacancyUrl, vacancyText } = (await request.json()) as OptimizeRequest;
+    const { cvData, vacancyUrl, vacancyText, locale } = (await request.json()) as OptimizeRequest;
+    const effectiveLocale = locale ?? request.headers.get('x-locale') ?? 'nl';
 
     if (!cvData) {
       return NextResponse.json({ error: 'cvData ontbreekt' }, { status: 400 });
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Real LLM analysis
-    const llm = await matchVacancy({ cvData, vacancyText: vacancy });
+    const llm = await matchVacancy({ cvData, vacancyText: vacancy, locale: effectiveLocale });
 
     // Apply bullet suggestions to a copy of experience
     const optimizedExperience = cvData.experience.map((exp, idx) => {

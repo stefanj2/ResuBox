@@ -1,12 +1,16 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { ArrowRight, Star, Shield, Zap, FileCheck } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui';
 import { TemplateThumbnail } from '@/components/preview/thumbnails/TemplateThumbnail';
 
 export function Hero() {
+  const t = useTranslations('Hero');
+  const tHeader = useTranslations('Header');
+
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-20">
       {/* Background */}
@@ -24,20 +28,19 @@ export function Hero() {
           <div className="text-center lg:text-left">
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
-              Jouw professionele CV,{' '}
-              <span className="text-emerald-600">binnen 10 minuten</span>
+              {t('title')}
             </h1>
 
             {/* Subtitle */}
             <p className="text-lg sm:text-xl text-slate-600 max-w-xl mb-8">
-              Kies uit 6 ATS-vriendelijke templates, vul je gegevens in en download direct als PDF. Zonder account, zonder kosten.
+              {t('subtitle')}
             </p>
 
             {/* CTA Section */}
             <div className="flex flex-col sm:flex-row items-center gap-5 mb-8">
               <Link href="/builder">
                 <Button size="lg" icon={ArrowRight} iconPosition="right" className="text-lg px-8 py-4 shadow-xl shadow-emerald-500/20">
-                  Maak gratis mijn CV
+                  {tHeader('ctaPrimary')}
                 </Button>
               </Link>
 
@@ -50,7 +53,7 @@ export function Hero() {
                 </div>
                 <span className="font-medium text-slate-700">4.9</span>
                 <span className="text-slate-300">•</span>
-                <span>2.500+ gebruikers</span>
+                <span>{t('trustUsers')}</span>
               </div>
             </div>
 
@@ -58,15 +61,15 @@ export function Hero() {
             <div className="flex flex-wrap justify-center lg:justify-start gap-3">
               <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-slate-200/60 shadow-sm">
                 <Zap className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-slate-700">Klaar in 10 min</span>
+                <span className="text-sm font-medium text-slate-700">{t('badgeReady')}</span>
               </div>
               <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-slate-200/60 shadow-sm">
                 <FileCheck className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-slate-700">ATS-proof</span>
+                <span className="text-sm font-medium text-slate-700">{t('badgeAts')}</span>
               </div>
               <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-slate-200/60 shadow-sm">
                 <Shield className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-medium text-slate-700">100% Gratis</span>
+                <span className="text-sm font-medium text-slate-700">{t('badgeFree')}</span>
               </div>
             </div>
           </div>
@@ -81,7 +84,7 @@ export function Hero() {
               </div>
               {/* Mobile template count badge */}
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-emerald-500 text-white rounded-full px-3 py-1.5 shadow-lg z-10">
-                <span className="text-xs font-semibold">6 gratis templates</span>
+                <span className="text-xs font-semibold">{t('trustTemplates')}</span>
               </div>
             </div>
           </div>
@@ -97,7 +100,7 @@ export function Hero() {
               </div>
               {/* Floating badge */}
               <div className="absolute -top-3 -right-3 bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                Populair
+                {t('badgePopular')}
               </div>
             </div>
 
@@ -121,7 +124,6 @@ export function Hero() {
 
             {/* Template count badge */}
             <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 bg-white rounded-full pl-2 pr-4 py-2 shadow-xl border border-slate-200 z-30">
-              {/* Mini document stack icons */}
               <div className="flex -space-x-1.5">
                 {['emerald', 'slate', 'indigo'].map((color, i) => (
                   <div
@@ -132,7 +134,6 @@ export function Hero() {
                     }`}
                     style={{ transform: `rotate(${(i - 1) * 8}deg)` }}
                   >
-                    {/* Mini lines to simulate CV content */}
                     <div className="mt-1.5 mx-0.5 space-y-0.5">
                       <div className="h-0.5 bg-white/60 rounded-full w-3/4" />
                       <div className="h-0.5 bg-white/40 rounded-full w-1/2" />
@@ -141,8 +142,8 @@ export function Hero() {
                 ))}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-800">6 templates</span>
-                <span className="text-[10px] text-slate-500 -mt-0.5">Allemaal gratis</span>
+                <span className="text-sm font-semibold text-slate-800">{t('trustTemplates')}</span>
+                <span className="text-[10px] text-slate-500 -mt-0.5">{t('trustAllFree')}</span>
               </div>
             </div>
           </div>

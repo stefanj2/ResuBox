@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import {
   ArrowLeft,
   Shield,
@@ -19,11 +19,21 @@ import {
   MessageCircle,
   Mail,
   Check,
-  X
+  X,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/landing';
+import { Link } from '@/i18n/navigation';
 
-const sections = [
+type SectionDef = {
+  id: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  content: React.ReactElement;
+};
+
+const SUPPORT_EMAIL = 'info@resubox.com';
+
+const nlSections: SectionDef[] = [
   {
     id: 'wie-zijn-wij',
     icon: User,
@@ -38,10 +48,7 @@ const sections = [
           <div className="space-y-2">
             <p className="font-semibold text-slate-900">ResuBox</p>
             <p className="text-slate-600">
-              E-mail: <a href="mailto:info@resubox.nl" className="text-emerald-600 hover:text-emerald-700 underline">info@resubox.nl</a>
-            </p>
-            <p className="text-slate-600">
-              Website: <a href="https://resubox.nl" className="text-emerald-600 hover:text-emerald-700 underline">resubox.nl</a>
+              E-mail: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>
             </p>
           </div>
         </div>
@@ -55,7 +62,6 @@ const sections = [
     content: (
       <>
         <p className="text-slate-600 mb-6">Wij verzamelen en verwerken de volgende categorieën persoonsgegevens:</p>
-
         <div className="space-y-6">
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
@@ -73,7 +79,7 @@ const sections = [
                 'LinkedIn profiel en website',
                 'Profielfoto (optioneel)',
                 'Werkervaring en taken',
-                'Opleiding en diploma\'s',
+                "Opleiding en diploma's",
                 'Vaardigheden',
                 'Profielsamenvatting',
               ].map((item, i) => (
@@ -120,7 +126,7 @@ const sections = [
               2.4 Automatisch verzamelde gegevens
             </h4>
             <div className="flex flex-wrap gap-3">
-              {['IP-adres', 'Browsertype', 'Apparaatgegevens', 'Tijdstip bezoek', 'Bezochte pagina\'s'].map((item, i) => (
+              {['IP-adres', 'Browsertype', 'Apparaatgegevens', 'Tijdstip bezoek', "Bezochte pagina's"].map((item, i) => (
                 <span key={i} className="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-sm">{item}</span>
               ))}
             </div>
@@ -251,7 +257,6 @@ const sections = [
     content: (
       <div className="space-y-6">
         <p className="text-slate-600">Wij delen je gegevens alleen met derden wanneer dit noodzakelijk is:</p>
-
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <h4 className="font-semibold text-slate-900 mb-3">6.1 Dienstverleners (verwerkers)</h4>
           <div className="space-y-2">
@@ -268,12 +273,10 @@ const sections = [
           </div>
           <p className="text-sm text-slate-500 mt-3 italic">Met al deze partijen hebben wij verwerkersovereenkomsten gesloten.</p>
         </div>
-
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <h4 className="font-semibold text-slate-900 mb-3">6.2 Wanneer wettelijk vereist</h4>
           <p className="text-slate-600 text-sm">Wij kunnen gegevens delen wanneer dit wettelijk verplicht is, bijvoorbeeld op verzoek van autoriteiten.</p>
         </div>
-
         <div className="bg-red-50 rounded-xl border border-red-200 p-5">
           <h4 className="font-semibold text-red-900 mb-3">6.3 Wat wij NIET doen</h4>
           <ul className="space-y-2">
@@ -299,7 +302,6 @@ const sections = [
     content: (
       <div className="space-y-4">
         <p className="text-slate-600">Wij maken beperkt gebruik van cookies:</p>
-
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-2">
@@ -313,7 +315,6 @@ const sections = [
               Gebruikt voor sessiebeheer en beveiligingsdoeleinden.
             </p>
           </div>
-
           <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -327,7 +328,6 @@ const sections = [
             </p>
           </div>
         </div>
-
         <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
           <p className="text-amber-800 text-sm">
             <strong>7.3 Cookie-instellingen:</strong> Je kunt cookies beheren via je browserinstellingen.
@@ -362,7 +362,7 @@ const sections = [
         </div>
         <div className="mt-4 bg-emerald-50 rounded-xl p-4 border border-emerald-200">
           <p className="text-emerald-800 text-sm">
-            Om je rechten uit te oefenen, neem contact met ons op via <a href="mailto:info@resubox.nl" className="underline font-medium">info@resubox.nl</a>.
+            Om je rechten uit te oefenen, neem contact met ons op via <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-medium">{SUPPORT_EMAIL}</a>.
             Wij reageren binnen 30 dagen op je verzoek.
           </p>
         </div>
@@ -421,7 +421,7 @@ const sections = [
       <p className="text-slate-600">
         Wij streven ernaar je gegevens binnen de <strong>Europese Economische Ruimte (EER)</strong> te verwerken.
         Indien gegevens buiten de EER worden verwerkt, zorgen wij voor passende waarborgen
-        conform de AVG, zoals standaardcontractbepalingen (SCC's).
+        conform de AVG, zoals standaardcontractbepalingen (SCC&apos;s).
       </p>
     ),
   },
@@ -444,7 +444,7 @@ const sections = [
       <div className="space-y-4">
         <p className="text-slate-600">
           Als je een klacht hebt over de verwerking van je persoonsgegevens, horen we dit graag.
-          Neem contact met ons op via <a href="mailto:info@resubox.nl" className="text-emerald-600 hover:text-emerald-700 underline">info@resubox.nl</a>.
+          Neem contact met ons op via <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>.
         </p>
         <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
           <p className="text-slate-600 mb-3">Je hebt ook het recht om een klacht in te dienen bij de Autoriteit Persoonsgegevens:</p>
@@ -473,10 +473,7 @@ const sections = [
         <div className="space-y-2">
           <p className="font-semibold text-slate-900">ResuBox</p>
           <p className="text-slate-600">
-            E-mail: <a href="mailto:info@resubox.nl" className="text-emerald-600 hover:text-emerald-700 underline">info@resubox.nl</a>
-          </p>
-          <p className="text-slate-600">
-            Website: <a href="https://resubox.nl" className="text-emerald-600 hover:text-emerald-700 underline">resubox.nl</a>
+            E-mail: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>
           </p>
         </div>
       </div>
@@ -484,14 +481,489 @@ const sections = [
   },
 ];
 
+const enSections: SectionDef[] = [
+  {
+    id: 'wie-zijn-wij',
+    icon: User,
+    title: '1. Who we are',
+    content: (
+      <>
+        <p className="text-slate-600 mb-4">
+          ResuBox is an online CV builder service that helps you create a professional CV easily.
+          For questions about this privacy policy you can contact us at:
+        </p>
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-100">
+          <div className="space-y-2">
+            <p className="font-semibold text-slate-900">ResuBox</p>
+            <p className="text-slate-600">
+              Email: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>
+            </p>
+          </div>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'welke-gegevens',
+    icon: FileText,
+    title: '2. What data do we collect?',
+    content: (
+      <>
+        <p className="text-slate-600 mb-6">We collect and process the following categories of personal data:</p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-emerald-600" />
+              </div>
+              2.1 Data you enter into your CV
+            </h4>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {[
+                'Name (first name, last name)',
+                'Email and phone number',
+                'Address and city',
+                'Date of birth and nationality',
+                'LinkedIn profile and website',
+                'Profile photo (optional)',
+                'Work experience and tasks',
+                'Education and qualifications',
+                'Skills',
+                'Profile summary',
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-slate-600">
+                  <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Key className="w-4 h-4 text-blue-600" />
+              </div>
+              2.2 Data for magic link functionality
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm">Email</span>
+              <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm">Unique session token</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-purple-600" />
+              </div>
+              2.3 Billing data
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              <span className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm">Name</span>
+              <span className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm">Email</span>
+              <span className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg text-sm">Payment details</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
+                <Globe className="w-4 h-4 text-amber-600" />
+              </div>
+              2.4 Automatically collected data
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              {['IP address', 'Browser type', 'Device info', 'Visit timestamp', 'Pages visited'].map((item, i) => (
+                <span key={i} className="px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-sm">{item}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'waarvoor',
+    icon: Database,
+    title: '3. What we use your data for',
+    content: (
+      <>
+        <p className="text-slate-600 mb-4">We process your data for the following purposes:</p>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="text-left py-3 px-4 font-semibold text-slate-900 bg-slate-50 rounded-tl-lg">Purpose</th>
+                <th className="text-left py-3 px-4 font-semibold text-slate-900 bg-slate-50 rounded-tr-lg">Legal basis (GDPR)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {[
+                { doel: 'Generating your CV', grond: 'Performance of contract' },
+                { doel: 'Saving your CV via magic link', grond: 'Performance of contract / Consent' },
+                { doel: 'Sending invoices', grond: 'Performance of contract / Legal obligation' },
+                { doel: 'Customer service and communication', grond: 'Legitimate interest' },
+                { doel: 'Improving our service', grond: 'Legitimate interest' },
+                { doel: 'Fraud prevention', grond: 'Legitimate interest' },
+              ].map((row, i) => (
+                <tr key={i} className="hover:bg-slate-50">
+                  <td className="py-3 px-4 text-slate-600">{row.doel}</td>
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-sm">{row.grond}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'waar-opgeslagen',
+    icon: Database,
+    title: '4. Where your data is stored',
+    content: (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+            <Database className="w-5 h-5 text-blue-600" />
+            4.1 Local storage (browser)
+          </h4>
+          <p className="text-slate-600 text-sm">
+            By default your CV data is stored locally in your browser (localStorage).
+            This data does not leave your device unless you request a magic link or download your CV.
+            You can remove it by clearing your browser data.
+          </p>
+        </div>
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-100">
+          <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-emerald-600" />
+            4.2 Server storage
+          </h4>
+          <p className="text-slate-600 text-sm mb-3">
+            When you request a magic link or download your CV, your data is stored on secured servers:
+          </p>
+          <div className="grid sm:grid-cols-3 gap-3">
+            {[
+              { icon: Lock, text: 'Encrypted connections (HTTPS/TLS)' },
+              { icon: Shield, text: 'Secured EU data centres' },
+              { icon: Key, text: 'Access restrictions' },
+            ].map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={i} className="flex items-center gap-2 text-sm text-emerald-700 bg-white rounded-lg p-2">
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span>{item.text}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'bewaartermijn',
+    icon: Clock,
+    title: '5. How long we keep your data',
+    content: (
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="text-left py-3 px-4 font-semibold text-slate-900 bg-slate-50 rounded-tl-lg">Data type</th>
+              <th className="text-left py-3 px-4 font-semibold text-slate-900 bg-slate-50 rounded-tr-lg">Retention period</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {[
+              { type: 'CV data (local)', termijn: 'Until you clear your browser' },
+              { type: 'CV data (server, via magic link)', termijn: '1 year after last use' },
+              { type: 'Billing data', termijn: '7 years (statutory retention)' },
+              { type: 'Email correspondence', termijn: '2 years' },
+              { type: 'Analytics data', termijn: '26 months' },
+            ].map((row, i) => (
+              <tr key={i} className="hover:bg-slate-50">
+                <td className="py-3 px-4 text-slate-600">{row.type}</td>
+                <td className="py-3 px-4">
+                  <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-medium">{row.termijn}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ),
+  },
+  {
+    id: 'delen',
+    icon: Users,
+    title: '6. Do we share your data with third parties?',
+    content: (
+      <div className="space-y-6">
+        <p className="text-slate-600">We only share your data with third parties when necessary:</p>
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <h4 className="font-semibold text-slate-900 mb-3">6.1 Service providers (processors)</h4>
+          <div className="space-y-2">
+            {[
+              { label: 'Hosting provider', desc: 'for hosting the website and data storage' },
+              { label: 'Email provider', desc: 'for sending magic links and invoices' },
+              { label: 'Payment provider', desc: 'for processing payments' },
+            ].map((item, i) => (
+              <div key={i} className="flex gap-2 text-sm">
+                <span className="font-medium text-slate-700 whitespace-nowrap">{item.label}:</span>
+                <span className="text-slate-600">{item.desc}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-slate-500 mt-3 italic">We have data processing agreements in place with each of these parties.</p>
+        </div>
+        <div className="bg-white rounded-xl border border-slate-200 p-5">
+          <h4 className="font-semibold text-slate-900 mb-3">6.2 When legally required</h4>
+          <p className="text-slate-600 text-sm">We may share data when legally required, e.g. on request of authorities.</p>
+        </div>
+        <div className="bg-red-50 rounded-xl border border-red-200 p-5">
+          <h4 className="font-semibold text-red-900 mb-3">6.3 What we DO NOT do</h4>
+          <ul className="space-y-2">
+            {[
+              'We never sell your data to third parties',
+              'We do not use your data for third-party commercial purposes',
+              'We do not share your CV content with employers or recruiters',
+            ].map((item, i) => (
+              <li key={i} className="flex items-center gap-2 text-sm text-red-800">
+                <X className="w-4 h-4 text-red-500 flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'cookies',
+    icon: Cookie,
+    title: '7. Cookies',
+    content: (
+      <div className="space-y-4">
+        <p className="text-slate-600">We make limited use of cookies:</p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                <Check className="w-4 h-4 text-green-600" />
+              </div>
+              <h4 className="font-semibold text-slate-900">7.1 Necessary cookies</h4>
+            </div>
+            <p className="text-slate-600 text-sm">
+              Essential for the website to function. Cannot be disabled.
+              Used for session management and security.
+            </p>
+          </div>
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Database className="w-4 h-4 text-blue-600" />
+              </div>
+              <h4 className="font-semibold text-slate-900">7.2 Analytics cookies</h4>
+            </div>
+            <p className="text-slate-600 text-sm">
+              Used to understand how visitors use our site. Data is processed anonymously.
+            </p>
+          </div>
+        </div>
+        <div className="bg-amber-50 rounded-xl border border-amber-200 p-4">
+          <p className="text-amber-800 text-sm">
+            <strong>7.3 Cookie settings:</strong> You can manage cookies via your browser settings.
+            Disabling necessary cookies may limit site functionality.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'rechten',
+    icon: Key,
+    title: '8. Your rights',
+    content: (
+      <>
+        <p className="text-slate-600 mb-4">Under the GDPR you have the following rights:</p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { title: 'Right of access', desc: 'You can request what data we hold about you.' },
+            { title: 'Right to rectification', desc: 'You can have inaccurate data corrected.' },
+            { title: 'Right to erasure', desc: 'You can request deletion of your data.' },
+            { title: 'Right to restrict processing', desc: 'You can request that processing be restricted.' },
+            { title: 'Right to data portability', desc: 'You can receive your data in a structured format.' },
+            { title: 'Right to object', desc: 'You can object to processing.' },
+            { title: 'Withdraw consent', desc: 'You can withdraw your consent at any time.' },
+          ].map((item, i) => (
+            <div key={i} className="bg-white rounded-xl border border-slate-200 p-4 hover:border-emerald-300 transition-colors">
+              <h4 className="font-semibold text-emerald-700 mb-1">{item.title}</h4>
+              <p className="text-slate-600 text-sm">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 bg-emerald-50 rounded-xl p-4 border border-emerald-200">
+          <p className="text-emerald-800 text-sm">
+            To exercise your rights, contact us at <a href={`mailto:${SUPPORT_EMAIL}`} className="underline font-medium">{SUPPORT_EMAIL}</a>.
+            We respond to requests within 30 days.
+          </p>
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'beveiliging',
+    icon: Lock,
+    title: '9. Security',
+    content: (
+      <>
+        <p className="text-slate-600 mb-4">We take appropriate technical and organisational measures to protect your data:</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[
+            { icon: Lock, text: 'SSL/TLS encryption' },
+            { icon: Database, text: 'Encrypted storage' },
+            { icon: RefreshCw, text: 'Regular updates' },
+            { icon: Key, text: 'Access restrictions' },
+            { icon: Database, text: 'Regular backups' },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div key={i} className="flex items-center gap-3 bg-slate-50 rounded-xl p-4 border border-slate-200">
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-5 h-5 text-emerald-600" />
+                </div>
+                <span className="text-slate-700 font-medium text-sm">{item.text}</span>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    ),
+  },
+  {
+    id: 'minderjarigen',
+    icon: Baby,
+    title: '10. Minors',
+    content: (
+      <div className="bg-amber-50 rounded-xl p-5 border border-amber-200">
+        <p className="text-amber-800">
+          Our service is primarily intended for people aged <strong>16 and over</strong>.
+          We do not knowingly collect data from children under 16.
+          If you are a parent or guardian and discover your child has provided data,
+          please contact us.
+        </p>
+      </div>
+    ),
+  },
+  {
+    id: 'internationaal',
+    icon: Globe,
+    title: '11. International transfers',
+    content: (
+      <p className="text-slate-600">
+        We aim to process your data within the <strong>European Economic Area (EEA)</strong>.
+        If data is processed outside the EEA, we ensure appropriate safeguards
+        in line with the GDPR, such as Standard Contractual Clauses (SCCs).
+      </p>
+    ),
+  },
+  {
+    id: 'wijzigingen',
+    icon: RefreshCw,
+    title: '12. Changes',
+    content: (
+      <p className="text-slate-600">
+        We may update this privacy policy from time to time. Changes are published on this page.
+        For significant changes we notify you by email (if available) or via a banner on the site.
+      </p>
+    ),
+  },
+  {
+    id: 'klachten',
+    icon: MessageCircle,
+    title: '13. Complaints',
+    content: (
+      <div className="space-y-4">
+        <p className="text-slate-600">
+          If you have a complaint about how we process your personal data, we would like to hear it.
+          Contact us at <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>.
+        </p>
+        <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+          <p className="text-slate-600 mb-3">You also have the right to file a complaint with your national data protection authority. In the Netherlands:</p>
+          <div className="space-y-2">
+            <p className="text-slate-700">
+              <strong>Website:</strong>{' '}
+              <a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-700 underline">
+                autoriteitpersoonsgegevens.nl
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'contact',
+    icon: Mail,
+    title: '14. Contact',
+    content: (
+      <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200">
+        <p className="text-slate-600 mb-4">For questions about this privacy policy or the processing of your data:</p>
+        <div className="space-y-2">
+          <p className="font-semibold text-slate-900">ResuBox</p>
+          <p className="text-slate-600">
+            Email: <a href={`mailto:${SUPPORT_EMAIL}`} className="text-emerald-600 hover:text-emerald-700 underline">{SUPPORT_EMAIL}</a>
+          </p>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const COPY = {
+  nl: {
+    backHome: 'Terug naar home',
+    pageTitle: 'Privacybeleid',
+    lastUpdated: 'Laatst bijgewerkt',
+    intro: 'ResuBox hecht veel waarde aan de bescherming van je persoonsgegevens. In dit privacybeleid leggen we uit welke gegevens we verzamelen, waarom we dit doen, en hoe we je privacy beschermen conform de AVG/GDPR.',
+    goTo: 'Ga naar:',
+    quickLinks: ['Gegevens', 'Doel', 'Opslag', 'Delen', 'Cookies', 'Rechten'],
+    ctaTitle: 'Vragen over je privacy?',
+    ctaSubtitle: 'Neem gerust contact met ons op als je vragen hebt over hoe wij met je gegevens omgaan.',
+    contactButton: 'Neem contact op',
+    sections: nlSections,
+    dateLocale: 'nl-NL',
+  },
+  en: {
+    backHome: 'Back to home',
+    pageTitle: 'Privacy Policy',
+    lastUpdated: 'Last updated',
+    intro: 'ResuBox takes the protection of your personal data seriously. This privacy policy explains what data we collect, why, and how we protect your privacy in line with GDPR.',
+    goTo: 'Jump to:',
+    quickLinks: ['Data', 'Purpose', 'Storage', 'Sharing', 'Cookies', 'Rights'],
+    ctaTitle: 'Questions about your privacy?',
+    ctaSubtitle: 'Feel free to get in touch if you have any questions about how we handle your data.',
+    contactButton: 'Contact us',
+    sections: enSections,
+    dateLocale: 'en-GB',
+  },
+} as const;
+
 export default function PrivacyPage() {
+  const locale = useLocale();
+  const copy = locale === 'nl' ? COPY.nl : COPY.en;
+  const sections = copy.sections;
+  const quickIds = ['welke-gegevens', 'waarvoor', 'waar-opgeslagen', 'delen', 'cookies', 'rechten'];
+
   return (
     <main className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero Section */}
       <section className="pt-32 pb-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-500 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-500 rounded-full blur-3xl" />
@@ -503,7 +975,7 @@ export default function PrivacyPage() {
             className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Terug naar home
+            {copy.backHome}
           </Link>
 
           <div className="flex items-center gap-4 mb-6">
@@ -512,31 +984,28 @@ export default function PrivacyPage() {
             </div>
             <div>
               <h1 className="text-4xl sm:text-5xl font-bold text-white">
-                Privacybeleid
+                {copy.pageTitle}
               </h1>
               <p className="text-slate-400 mt-1">
-                Laatst bijgewerkt: {new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {copy.lastUpdated}: {new Date().toLocaleDateString(copy.dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
           </div>
 
           <p className="text-lg text-slate-300 max-w-2xl">
-            ResuBox hecht veel waarde aan de bescherming van je persoonsgegevens.
-            In dit privacybeleid leggen we uit welke gegevens we verzamelen, waarom we dit doen,
-            en hoe we je privacy beschermen conform de AVG/GDPR.
+            {copy.intro}
           </p>
         </div>
       </section>
 
-      {/* Quick Navigation */}
       <section className="py-8 bg-slate-50 border-b border-slate-200 sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-hide">
-            <span className="text-sm text-slate-500 whitespace-nowrap">Ga naar:</span>
-            {['Gegevens', 'Doel', 'Opslag', 'Delen', 'Cookies', 'Rechten'].map((item, i) => (
+            <span className="text-sm text-slate-500 whitespace-nowrap">{copy.goTo}</span>
+            {copy.quickLinks.map((item, i) => (
               <a
                 key={i}
-                href={`#${['welke-gegevens', 'waarvoor', 'waar-opgeslagen', 'delen', 'cookies', 'rechten'][i]}`}
+                href={`#${quickIds[i]}`}
                 className="px-3 py-1.5 text-sm text-slate-600 hover:text-emerald-600 bg-white rounded-full border border-slate-200 hover:border-emerald-300 transition-colors whitespace-nowrap"
               >
                 {item}
@@ -546,7 +1015,6 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      {/* Content */}
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-8">
@@ -577,20 +1045,19 @@ export default function PrivacyPage() {
             })}
           </div>
 
-          {/* CTA Section */}
           <div className="mt-12 p-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl text-white text-center">
             <h3 className="text-2xl font-bold mb-4">
-              Vragen over je privacy?
+              {copy.ctaTitle}
             </h3>
             <p className="text-emerald-100 mb-6 max-w-lg mx-auto">
-              Neem gerust contact met ons op als je vragen hebt over hoe wij met je gegevens omgaan.
+              {copy.ctaSubtitle}
             </p>
             <Link
               href="/contact"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 font-semibold rounded-xl hover:bg-emerald-50 transition-colors"
             >
               <Mail className="w-5 h-5" />
-              Neem contact op
+              {copy.contactButton}
             </Link>
           </div>
         </div>

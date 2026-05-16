@@ -6,6 +6,7 @@ import {
   PROFILE_GENERATOR_SYSTEM,
   BULLET_IMPROVER_SYSTEM,
   VACANCY_MATCH_SYSTEM,
+  getLanguageInstruction,
 } from './prompts';
 
 // ──────────────────────────────────────────────────────────────────
@@ -15,6 +16,7 @@ export interface GenerateProfileInput {
   experience: Experience[];
   education: CVData['education'];
   skills: CVData['skills'];
+  locale?: string;
 }
 
 export interface GenerateProfileResult {
@@ -63,7 +65,7 @@ Output: alleen de 2-3 zinnen profieltekst.`;
     system: [
       {
         type: 'text',
-        text: PROFILE_GENERATOR_SYSTEM,
+        text: PROFILE_GENERATOR_SYSTEM + getLanguageInstruction(input.locale ?? 'nl'),
         cache_control: { type: 'ephemeral' },
       },
     ],
@@ -97,6 +99,7 @@ export interface ImproveBulletInput {
   jobTitle: string;
   company: string;
   description?: string;
+  locale?: string;
 }
 
 export interface ImproveBulletResult {
@@ -117,7 +120,7 @@ Herschrijf de bullet.`;
     system: [
       {
         type: 'text',
-        text: BULLET_IMPROVER_SYSTEM,
+        text: BULLET_IMPROVER_SYSTEM + getLanguageInstruction(input.locale ?? 'nl'),
         cache_control: { type: 'ephemeral' },
       },
     ],
@@ -149,6 +152,7 @@ Herschrijf de bullet.`;
 export interface VacancyMatchInput {
   cvData: CVData;
   vacancyText: string;
+  locale?: string;
 }
 
 export interface BulletSuggestion {
@@ -246,7 +250,7 @@ Analyseer en geef je gestructureerde JSON-output.`;
     system: [
       {
         type: 'text',
-        text: VACANCY_MATCH_SYSTEM,
+        text: VACANCY_MATCH_SYSTEM + getLanguageInstruction(input.locale ?? 'nl'),
         cache_control: { type: 'ephemeral' },
       },
     ],

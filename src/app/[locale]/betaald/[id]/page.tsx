@@ -1,128 +1,127 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { CheckCircle, ArrowRight, FileText, Mail } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { getOrder } from '@/lib/orders';
-
-export const metadata: Metadata = {
-  title: 'Betaling Geslaagd - ResuBox',
-  description: 'Je betaling is succesvol verwerkt.',
-};
+import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
+}
+
+const CURRENCY_FORMAT: Record<string, (a: number) => string> = {
+  nl: (a) => `€${a.toFixed(2).replace('.', ',')}`,
+  de: (a) => `${a.toFixed(2).replace('.', ',')} €`,
+  en: (a) => `£${a.toFixed(2)}`,
+  sv: (a) => `${Math.round(a)} kr`,
+  da: (a) => `${Math.round(a)} kr`,
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'PaymentSuccess' });
+  return {
+    title: `${t('pageTitle')} - ResuBox`,
+    description: t('pageDescription'),
+  };
 }
 
 export default async function BetaaldPage({ params }: PageProps) {
-  const { id } = await params;
+  const { locale, id } = await params;
   const order = await getOrder(id);
+  const t = await getTranslations({ locale, namespace: 'PaymentSuccess' });
+  const orderLocale = order?.locale ?? order?.cv_data?.meta?.locale ?? locale;
+  const formatPrice = CURRENCY_FORMAT[orderLocale] ?? CURRENCY_FORMAT.nl;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center h-16 sm:h-20">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             <Link href="/">
-              <Image
-                src="/resubox-logo.svg"
-                alt="ResuBox"
-                width={160}
-                height={40}
-                className="h-8 sm:h-10 w-auto"
-                priority
-              />
+              <Image src="/resubox-logo.svg" alt="ResuBox" width={160} height={40} className="h-8 sm:h-10 w-auto" priority />
             </Link>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
 
-      {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-16 sm:py-24">
         <div className="text-center">
-          {/* Success Icon */}
           <div className="mx-auto w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-8">
             <CheckCircle className="w-12 h-12 text-emerald-600" />
           </div>
 
-          {/* Title */}
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-            Betaling geslaagd!
+            {t('title')}
           </h1>
 
           <p className="text-lg text-slate-600 mb-8">
-            Bedankt voor je betaling. Je factuur is nu volledig voldaan.
+            {t('subtitle')}
           </p>
 
-          {/* Order Details Card */}
           {order && (
             <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-8 mb-8 text-left">
               <h2 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-emerald-600" />
-                Betalingsdetails
+                {t('detailsTitle')}
               </h2>
 
               <div className="space-y-3">
                 <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-600">Factuurnummer</span>
+                  <span className="text-slate-600">{t('invoiceNumber')}</span>
                   <span className="font-medium text-slate-900">{order.dossier_number}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-600">Naam</span>
+                  <span className="text-slate-600">{t('name')}</span>
                   <span className="font-medium text-slate-900">{order.customer_name}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-600">Bedrag</span>
-                  <span className="font-medium text-emerald-600">&euro;{order.amount.toFixed(2)}</span>
+                  <span className="text-slate-600">{t('amount')}</span>
+                  <span className="font-medium text-emerald-600">{formatPrice(order.amount)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-600">Status</span>
+                  <span className="text-slate-600">{t('status')}</span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
                     <CheckCircle className="w-4 h-4" />
-                    Betaald
+                    {t('statusPaid')}
                   </span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Email Confirmation Note */}
           <div className="bg-blue-50 rounded-xl p-4 mb-8 flex items-start gap-3 text-left">
             <Mail className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-blue-800">
-              Je ontvangt binnen enkele minuten een bevestigingsmail op{' '}
-              {order ? (
-                <span className="font-medium">{order.customer_email}</span>
-              ) : (
-                'je e-mailadres'
-              )}
-              .
+              {order
+                ? t('confirmationEmail', { email: order.customer_email })
+                : t('confirmationEmailGeneric')}
             </p>
           </div>
 
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/builder"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors"
             >
-              Nieuw CV maken
+              {t('newCv')}
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-700 font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors"
             >
-              Terug naar home
+              {t('backHome')}
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Simple Footer */}
       <footer className="border-t border-slate-100 py-8">
         <div className="max-w-6xl mx-auto px-4 text-center text-sm text-slate-500">
-          <p>&copy; {new Date().getFullYear()} ResuBox. Alle rechten voorbehouden.</p>
+          <p>&copy; {new Date().getFullYear()} ResuBox. {t('rightsReserved')}</p>
         </div>
       </footer>
     </main>

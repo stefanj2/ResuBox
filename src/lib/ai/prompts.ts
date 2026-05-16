@@ -1,4 +1,25 @@
 /**
+ * Locale instruction appended to each system prompt so Claude responds in
+ * the user's language. The prompts themselves stay in NL — Claude
+ * understands them fine — but the output language is enforced explicitly.
+ */
+export function getLanguageInstruction(locale: string): string {
+  switch (locale) {
+    case 'en':
+      return '\n\n# CRITICAL: Respond in fluent professional British English. Use UK CV conventions (no photo, no DOB, "CV" not "resume", Skills/Experience headers).';
+    case 'de':
+      return '\n\n# CRITICAL: Antworten Sie in fließendem, professionellem Deutsch. Verwenden Sie die "Sie"-Form (formell). Folgen Sie deutschen Lebenslauf-Konventionen (formaler Ton, Berufserfahrung statt Werkervaring).';
+    case 'sv':
+      return '\n\n# CRITICAL: Svara på flytande, professionell svenska. Använd svensk CV-stil (saklig, ej självhyllande, Arbetslivserfarenhet, Utbildning, Kompetenser).';
+    case 'da':
+      return '\n\n# CRITICAL: Svar på flydende, professionelt dansk. Brug dansk CV-stil (saglig, ikke selvhyldende, Erhvervserfaring, Uddannelse, Færdigheder).';
+    case 'nl':
+    default:
+      return ''; // NL is the prompt's native language
+  }
+}
+
+/**
  * System prompts for the three CV-AI features.
  *
  * Each prompt is kept stable (no timestamps, no user-specific content)

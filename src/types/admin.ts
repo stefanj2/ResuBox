@@ -8,7 +8,9 @@ export type OrderStatus =
   | 'factuur_verstuurd'
   | 'herinnering_1'
   | 'herinnering_2'
+  | 'herinnering_3'
   | 'incasso_overgedragen'
+  | 'incasso_manual_review'
   | 'betaald'
   | 'afgeboekt';
 
@@ -32,6 +34,9 @@ export interface CVOrder {
   template_used?: string;
   cv_data?: CVData; // Full CV data for regenerating PDF
 
+  // Locale at download time — drives email/SMS/checkout/collections language
+  locale: string;
+
   // Financial
   amount: number;
   dossier_number?: string;
@@ -47,7 +52,11 @@ export interface CVOrder {
   invoice_sent_at?: string;
   reminder_1_sent_at?: string;
   reminder_2_sent_at?: string;
+  reminder_3_sent_at?: string;
   incasso_sent_at?: string;
+  // SMS tracking (7d after invoice, then 7d later)
+  sms_1_sent_at?: string;
+  sms_2_sent_at?: string;
 
   // Justus Collect (incasso)
   justus_case_id?: string;
@@ -62,6 +71,8 @@ export type ActionType =
   | 'order_created'
   | 'status_changed'
   | 'email_sent'
+  | 'sms_sent'
+  | 'sms_failed'
   | 'payment_created'
   | 'payment_received'
   | 'payment_failed'

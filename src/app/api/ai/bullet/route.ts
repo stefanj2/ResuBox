@@ -13,6 +13,7 @@ interface Body {
   jobTitle?: string;
   company?: string;
   description?: string;
+  locale?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
   if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
   try {
-    const { bullet, jobTitle, company, description } = (await request.json()) as Body;
+    const { bullet, jobTitle, company, description, locale } = (await request.json()) as Body;
     if (!bullet || typeof bullet !== 'string') {
       return NextResponse.json({ error: 'bullet is verplicht' }, { status: 400 });
     }
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
       jobTitle: jobTitle ?? '',
       company: company ?? '',
       description: description ?? '',
+      locale: locale ?? request.headers.get('x-locale') ?? 'nl',
     });
 
     return NextResponse.json({ bullet: result.bullet, usage: result.usage });

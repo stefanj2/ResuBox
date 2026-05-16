@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addOrderAction, getOrder, updateOrder } from '@/lib/orders';
 import { createCheckoutSession } from '@/lib/stripe';
+import { localizedPath, type Locale } from '@/i18n/routing';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 export async function POST(request: NextRequest) {
   try {
-    const { orderId } = await request.json();
+    const { orderId, locale } = await request.json();
 
     if (!orderId) {
       return NextResponse.json(
@@ -31,15 +32,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const effectiveLocale = (locale ?? order.locale ?? order.cv_data?.meta?.locale ?? request.headers.get('x-locale') ?? 'nl') as Locale;
+
     const result = await createCheckoutSession({
       orderId: order.id,
       amount: order.amount,
-      description: `ResuBox by Dune Legal - ${order.dossier_number}`,
+      description: `ResuBox - ${order.dossier_number}`,
       customerEmail: order.customer_email,
       customerName: order.customer_name,
       dossierNumber: order.dossier_number ?? order.id,
-      successUrl: `${siteUrl}/betaald/${order.id}`,
-      cancelUrl: `${siteUrl}/betalen/${order.id}`,
+      successUrl: `${siteUrl}${localizedPath('/betaald/[id]', effectiveLocale, { id: order.id })}`,
+      cancelUrl: `${siteUrl}${localizedPath('/betalen/[id]', effectiveLocale, { id: order.id })}`,
+      locale: effectiveLocale,
     });
 
     if (!result.success) {

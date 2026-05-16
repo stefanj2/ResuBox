@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { Mail, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 import { Modal, Input, Button } from '@/components/ui';
 
@@ -11,6 +12,7 @@ interface MagicLinkModalProps {
 }
 
 export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
+  const t = useTranslations('MagicLinkModal');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState('');
@@ -18,9 +20,9 @@ export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !email.includes('@')) {
-      setError('Vul een geldig emailadres in');
+      setError(t('invalidEmail'));
       return;
     }
 
@@ -32,41 +34,36 @@ export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
       const sessionsData = localStorage.getItem('cv-builder-sessions');
       if (sessionsData) {
         const sessions = JSON.parse(sessionsData);
-        // Zoek sessie met dit emailadres
         const sessionToken = Object.keys(sessions).find(
-          token => sessions[token].personal?.email === email
+          (token) => sessions[token].personal?.email === email
         );
-        
+
         if (sessionToken) {
-          // Sessie gevonden - navigeer naar builder met token
           setStatus('success');
           setTimeout(() => {
-            router.push(`/builder?token=${sessionToken}`);
+            router.push({ pathname: '/builder', query: { token: sessionToken } });
           }, 1500);
           return;
         }
       }
 
       // Geen sessie gevonden - simuleer dat we een email sturen
-      // In productie zou dit een API call zijn
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       setStatus('success');
-      // Na 2 seconden sluit modal (in echt zou user email checken)
       setTimeout(() => {
         onClose();
         setStatus('idle');
         setEmail('');
       }, 3000);
-      
     } catch {
-      setError('Er ging iets mis. Probeer het opnieuw.');
+      setError(t('error'));
       setStatus('error');
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Ga verder met je CV">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('title')}>
       <div className="p-6">
         {status === 'success' ? (
           <div className="text-center py-8">
@@ -74,25 +71,23 @@ export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
               <CheckCircle className="w-8 h-8 text-emerald-600" />
             </div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              Check je inbox!
+              {t('successTitle')}
             </h3>
             <p className="text-slate-600">
-              We hebben een link gestuurd naar <strong>{email}</strong>. 
-              Klik op de link om verder te gaan met je CV.
+              {t('successBody')} <strong>{email}</strong>
             </p>
           </div>
         ) : (
           <>
             <p className="text-slate-600 mb-6">
-              Vul je emailadres in waarmee je eerder bent begonnen. 
-              We sturen je een link om direct verder te gaan.
+              {t('subtitle')}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 type="email"
-                label="Emailadres"
-                placeholder="jouw@email.nl"
+                label={t('emailLabel')}
+                placeholder={t('emailPlaceholder')}
                 icon={Mail}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -108,12 +103,12 @@ export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
                 iconPosition="right"
                 loading={status === 'loading'}
               >
-                {status === 'loading' ? 'Even geduld...' : 'Stuur herstel-link'}
+                {status === 'loading' ? t('sending') : t('sendButton')}
               </Button>
             </form>
 
             <p className="text-sm text-slate-500 text-center mt-4">
-              Nog geen CV begonnen?{' '}
+              {t('notStarted')}{' '}
               <button
                 onClick={() => {
                   onClose();
@@ -121,7 +116,7 @@ export function MagicLinkModal({ isOpen, onClose }: MagicLinkModalProps) {
                 }}
                 className="text-emerald-600 hover:text-emerald-700 font-medium"
               >
-                Start nu gratis
+                {t('startNow')}
               </button>
             </p>
           </>

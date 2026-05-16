@@ -15,14 +15,17 @@ export async function POST(request: NextRequest) {
   if (!success) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
 
   try {
-    const body = (await request.json()) as { cvData?: CVData };
+    const body = (await request.json()) as { cvData?: CVData; locale?: string };
     const cv = body.cvData;
     if (!cv) return NextResponse.json({ error: 'cvData ontbreekt' }, { status: 400 });
+
+    const locale = body.locale ?? request.headers.get('x-locale') ?? 'nl';
 
     const result = await generateProfile({
       experience: cv.experience ?? [],
       education: cv.education ?? [],
       skills: cv.skills ?? [],
+      locale,
     });
 
     return NextResponse.json({ profile: result.profile, usage: result.usage });

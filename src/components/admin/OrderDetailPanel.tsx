@@ -103,9 +103,11 @@ export function OrderDetailPanel({
   const emailButtons = [
     { type: 'confirmation', label: 'Bevestiging', sentAt: order.confirmation_sent_at },
     { type: 'invoice', label: 'Factuur', sentAt: order.invoice_sent_at },
-    { type: 'reminder_1', label: '1e Herinnering', sentAt: order.reminder_1_sent_at },
-    { type: 'reminder_2', label: 'WIK-brief', sentAt: order.reminder_2_sent_at },
-    { type: 'incasso', label: 'Incasso', sentAt: order.incasso_sent_at },
+    { type: 'reminder_1', label: '1e Herinnering (T+3d)', sentAt: order.reminder_1_sent_at },
+    { type: 'reminder_2', label: '2e Herinnering + SMS (T+7d)', sentAt: order.reminder_2_sent_at },
+    { type: 'reminder_3', label: 'Pre-aanmaning (T+10d)', sentAt: order.reminder_3_sent_at },
+    { type: 'wik', label: 'WIK-aanmaning + SMS (T+14d)', sentAt: order.reminder_3_sent_at },
+    { type: 'incasso', label: 'Incasso (T+28d)', sentAt: order.incasso_sent_at },
   ];
 
   return (

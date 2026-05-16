@@ -9,6 +9,6 @@ export const config = {
   //   /auth/*, /dashboard, /login, sitemap.xml, robots.txt, favicons.
   // The admin / payment / auth surfaces stay NL-only — they're operational, not user-facing.
   matcher: [
-    '/((?!api|_next|_vercel|admin|betalen|betaald|auth|dashboard|login|opengraph-image|icon|apple-icon|sitemap.xml|robots.txt|.*\\..*).*)',
+    '/((?!api|_next|_vercel|admin|opengraph-image|icon|apple-icon|sitemap.xml|robots.txt|.*\\..*).*)',
   ],
 };

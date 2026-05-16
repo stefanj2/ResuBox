@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Upload, Loader2, CheckCircle, AlertCircle, AlertTriangle, FileText, ArrowRight, X } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 interface AtsCheck {
   id: string;
@@ -30,6 +31,7 @@ interface AtsResult {
 }
 
 export default function AtsCheckClient() {
+  const t = useTranslations('AtsCheck');
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
@@ -50,14 +52,14 @@ export default function AtsCheckClient() {
       const json = await res.json();
       if (!res.ok || !json.success) {
         setStatus('error');
-        setError(json.error ?? 'Check mislukt');
+        setError(json.error ?? 'Check failed');
         return;
       }
       setStatus('done');
       setResult(json.result);
     } catch (err) {
       setStatus('error');
-      setError(err instanceof Error ? err.message : 'Onverwachte fout');
+      setError(err instanceof Error ? err.message : 'Unexpected error');
     }
   };
 
@@ -77,10 +79,9 @@ export default function AtsCheckClient() {
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
       <div className="space-y-6">
-        {/* File upload */}
         <div>
           <label className="block text-sm font-semibold text-slate-900 mb-2">
-            Upload je CV (PDF)
+            {t('uploadLabel')}
           </label>
           <input
             ref={fileRef}
@@ -97,8 +98,8 @@ export default function AtsCheckClient() {
             >
               <Upload className="w-10 h-10 text-slate-400" />
               <div>
-                <span className="text-base font-medium text-slate-900">Kies bestand</span>
-                <p className="text-sm text-slate-500 mt-1">PDF, max 8 MB</p>
+                <span className="text-base font-medium text-slate-900">{t('chooseFile')}</span>
+                <p className="text-sm text-slate-500 mt-1">{t('fileHint')}</p>
               </div>
             </button>
           ) : (
@@ -114,7 +115,7 @@ export default function AtsCheckClient() {
                 type="button"
                 onClick={reset}
                 className="p-1 text-slate-400 hover:text-slate-600"
-                aria-label="Verwijder bestand"
+                aria-label={t('removeFile')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -122,19 +123,18 @@ export default function AtsCheckClient() {
           )}
         </div>
 
-        {/* Job description (optional) */}
         <div>
           <label className="block text-sm font-semibold text-slate-900 mb-2">
-            Vacaturetekst <span className="font-normal text-slate-500">(optioneel)</span>
+            {t('vacancyLabel')} <span className="font-normal text-slate-500">{t('vacancyHintLabel')}</span>
           </label>
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Plak hier de vacaturetekst om te zien hoe goed je CV matcht..."
+            placeholder={t('vacancyPlaceholder')}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 min-h-[100px] resize-y"
           />
           <p className="text-xs text-slate-500 mt-1">
-            Vergelijkt de woorden in de vacature met die in je CV — geeft een match-percentage.
+            {t('vacancyHint')}
           </p>
         </div>
 
@@ -157,10 +157,10 @@ export default function AtsCheckClient() {
         >
           {status === 'checking' ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" /> Bezig met checken…
+              <Loader2 className="w-5 h-5 animate-spin" /> {t('checking')}
             </>
           ) : (
-            <>Check mijn CV</>
+            <>{t('checkButton')}</>
           )}
         </button>
       </div>
@@ -169,26 +169,23 @@ export default function AtsCheckClient() {
 }
 
 function ResultView({ result, onReset }: { result: AtsResult; onReset: () => void }) {
+  const t = useTranslations('AtsCheck');
+  const tScore = useTranslations('Score');
   const gradeColor = {
     excellent: 'text-emerald-600 bg-emerald-50',
     good: 'text-emerald-600 bg-emerald-50',
     fair: 'text-amber-600 bg-amber-50',
     poor: 'text-red-600 bg-red-50',
   }[result.grade];
-  const gradeLabel = {
-    excellent: 'Uitstekend',
-    good: 'Goed',
-    fair: 'Kan beter',
-    poor: 'Slecht',
-  }[result.grade];
+  const gradeLabel = tScore(result.grade);
 
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Jouw ATS-score</p>
-            <h2 className="text-5xl font-bold text-slate-900">{result.score}<span className="text-2xl text-slate-400">/100</span></h2>
+            <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">{t('scoreLabel')}</p>
+            <h2 className="text-5xl font-bold text-slate-900">{result.score}<span className="text-2xl text-slate-400">{t('outOf')}</span></h2>
             <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ${gradeColor}`}>
               {gradeLabel}
             </span>
@@ -198,30 +195,30 @@ function ResultView({ result, onReset }: { result: AtsResult; onReset: () => voi
             onClick={onReset}
             className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-lg"
           >
-            Nieuwe check
+            {t('newCheck')}
           </button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm text-slate-600 mb-4 pb-4 border-b border-slate-100">
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Woorden</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('metaWords')}</p>
             <p className="font-semibold text-slate-900">{result.metadata.wordCount}</p>
           </div>
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Pagina&apos;s</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('metaPages')}</p>
             <p className="font-semibold text-slate-900">~{result.metadata.pageCountEstimate}</p>
           </div>
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">E-mail</p>
-            <p className="font-semibold text-slate-900">{result.metadata.hasEmail ? 'Ja' : 'Nee'}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('metaEmail')}</p>
+            <p className="font-semibold text-slate-900">{result.metadata.hasEmail ? t('metaYes') : t('metaNo')}</p>
           </div>
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Telefoon</p>
-            <p className="font-semibold text-slate-900">{result.metadata.hasPhone ? 'Ja' : 'Nee'}</p>
+            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('metaPhone')}</p>
+            <p className="font-semibold text-slate-900">{result.metadata.hasPhone ? t('metaYes') : t('metaNo')}</p>
           </div>
         </div>
 
-        <h3 className="font-semibold text-slate-900 mb-3">Detail-checks</h3>
+        <h3 className="font-semibold text-slate-900 mb-3">{t('detailChecks')}</h3>
         <ul className="space-y-3">
           {result.checks.map((check) => (
             <li key={check.id} className="flex items-start gap-3">
@@ -241,15 +238,14 @@ function ResultView({ result, onReset }: { result: AtsResult; onReset: () => voi
 
       {result.keywordMatch && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">Vacature-match</h3>
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">{t('vacancyMatch')}</h3>
           <p className="text-sm text-slate-600 mb-4">
-            <strong className="text-slate-900">{result.keywordMatch.matchPercentage}%</strong> van
-            de trefwoorden in de vacature komt ook in je CV voor.
+            {t('matchPercent', { percent: result.keywordMatch.matchPercentage })}
           </p>
           {result.keywordMatch.missing.length > 0 && (
             <div>
               <p className="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-2">
-                Trefwoorden uit vacature die ontbreken in je CV
+                {t('matchKeywords')}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {result.keywordMatch.missing.slice(0, 30).map((kw) => (
@@ -260,11 +256,6 @@ function ResultView({ result, onReset }: { result: AtsResult; onReset: () => voi
                     {kw}
                   </span>
                 ))}
-                {result.keywordMatch.missing.length > 30 && (
-                  <span className="text-xs text-slate-500 py-1">
-                    + {result.keywordMatch.missing.length - 30} meer
-                  </span>
-                )}
               </div>
             </div>
           )}
@@ -273,17 +264,16 @@ function ResultView({ result, onReset }: { result: AtsResult; onReset: () => voi
 
       <div className="bg-emerald-50 rounded-2xl border border-emerald-200 p-6 sm:p-8">
         <h3 className="text-xl font-semibold text-slate-900 mb-2">
-          Maak een nieuw, ATS-geoptimaliseerd CV
+          {t('newCvCta')}
         </h3>
         <p className="text-slate-700 mb-5">
-          Onze CV builder produceert tekst-selecteerbare PDF&apos;s die elke ATS leest.
-          Recruiter-gerichte typografie, 6 templates, direct downloadbaar.
+          {t('newCvSubtitle')}
         </p>
         <Link
           href="/builder"
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700"
         >
-          Start gratis <ArrowRight className="w-4 h-4" />
+          {t('startFree')} <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

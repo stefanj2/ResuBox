@@ -8,11 +8,13 @@ const fromEmailIncasso = process.env.FROM_EMAIL_INCASSO || 'Incasso Afdeling <in
 
 const limiter = rateLimiter({ limit: 10, windowMs: 60_000 });
 
-const TIMESTAMP_FIELDS: Record<string, 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'incasso'> = {
+const TIMESTAMP_FIELDS: Record<string, 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'reminder_3' | 'wik' | 'incasso'> = {
   confirmation: 'confirmation',
   invoice: 'invoice',
   reminder_1: 'reminder_1',
   reminder_2: 'reminder_2',
+  reminder_3: 'reminder_3',
+  wik: 'wik',
   incasso: 'incasso',
 };
 
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validTypes = ['confirmation', 'invoice', 'reminder_1', 'reminder_2', 'incasso', 'payment_received'];
+    const validTypes = ['confirmation', 'invoice', 'reminder_1', 'reminder_2', 'reminder_3', 'wik', 'incasso', 'payment_received'];
     if (!validTypes.includes(emailType)) {
       return NextResponse.json(
         { error: 'Ongeldig email type' },

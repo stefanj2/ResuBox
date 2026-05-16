@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Sidebar } from './Sidebar';
 import { PersonalSection } from './sections/PersonalSection';
 import { ProfileSection } from './sections/ProfileSection';
@@ -18,17 +19,25 @@ import { TemplateSelector } from '@/components/templateSelector';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { SyncStatusPill } from './SyncStatusPill';
 import { LiveScorePanel } from './LiveScorePanel';
+import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
 
-const sections = [
-  { id: 0, title: 'Persoonsgegevens', shortTitle: 'Persoon', icon: User, component: PersonalSection },
-  { id: 1, title: 'Werkervaring', shortTitle: 'Werk', icon: Briefcase, component: ExperienceSection },
-  { id: 2, title: 'Opleiding', shortTitle: 'Studie', icon: GraduationCap, component: EducationSection },
-  { id: 3, title: 'Vaardigheden', shortTitle: 'Skills', icon: Wrench, component: SkillsSection },
-  { id: 4, title: 'Profiel', shortTitle: 'Profiel', icon: FileText, component: ProfileSection },
-];
+const SECTION_DEFS = [
+  { id: 0, key: 'personal', shortKey: 'personalShort', icon: User, component: PersonalSection },
+  { id: 1, key: 'work', shortKey: 'workShort', icon: Briefcase, component: ExperienceSection },
+  { id: 2, key: 'education', shortKey: 'educationShort', icon: GraduationCap, component: EducationSection },
+  { id: 3, key: 'skills', shortKey: 'skillsShort', icon: Wrench, component: SkillsSection },
+  { id: 4, key: 'profile', shortKey: 'profileShort', icon: FileText, component: ProfileSection },
+] as const;
 
 export function EditorLayout() {
   const { currentSection, setCurrentSection, cvData } = useCVData();
+  const tSections = useTranslations('Builder.sections');
+  const tUi = useTranslations('Builder.ui');
+  const sections = SECTION_DEFS.map((s) => ({
+    ...s,
+    title: tSections(s.key),
+    shortTitle: tSections(s.shortKey),
+  }));
   const [showPreview, setShowPreview] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
@@ -128,6 +137,7 @@ export function EditorLayout() {
                 />
               </Link>
               <div className="flex items-center gap-2">
+                <LanguageSwitcher />
                 <SyncStatusPill />
                 <Button
                   variant="secondary"
@@ -135,7 +145,7 @@ export function EditorLayout() {
                   icon={Palette}
                   onClick={() => setShowTemplateModal(true)}
                 >
-                  Sjabloon
+                  {tUi('templateButton')}
                 </Button>
                 <Button
                   variant="primary"
@@ -143,7 +153,7 @@ export function EditorLayout() {
                   icon={Download}
                   onClick={handleOpenDownloadModal}
                 >
-                  Download CV
+                  {tUi('downloadCv')}
                 </Button>
               </div>
             </header>
@@ -194,11 +204,12 @@ export function EditorLayout() {
               />
             </Link>
             <div className="flex items-center gap-1">
+              <LanguageSwitcher />
               {/* Template button */}
               <button
                 onClick={() => setShowTemplateModal(true)}
                 className="p-2 text-slate-600 hover:text-emerald-600 transition-colors"
-                aria-label="Sjabloon wijzigen"
+                aria-label={tUi('templateButton')}
               >
                 <Palette className="w-5 h-5" />
               </button>
@@ -206,7 +217,7 @@ export function EditorLayout() {
               <button
                 onClick={() => setShowPreview(true)}
                 className="p-2 text-slate-600 hover:text-emerald-600 transition-colors"
-                aria-label="Bekijk voorbeeld"
+                aria-label={tUi('cvPreview')}
               >
                 <Eye className="w-5 h-5" />
               </button>
@@ -274,7 +285,7 @@ export function EditorLayout() {
                   ? 'text-slate-300'
                   : 'text-slate-500 hover:bg-slate-200 active:bg-slate-300'
               }`}
-              aria-label="Vorige sectie"
+              aria-label={tUi('previousSection')}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -283,7 +294,7 @@ export function EditorLayout() {
                 {sections[currentSection].title}
               </h2>
               <p className="text-xs text-slate-500">
-                Stap {currentSection + 1} van {sections.length}
+                {tUi('stepOf', { n: currentSection + 1, total: sections.length })}
               </p>
             </div>
             <button
@@ -294,7 +305,7 @@ export function EditorLayout() {
                   ? 'text-slate-300'
                   : 'text-slate-500 hover:bg-slate-200 active:bg-slate-300'
               }`}
-              aria-label="Volgende sectie"
+              aria-label={tUi('nextSection')}
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -319,12 +330,12 @@ export function EditorLayout() {
             <div className="fixed inset-0 bg-slate-800 z-50 flex flex-col">
               {/* Preview Header */}
               <div className="bg-slate-900 px-4 py-3 flex items-center justify-between safe-area-top">
-                <span className="text-white font-medium">CV Voorbeeld</span>
+                <span className="text-white font-medium">{tUi('cvPreview')}</span>
                 <button
                   onClick={() => setShowPreview(false)}
                   className="text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg font-medium text-sm"
                 >
-                  Sluiten
+                  {tUi('close')}
                 </button>
               </div>
               {/* Preview Content - Scrollable */}
@@ -352,7 +363,7 @@ export function EditorLayout() {
       <Modal
         isOpen={showTemplateModal}
         onClose={() => setShowTemplateModal(false)}
-        title="Sjabloon kiezen"
+        title={tUi('templateModalTitle')}
         size="xl"
         mobileFullScreen
       >

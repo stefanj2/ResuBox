@@ -34,6 +34,7 @@ function rowToOrder(row: CvOrderRow): CVOrder {
     cv_id: row.cv_id ?? undefined,
     template_used: row.template_used ?? undefined,
     cv_data: row.cv_data ?? undefined,
+    locale: row.locale ?? 'nl',
     amount: typeof row.amount === 'string' ? parseFloat(row.amount) : row.amount,
     dossier_number: row.dossier_number ?? undefined,
     stripe_session_id: row.stripe_session_id ?? undefined,
@@ -44,7 +45,10 @@ function rowToOrder(row: CvOrderRow): CVOrder {
     invoice_sent_at: row.invoice_sent_at ?? undefined,
     reminder_1_sent_at: row.reminder_1_sent_at ?? undefined,
     reminder_2_sent_at: row.reminder_2_sent_at ?? undefined,
+    reminder_3_sent_at: row.reminder_3_sent_at ?? undefined,
     incasso_sent_at: row.incasso_sent_at ?? undefined,
+    sms_1_sent_at: row.sms_1_sent_at ?? undefined,
+    sms_2_sent_at: row.sms_2_sent_at ?? undefined,
     justus_case_id: row.justus_case_id ?? undefined,
     justus_case_number: row.justus_case_number ?? undefined,
     created_at: row.created_at,
@@ -95,6 +99,11 @@ export async function createOrder(orderData: {
   const id = uuidv4();
   const dossier_number = generateDossierNumber();
 
+  // Capture the locale from the CV's meta. This is the locale the user was
+  // browsing in when they hit download — drives email/SMS/checkout language
+  // and per-country collections routing for the entire debt-collection flow.
+  const locale = orderData.cv_data?.meta?.locale ?? 'nl';
+
   const [inserted] = await db
     .insert(cvOrders)
     .values({
@@ -110,13 +119,14 @@ export async function createOrder(orderData: {
       cv_id: orderData.cv_id,
       template_used: orderData.template_used,
       cv_data: orderData.cv_data,
+      locale,
       amount: '42.00',
       dossier_number,
     })
     .returning();
 
   const order = rowToOrder(inserted);
-  await addOrderAction(order.id, 'order_created', 'Order aangemaakt', 'system');
+  await addOrderAction(order.id, 'order_created', `Order aangemaakt (taal: ${locale})`, 'system');
   return order;
 }
 
@@ -310,7 +320,9 @@ export async function getOrderStatistics(): Promise<OrderStatistics> {
       factuur_verstuurd: 0,
       herinnering_1: 0,
       herinnering_2: 0,
+      herinnering_3: 0,
       incasso_overgedragen: 0,
+      incasso_manual_review: 0,
       betaald: 0,
       afgeboekt: 0,
     },
@@ -339,7 +351,7 @@ export async function getOrdersByStatus(status: OrderStatus): Promise<CVOrder[]>
 
 export async function markEmailSent(
   orderId: string,
-  emailType: 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'incasso'
+  emailType: 'confirmation' | 'invoice' | 'reminder_1' | 'reminder_2' | 'reminder_3' | 'wik' | 'incasso'
 ): Promise<CVOrder | null> {
   const now = new Date().toISOString();
   const fieldMap = {
@@ -347,6 +359,8 @@ export async function markEmailSent(
     invoice: 'invoice_sent_at',
     reminder_1: 'reminder_1_sent_at',
     reminder_2: 'reminder_2_sent_at',
+    reminder_3: 'reminder_3_sent_at',
+    wik: 'reminder_3_sent_at', // WIK uses the same field; pre-aanmaning is stored in its own column
     incasso: 'incasso_sent_at',
   } as const;
 
