@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { User, FileText, Briefcase, GraduationCap, Wrench, Check } from 'lucide-react';
 import { useCVData } from '@/context/CVContext';
+import { isSectionComplete, getCvProgress } from '@/lib/cvProgress';
 
 interface Section {
   id: number;
@@ -20,36 +22,20 @@ const sectionIcons = [User, Briefcase, GraduationCap, Wrench, FileText];
 
 export function Sidebar({ sections, currentSection, onSectionChange }: SidebarProps) {
   const { cvData } = useCVData();
-
-  // Check of sectie "compleet" is (basic check)
-  // Order: Persoon, Werk, Studie, Skills, Profiel
-  const isSectionComplete = (id: number): boolean => {
-    switch (id) {
-      case 0: // Persoonsgegevens
-        return !!(cvData.personal.firstName && cvData.personal.lastName && cvData.personal.email && cvData.personal.postalCode && cvData.personal.houseNumber);
-      case 1: // Werkervaring
-        return cvData.experience.length > 0 && cvData.experience.some(e => e.jobTitle && e.company);
-      case 2: // Opleiding
-        return cvData.education.length > 0 && cvData.education.some(e => e.degree && e.institution);
-      case 3: // Vaardigheden
-        return cvData.skills.length >= 3;
-      case 4: // Profiel
-        return cvData.profile.summary.length > 20;
-      default:
-        return false;
-    }
-  };
+  const t = useTranslations('Builder.ui');
+  const tProgress = useTranslations('BuilderProgress');
+  const progress = getCvProgress(cvData);
 
   return (
     <nav className="w-56 bg-slate-50 border-r border-slate-200 flex-shrink-0">
       <div className="p-4">
         <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
-          Secties
+          {t('sectionsLabel')}
         </h2>
         <ul className="space-y-1">
           {sections.map((section, index) => {
             const Icon = sectionIcons[index];
-            const isComplete = isSectionComplete(section.id);
+            const isComplete = isSectionComplete(section.id, cvData);
             const isActive = currentSection === section.id;
 
             return (
@@ -70,9 +56,14 @@ export function Sidebar({ sections, currentSection, onSectionChange }: SidebarPr
                       </div>
                     )}
                   </div>
-                  <span className={`text-sm font-medium ${isActive ? 'text-emerald-700' : ''}`}>
-                    {section.title}
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-[10px] uppercase tracking-wider ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
+                      {t('stepOf', { n: index + 1, total: sections.length })}
+                    </p>
+                    <p className={`text-sm font-medium ${isActive ? 'text-emerald-700' : ''}`}>
+                      {section.title}
+                    </p>
+                  </div>
                 </button>
               </li>
             );
@@ -80,21 +71,18 @@ export function Sidebar({ sections, currentSection, onSectionChange }: SidebarPr
         </ul>
       </div>
 
-      {/* Progress indicator */}
       <div className="px-4 mt-4">
         <div className="bg-white rounded-lg border border-slate-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-slate-500">Voortgang</span>
+            <span className="text-xs font-medium text-slate-500">{tProgress('progressLabel')}</span>
             <span className="text-xs font-semibold text-emerald-600">
-              {sections.filter(s => isSectionComplete(s.id)).length}/{sections.length}
+              {progress.completed}/{progress.total}
             </span>
           </div>
           <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-              style={{
-                width: `${(sections.filter(s => isSectionComplete(s.id)).length / sections.length) * 100}%`
-              }}
+              style={{ width: `${progress.percent}%` }}
             />
           </div>
         </div>

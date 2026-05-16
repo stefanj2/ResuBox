@@ -774,6 +774,21 @@
     "title": "Kontakt",
     "description": "Kontaktieren Sie ResuBox. Fragen, Feedback oder Hilfe nötig — wir helfen Ihnen gerne weiter."
   },
+  "BuilderProgress": {
+    "getStarted": "Willkommen! Füllen Sie {total} kurze Abschnitte aus, um Ihren Lebenslauf abzuschließen",
+    "progress": "{completed}/{total} Abschnitte fertig — noch {remaining}",
+    "allDone": "Fertig! Ihr Lebenslauf ist bereit zum Herunterladen",
+    "progressLabel": "Fortschritt"
+  },
+  "SectionFooter": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "previousNamed": "← {name}",
+    "nextNamed": "Weiter: {name} →",
+    "incompleteHint": "Bitte füllen Sie die Pflichtfelder unten aus, um fortzufahren",
+    "completeFirst": "Noch {remaining} Abschnitt(e) ausfüllen",
+    "downloadGateTooltip": "Füllen Sie noch {remaining} Abschnitt(e) aus, um herunterzuladen"
+  },
   "LanguageSwitcher": {
     "label": "Sprache",
     "nl": "Nederlands",

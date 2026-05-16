@@ -775,6 +775,21 @@
     "title": "Contact",
     "description": "Get in touch with ResuBox. Questions, feedback or help needed — we're here for you."
   },
+  "BuilderProgress": {
+    "getStarted": "Welcome! Fill in {total} short sections to complete your CV",
+    "progress": "{completed}/{total} sections done — {remaining} to go",
+    "allDone": "All set! Your CV is ready to download",
+    "progressLabel": "Progress"
+  },
+  "SectionFooter": {
+    "previous": "Previous",
+    "next": "Next",
+    "previousNamed": "← {name}",
+    "nextNamed": "Next: {name} →",
+    "incompleteHint": "Fill in the required fields below before continuing",
+    "completeFirst": "Complete {remaining} more section(s) first",
+    "downloadGateTooltip": "Fill in {remaining} more section(s) to download"
+  },
   "LanguageSwitcher": {
     "label": "Language",
     "nl": "Nederlands",

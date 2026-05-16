@@ -19,6 +19,9 @@ import { TemplateSelector } from '@/components/templateSelector';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { SyncStatusPill } from './SyncStatusPill';
 import { LiveScorePanel } from './LiveScorePanel';
+import { BuilderProgress } from './BuilderProgress';
+import { SectionFooter } from './SectionFooter';
+import { getCvProgress } from '@/lib/cvProgress';
 import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
 
 const SECTION_DEFS = [
@@ -33,6 +36,9 @@ export function EditorLayout() {
   const { currentSection, setCurrentSection, cvData } = useCVData();
   const tSections = useTranslations('Builder.sections');
   const tUi = useTranslations('Builder.ui');
+  const tFooter = useTranslations('SectionFooter');
+  const progress = getCvProgress(cvData);
+  const canDownload = progress.isComplete;
   const sections = SECTION_DEFS.map((s) => ({
     ...s,
     title: tSections(s.key),
@@ -152,6 +158,9 @@ export function EditorLayout() {
                   size="sm"
                   icon={Download}
                   onClick={handleOpenDownloadModal}
+                  disabled={!canDownload}
+                  className={canDownload ? 'animate-pulse' : ''}
+                  title={canDownload ? undefined : tFooter('downloadGateTooltip', { remaining: progress.remaining })}
                 >
                   {tUi('downloadCv')}
                 </Button>
@@ -165,10 +174,14 @@ export function EditorLayout() {
                 currentSection={currentSection}
                 onSectionChange={setCurrentSection}
               />
-              
+
               {/* Content Area */}
-              <div className="flex-1 overflow-y-auto p-6">
-                <CurrentSectionComponent />
+              <div className="flex-1 overflow-y-auto flex flex-col">
+                <BuilderProgress />
+                <div className="flex-1 p-6">
+                  <CurrentSectionComponent />
+                  <SectionFooter currentSection={currentSection} onDownload={handleOpenDownloadModal} />
+                </div>
               </div>
             </div>
           </div>
@@ -312,8 +325,12 @@ export function EditorLayout() {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 p-4 pb-32">
-            <CurrentSectionComponent />
+          <div className="flex-1 pb-32">
+            <BuilderProgress />
+            <div className="p-4">
+              <CurrentSectionComponent />
+              <SectionFooter currentSection={currentSection} onDownload={handleOpenDownloadModal} />
+            </div>
           </div>
 
           {/* Sticky Mobile CTA */}

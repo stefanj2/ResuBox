@@ -775,6 +775,21 @@
     "title": "Kontakt",
     "description": "Kontakta ResuBox. Frågor, feedback eller behöver du hjälp — vi hjälper dig gärna."
   },
+  "BuilderProgress": {
+    "getStarted": "Välkommen! Fyll i {total} korta avsnitt för att slutföra ditt CV",
+    "progress": "{completed}/{total} avsnitt klara — {remaining} kvar",
+    "allDone": "Klart! Ditt CV är redo att laddas ner",
+    "progressLabel": "Framsteg"
+  },
+  "SectionFooter": {
+    "previous": "Föregående",
+    "next": "Nästa",
+    "previousNamed": "← {name}",
+    "nextNamed": "Nästa: {name} →",
+    "incompleteHint": "Fyll i de obligatoriska fälten nedan för att fortsätta",
+    "completeFirst": "Fyll i {remaining} avsnitt till",
+    "downloadGateTooltip": "Fyll i {remaining} avsnitt till för att kunna ladda ner"
+  },
   "LanguageSwitcher": {
     "label": "Språk",
     "nl": "Nederlands",

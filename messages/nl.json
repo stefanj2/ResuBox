@@ -775,6 +775,21 @@
     "title": "Contact",
     "description": "Neem contact op met ResuBox. Vragen, feedback of hulp nodig — we helpen je graag verder."
   },
+  "BuilderProgress": {
+    "getStarted": "Welkom! Vul {total} korte secties in om je CV af te maken",
+    "progress": "{completed}/{total} secties klaar — nog {remaining} te gaan",
+    "allDone": "Klaar! Je CV is klaar om te downloaden",
+    "progressLabel": "Voortgang"
+  },
+  "SectionFooter": {
+    "previous": "Vorige",
+    "next": "Volgende",
+    "previousNamed": "← {name}",
+    "nextNamed": "Volgende: {name} →",
+    "incompleteHint": "Vul de verplichte velden hieronder in om door te gaan",
+    "completeFirst": "Vul nog {remaining} sectie(s) in",
+    "downloadGateTooltip": "Vul nog {remaining} sectie(s) in om te downloaden"
+  },
   "LanguageSwitcher": {
     "label": "Taal",
     "nl": "Nederlands",

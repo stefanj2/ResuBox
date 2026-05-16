@@ -775,6 +775,21 @@
     "title": "Kontakt",
     "description": "Kontakt ResuBox. Spørgsmål, feedback eller brug for hjælp — vi hjælper dig gerne."
   },
+  "BuilderProgress": {
+    "getStarted": "Velkommen! Udfyld {total} korte sektioner for at færdiggøre dit CV",
+    "progress": "{completed}/{total} sektioner klar — {remaining} tilbage",
+    "allDone": "Færdig! Dit CV er klar til download",
+    "progressLabel": "Fremskridt"
+  },
+  "SectionFooter": {
+    "previous": "Forrige",
+    "next": "Næste",
+    "previousNamed": "← {name}",
+    "nextNamed": "Næste: {name} →",
+    "incompleteHint": "Udfyld de obligatoriske felter nedenfor for at fortsætte",
+    "completeFirst": "Udfyld {remaining} sektion(er) mere",
+    "downloadGateTooltip": "Udfyld {remaining} sektion(er) mere for at downloade"
+  },
   "LanguageSwitcher": {
     "label": "Sprog",
     "nl": "Nederlands",
