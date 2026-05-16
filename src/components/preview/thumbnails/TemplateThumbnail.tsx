@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useLocale } from 'next-intl';
 import { TemplateId } from '@/types/cv';
 import {
   ModernTemplate,
@@ -10,7 +11,7 @@ import {
   ExecutiveTemplate,
   TechTemplate,
 } from '../templates';
-import { sampleCVData } from './sampleData';
+import { getSampleCVData } from './sampleData';
 
 const TEMPLATE_COMPONENTS = {
   modern: ModernTemplate,
@@ -27,11 +28,12 @@ interface TemplateThumbnailProps {
 }
 
 export function TemplateThumbnail({ templateId, scale = 0.22 }: TemplateThumbnailProps) {
+  const locale = useLocale();
   const TemplateComponent = TEMPLATE_COMPONENTS[templateId];
-  const sampleData = { ...sampleCVData, meta: { ...sampleCVData.meta, selectedTemplate: templateId } };
+  const base = getSampleCVData(locale);
+  const sampleData = { ...base, meta: { ...base.meta, selectedTemplate: templateId } };
 
   // A4 dimensions in mm: 210 x 297
-  // At scale 0.22, this becomes roughly 46.2mm x 65.3mm which is about 175px x 248px
   const containerWidth = 210 * scale;
   const containerHeight = 297 * scale;
 
@@ -51,7 +53,7 @@ export function TemplateThumbnail({ templateId, scale = 0.22 }: TemplateThumbnai
           height: '297mm',
         }}
       >
-        <TemplateComponent cvData={sampleData} />
+        <TemplateComponent cvData={sampleData} locale={locale} />
       </div>
     </div>
   );
