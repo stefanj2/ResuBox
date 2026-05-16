@@ -1,23 +1,26 @@
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Privacybeleid',
-  description: 'Lees het privacybeleid van ResuBox. Informatie over hoe wij omgaan met je persoonsgegevens, cookies, en je rechten onder de AVG.',
-  keywords: ['privacybeleid', 'privacy policy', 'AVG', 'GDPR', 'persoonsgegevens', 'ResuBox', 'CV builder'],
-  alternates: {
-    canonical: '/privacy',
-  },
-  openGraph: {
-    title: 'Privacybeleid | ResuBox',
-    description: 'Lees het privacybeleid van ResuBox CV builder.',
-    url: '/privacy',
-  },
-};
-
-export default function PrivacyLayout({
-  children,
-}: {
+interface Props {
+  params: Promise<{ locale: string }>;
   children: React.ReactNode;
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'PrivacyMeta' });
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: { canonical: '/privacy' },
+    openGraph: {
+      title: `${t('title')} | ResuBox`,
+      description: t('description'),
+      url: '/privacy',
+    },
+  };
+}
+
+export default function PrivacyLayout({ children }: Props) {
   return children;
 }

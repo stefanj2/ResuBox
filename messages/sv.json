@@ -759,6 +759,22 @@
     "mobileMessage": "{name} har laddat ner ett CV",
     "justNow": "Precis nu"
   },
+  "TermsMeta": {
+    "title": "Allmänna villkor",
+    "description": "Läs ResuBox allmänna villkor — information om hur vår CV-byggare används, betalning och dina rättigheter."
+  },
+  "PrivacyMeta": {
+    "title": "Integritetspolicy",
+    "description": "Läs ResuBox integritetspolicy — hur vi hanterar dina data, cookies och dina rättigheter under GDPR."
+  },
+  "FAQMeta": {
+    "title": "Vanliga frågor",
+    "description": "Svar på frågor om ResuBox CV-byggare — priser, ATS, betalning och hur du sparar ditt CV."
+  },
+  "ContactMeta": {
+    "title": "Kontakt",
+    "description": "Kontakta ResuBox. Frågor, feedback eller behöver du hjälp — vi hjälper dig gärna."
+  },
   "LanguageSwitcher": {
     "label": "Språk",
     "nl": "Nederlands",

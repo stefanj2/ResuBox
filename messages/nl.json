@@ -759,6 +759,22 @@
     "mobileMessage": "{name} heeft een CV gedownload",
     "justNow": "Zojuist"
   },
+  "TermsMeta": {
+    "title": "Algemene Voorwaarden",
+    "description": "Lees de algemene voorwaarden van ResuBox. Informatie over het gebruik van onze CV builder, betaling en je rechten."
+  },
+  "PrivacyMeta": {
+    "title": "Privacybeleid",
+    "description": "Lees het privacybeleid van ResuBox. Hoe wij omgaan met je gegevens, cookies en je rechten onder de AVG."
+  },
+  "FAQMeta": {
+    "title": "Veelgestelde vragen",
+    "description": "Antwoorden op vragen over ResuBox CV builder — prijzen, ATS, betaling, en hoe je je CV opslaat."
+  },
+  "ContactMeta": {
+    "title": "Contact",
+    "description": "Neem contact op met ResuBox. Vragen, feedback of hulp nodig — we helpen je graag verder."
+  },
   "LanguageSwitcher": {
     "label": "Taal",
     "nl": "Nederlands",

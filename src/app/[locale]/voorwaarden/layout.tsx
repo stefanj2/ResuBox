@@ -1,23 +1,26 @@
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Algemene Voorwaarden',
-  description: 'Lees de algemene voorwaarden van ResuBox. Informatie over het gebruik van onze CV builder dienst, betaling, en je rechten als consument.',
-  keywords: ['algemene voorwaarden', 'terms of service', 'ResuBox', 'CV builder', 'gebruiksvoorwaarden'],
-  alternates: {
-    canonical: '/voorwaarden',
-  },
-  openGraph: {
-    title: 'Algemene Voorwaarden | ResuBox',
-    description: 'Lees de algemene voorwaarden van ResuBox CV builder.',
-    url: '/voorwaarden',
-  },
-};
-
-export default function VoorwaardenLayout({
-  children,
-}: {
+interface Props {
+  params: Promise<{ locale: string }>;
   children: React.ReactNode;
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'TermsMeta' });
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: { canonical: '/voorwaarden' },
+    openGraph: {
+      title: `${t('title')} | ResuBox`,
+      description: t('description'),
+      url: '/voorwaarden',
+    },
+  };
+}
+
+export default function VoorwaardenLayout({ children }: Props) {
   return children;
 }

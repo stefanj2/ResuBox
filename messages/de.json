@@ -758,6 +758,22 @@
     "mobileMessage": "{name} hat einen Lebenslauf heruntergeladen",
     "justNow": "Gerade eben"
   },
+  "TermsMeta": {
+    "title": "Allgemeine Geschäftsbedingungen",
+    "description": "Lesen Sie die AGB von ResuBox — Informationen zur Nutzung unseres Lebenslauf-Builders, Zahlung und Ihren Rechten."
+  },
+  "PrivacyMeta": {
+    "title": "Datenschutzerklärung",
+    "description": "Lesen Sie die Datenschutzerklärung von ResuBox — wie wir mit Ihren Daten umgehen und Ihre Rechte nach DSGVO."
+  },
+  "FAQMeta": {
+    "title": "Häufig gestellte Fragen",
+    "description": "Antworten zu ResuBox Lebenslauf-Builder — Preise, ATS, Zahlung und wie Sie Ihren Lebenslauf speichern."
+  },
+  "ContactMeta": {
+    "title": "Kontakt",
+    "description": "Kontaktieren Sie ResuBox. Fragen, Feedback oder Hilfe nötig — wir helfen Ihnen gerne weiter."
+  },
   "LanguageSwitcher": {
     "label": "Sprache",
     "nl": "Nederlands",

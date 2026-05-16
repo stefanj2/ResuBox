@@ -1,23 +1,26 @@
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Veelgestelde Vragen (FAQ)',
-  description: 'Antwoorden op veelgestelde vragen over ResuBox CV builder. Leer meer over prijzen, ATS-optimalisatie, betaling en hoe je je CV kunt opslaan.',
-  keywords: ['FAQ', 'veelgestelde vragen', 'CV builder help', 'ResuBox support', 'CV maken hulp'],
-  alternates: {
-    canonical: '/faq',
-  },
-  openGraph: {
-    title: 'Veelgestelde Vragen | ResuBox',
-    description: 'Antwoorden op veelgestelde vragen over ResuBox CV builder.',
-    url: '/faq',
-  },
-};
-
-export default function FAQLayout({
-  children,
-}: {
+interface Props {
+  params: Promise<{ locale: string }>;
   children: React.ReactNode;
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'FAQMeta' });
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: { canonical: '/faq' },
+    openGraph: {
+      title: `${t('title')} | ResuBox`,
+      description: t('description'),
+      url: '/faq',
+    },
+  };
+}
+
+export default function FAQLayout({ children }: Props) {
   return children;
 }

@@ -1,23 +1,26 @@
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Neem contact op met ResuBox. Heb je vragen over onze CV builder of hulp nodig? We helpen je graag verder.',
-  keywords: ['contact', 'ResuBox contact', 'CV builder support', 'hulp CV maken'],
-  alternates: {
-    canonical: '/contact',
-  },
-  openGraph: {
-    title: 'Contact | ResuBox',
-    description: 'Neem contact op met ResuBox. We helpen je graag verder.',
-    url: '/contact',
-  },
-};
-
-export default function ContactLayout({
-  children,
-}: {
+interface Props {
+  params: Promise<{ locale: string }>;
   children: React.ReactNode;
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ContactMeta' });
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: { canonical: '/contact' },
+    openGraph: {
+      title: `${t('title')} | ResuBox`,
+      description: t('description'),
+      url: '/contact',
+    },
+  };
+}
+
+export default function ContactLayout({ children }: Props) {
   return children;
 }

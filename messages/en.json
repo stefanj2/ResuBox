@@ -759,6 +759,22 @@
     "mobileMessage": "{name} just downloaded a CV",
     "justNow": "Just now"
   },
+  "TermsMeta": {
+    "title": "Terms & Conditions",
+    "description": "Read ResuBox's terms & conditions — information about using our CV builder, payment, and your rights."
+  },
+  "PrivacyMeta": {
+    "title": "Privacy Policy",
+    "description": "Read ResuBox's privacy policy — how we handle your data, cookies, and your rights under GDPR."
+  },
+  "FAQMeta": {
+    "title": "Frequently asked questions",
+    "description": "Answers to questions about the ResuBox CV builder — pricing, ATS, payment, and saving your CV."
+  },
+  "ContactMeta": {
+    "title": "Contact",
+    "description": "Get in touch with ResuBox. Questions, feedback or help needed — we're here for you."
+  },
   "LanguageSwitcher": {
     "label": "Language",
     "nl": "Nederlands",
