@@ -49,7 +49,7 @@
     "badgeAts": "ATS-vänlig",
     "badgeReady": "Klar på 10 min",
     "title": "Ditt professionella CV på 10 minuter",
-    "subtitle": "Välj bland 6 ATS-vänliga mallar, fyll i dina uppgifter och ladda ner som PDF. Inget abonnemang, engångskostnad 449 kr.",
+    "subtitle": "Skapa ditt professionella CV gratis. Välj bland 6 ATS-vänliga mallar, fyll i dina uppgifter och se resultatet direkt. Inget konto behövs.",
     "cta": "Börja gratis",
     "trustUsers": "2 500+ användare",
     "trustTemplates": "6 gratis mallar",
@@ -443,7 +443,7 @@
     "faqButton": "Visa FAQ"
   },
   "Footer": {
-    "tagline": "Skapa ditt CV gratis. Engångskostnad 449 kr för nedladdningen. Inget abonnemang.",
+    "tagline": "Skapa ditt professionella CV gratis. Inget konto, inget abonnemang — kom igång direkt.",
     "productHeader": "Produkt",
     "supportHeader": "Support",
     "legalHeader": "Juridiskt",
