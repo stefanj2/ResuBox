@@ -640,7 +640,39 @@
     "skipForNow": "Spring over og vælg senere",
     "swipeToBrowse": "Swip for at se alle skabeloner",
     "apply": "Anvend",
-    "dataPreserved": "Dine oplysninger bevares, når du skifter skabelon eller farve."
+    "dataPreserved": "Dine oplysninger bevares, når du skifter skabelon eller farve.",
+    "popular": "Populær",
+    "templateNames": {
+      "modern": "Moderne",
+      "zakelijk": "Klassisk",
+      "creatief": "Kreativ",
+      "minimalist": "Minimalistisk",
+      "executive": "Executive",
+      "tech": "Tech"
+    },
+    "templateDescriptions": {
+      "modern": "Farvet sidebar med personlige oplysninger, hovedindhold til højre",
+      "zakelijk": "Traditionelt layout, serif-overskrifter, professionelt og kompakt",
+      "creatief": "Markant header, moderne grid, ikoner ved sektionerne",
+      "minimalist": "Ultrarent design med masser af hvid plads og elegante linjer",
+      "executive": "Premium mørk header med guldaccenter, direktionsniveau",
+      "tech": "Moderne tech-look med mørk sidebar og gradient-accenter"
+    }
+  },
+  "ColorPicker": {
+    "heading": "Farveskema",
+    "popular": "Populær",
+    "mostChosen": "Oftest valgt",
+    "names": {
+      "emerald": "Smaragd",
+      "blue": "Ocean",
+      "violet": "Lavendel",
+      "rose": "Rose",
+      "amber": "Guld",
+      "slate": "Grafit",
+      "teal": "Aqua",
+      "orange": "Orange"
+    }
   },
   "CoverLetterBuilder": {
     "metaTitle": "Lav en ansøgning - Gratis skabelon",

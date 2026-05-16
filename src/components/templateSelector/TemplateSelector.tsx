@@ -65,7 +65,7 @@ export function TemplateSelector({ mode, onSelect, onSkip }: TemplateSelectorPro
               onClick={() => onSelect?.(selectedTemplate)}
               className="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/30 min-h-[48px]"
             >
-              {t('continueWith', { name: TEMPLATES[selectedTemplate].nameNL })}
+              {t('continueWith', { name: t(`templateNames.${selectedTemplate}`) })}
             </button>
 
             {onSkip && (

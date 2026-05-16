@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
 import { ColorSchemeId } from '@/types/cv';
 import { COLOR_SCHEME_LIST } from '@/lib/colorSchemes';
@@ -12,12 +13,13 @@ interface ColorPickerProps {
 
 export function ColorPicker({ compact = false }: ColorPickerProps) {
   const { cvData, setColorScheme } = useCVData();
-  const selectedColor = cvData.meta.selectedColorScheme ?? 'emerald';
+  const t = useTranslations('ColorPicker');
+  const selectedColor: ColorSchemeId = cvData.meta.selectedColorScheme ?? 'emerald';
 
   return (
     <div>
       <h3 className={`font-semibold text-slate-900 ${compact ? 'text-sm mb-3 mt-4' : 'text-sm sm:text-base mb-3'}`}>
-        Kleurschema
+        {t('heading')}
       </h3>
 
       {/* Mobile: Simple color circles */}
@@ -27,7 +29,7 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
             key={scheme.id}
             onClick={() => setColorScheme(scheme.id)}
             className="relative p-1"
-            title={scheme.name}
+            title={t(`names.${scheme.id}`)}
           >
             <div
               className={`w-8 h-8 rounded-full transition-all ${
@@ -46,7 +48,7 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
             )}
             {scheme.id === 'emerald' && (
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[8px] text-amber-600 font-bold whitespace-nowrap">
-                Populair
+                {t('popular')}
               </div>
             )}
           </button>
@@ -66,16 +68,14 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
                 ? 'border-slate-900 bg-slate-50'
                 : 'border-slate-200 hover:border-slate-300 bg-white'
             }`}
-            title={scheme.name}
+            title={t(`names.${scheme.id}`)}
           >
-            {/* Popular badge for emerald */}
             {scheme.id === 'emerald' && (
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap z-10">
-                Meest gekozen
+                {t('mostChosen')}
               </div>
             )}
 
-            {/* Color swatch */}
             <div
               className="rounded-full w-5 h-5"
               style={{
@@ -83,12 +83,10 @@ export function ColorPicker({ compact = false }: ColorPickerProps) {
               }}
             />
 
-            {/* Name */}
             <span className="font-medium text-sm text-slate-700">
-              {scheme.name}
+              {t(`names.${scheme.id}`)}
             </span>
 
-            {/* Selected indicator */}
             {selectedColor === scheme.id && (
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-slate-900 rounded-full flex items-center justify-center">
                 <Check className="w-2.5 h-2.5 text-white" />

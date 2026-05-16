@@ -640,7 +640,39 @@
     "skipForNow": "Hoppa över och välj senare",
     "swipeToBrowse": "Svep för att bläddra bland alla mallar",
     "apply": "Tillämpa",
-    "dataPreserved": "Dina uppgifter bevaras när du byter mall eller färg."
+    "dataPreserved": "Dina uppgifter bevaras när du byter mall eller färg.",
+    "popular": "Populär",
+    "templateNames": {
+      "modern": "Modern",
+      "zakelijk": "Klassisk",
+      "creatief": "Kreativ",
+      "minimalist": "Minimalistisk",
+      "executive": "Executive",
+      "tech": "Tech"
+    },
+    "templateDescriptions": {
+      "modern": "Färgad sidlist med personlig info, huvudinnehåll till höger",
+      "zakelijk": "Traditionell layout, serif-rubriker, professionellt och kompakt",
+      "creatief": "Tydlig header, modernt rutnät, ikoner intill avsnitten",
+      "minimalist": "Renodlad design med mycket vit yta och eleganta linjer",
+      "executive": "Premium mörk header med guldaccenter, ledningsnivå",
+      "tech": "Modern tech-look med mörk sidlist och gradient-accenter"
+    }
+  },
+  "ColorPicker": {
+    "heading": "Färgschema",
+    "popular": "Populär",
+    "mostChosen": "Mest vald",
+    "names": {
+      "emerald": "Smaragd",
+      "blue": "Hav",
+      "violet": "Lavendel",
+      "rose": "Ros",
+      "amber": "Guld",
+      "slate": "Grafit",
+      "teal": "Aqua",
+      "orange": "Orange"
+    }
   },
   "CoverLetterBuilder": {
     "metaTitle": "Skapa personligt brev - Gratis mall",

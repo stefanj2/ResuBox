@@ -639,7 +639,39 @@
     "skipForNow": "Überspringen und später wählen",
     "swipeToBrowse": "Wischen Sie, um alle Vorlagen anzusehen",
     "apply": "Anwenden",
-    "dataPreserved": "Ihre Daten bleiben beim Wechsel der Vorlage oder Farbe erhalten."
+    "dataPreserved": "Ihre Daten bleiben beim Wechsel der Vorlage oder Farbe erhalten.",
+    "popular": "Beliebt",
+    "templateNames": {
+      "modern": "Modern",
+      "zakelijk": "Klassisch",
+      "creatief": "Kreativ",
+      "minimalist": "Minimalistisch",
+      "executive": "Executive",
+      "tech": "Tech"
+    },
+    "templateDescriptions": {
+      "modern": "Farbige Seitenleiste mit persönlichen Daten, Hauptinhalt rechts",
+      "zakelijk": "Traditionelles Layout, Serifenüberschriften, professionell und kompakt",
+      "creatief": "Auffälliger Header, modernes Grid, Icons neben den Abschnitten",
+      "minimalist": "Ultra-klares Design mit viel Weißraum und eleganten Linien",
+      "executive": "Hochwertiger dunkler Header mit Gold-Akzenten, Führungsebene",
+      "tech": "Moderner Tech-Look mit dunkler Seitenleiste und Gradient-Akzenten"
+    }
+  },
+  "ColorPicker": {
+    "heading": "Farbschema",
+    "popular": "Beliebt",
+    "mostChosen": "Am häufigsten gewählt",
+    "names": {
+      "emerald": "Smaragd",
+      "blue": "Ozean",
+      "violet": "Lavendel",
+      "rose": "Rose",
+      "amber": "Gold",
+      "slate": "Graphit",
+      "teal": "Aqua",
+      "orange": "Orange"
+    }
   },
   "CoverLetterBuilder": {
     "metaTitle": "Anschreiben erstellen - Kostenlose Vorlage",

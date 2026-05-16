@@ -640,7 +640,39 @@
     "skipForNow": "Sla over en kies later",
     "swipeToBrowse": "Swipe om alle templates te bekijken",
     "apply": "Toepassen",
-    "dataPreserved": "Je gegevens blijven behouden als je van template of kleur wisselt."
+    "dataPreserved": "Je gegevens blijven behouden als je van template of kleur wisselt.",
+    "popular": "Populair",
+    "templateNames": {
+      "modern": "Modern",
+      "zakelijk": "Zakelijk",
+      "creatief": "Creatief",
+      "minimalist": "Minimalist",
+      "executive": "Executive",
+      "tech": "Tech"
+    },
+    "templateDescriptions": {
+      "modern": "Gekleurde zijbalk met persoonlijke info, hoofdinhoud rechts",
+      "zakelijk": "Traditionele opmaak, serif koppen, professioneel en compact",
+      "creatief": "Opvallende header, moderne grid, iconen bij secties",
+      "minimalist": "Ultra-clean design met veel witruimte en elegante lijnen",
+      "executive": "Premium donkere header met gouden accenten, directieniveau",
+      "tech": "Moderne tech-look met donkere zijbalk en gradient accenten"
+    }
+  },
+  "ColorPicker": {
+    "heading": "Kleurschema",
+    "popular": "Populair",
+    "mostChosen": "Meest gekozen",
+    "names": {
+      "emerald": "Smaragd",
+      "blue": "Oceaan",
+      "violet": "Lavendel",
+      "rose": "Roos",
+      "amber": "Goud",
+      "slate": "Grafiet",
+      "teal": "Aqua",
+      "orange": "Oranje"
+    }
   },
   "CoverLetterBuilder": {
     "metaTitle": "Motivatiebrief maken - Gratis sjabloon",

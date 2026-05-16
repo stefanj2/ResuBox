@@ -640,7 +640,39 @@
     "skipForNow": "Skip and choose later",
     "swipeToBrowse": "Swipe to browse all templates",
     "apply": "Apply",
-    "dataPreserved": "Your data is preserved when switching template or colour."
+    "dataPreserved": "Your data is preserved when switching template or colour.",
+    "popular": "Popular",
+    "templateNames": {
+      "modern": "Modern",
+      "zakelijk": "Classic",
+      "creatief": "Creative",
+      "minimalist": "Minimalist",
+      "executive": "Executive",
+      "tech": "Tech"
+    },
+    "templateDescriptions": {
+      "modern": "Coloured sidebar with personal info, main content on the right",
+      "zakelijk": "Traditional layout, serif headings, professional and compact",
+      "creatief": "Bold header, modern grid, icons next to sections",
+      "minimalist": "Ultra-clean design with plenty of white space and elegant lines",
+      "executive": "Premium dark header with gold accents, board-level",
+      "tech": "Modern tech look with dark sidebar and gradient accents"
+    }
+  },
+  "ColorPicker": {
+    "heading": "Colour scheme",
+    "popular": "Popular",
+    "mostChosen": "Most chosen",
+    "names": {
+      "emerald": "Emerald",
+      "blue": "Ocean",
+      "violet": "Lavender",
+      "rose": "Rose",
+      "amber": "Gold",
+      "slate": "Graphite",
+      "teal": "Aqua",
+      "orange": "Orange"
+    }
   },
   "CoverLetterBuilder": {
     "metaTitle": "Create a cover letter - Free template",
