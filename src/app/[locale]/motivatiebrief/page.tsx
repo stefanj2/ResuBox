@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'CoverLetterBuilder' });
   return {
-    title: `${t('metaTitle')} | ResuBox`,
+    title: t('metaTitle'),
     description: t('metaDescription'),
     alternates: { canonical: '/motivatiebrief' },
     openGraph: {

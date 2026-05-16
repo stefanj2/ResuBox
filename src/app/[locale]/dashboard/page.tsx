@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Dashboard' });
   return {
-    title: `${t('pageTitle')} | ResuBox`,
+    title: t('pageTitle'),
     robots: { index: false, follow: false },
   };
 }

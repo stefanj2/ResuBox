@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'CvExamples' });
   return {
-    title: `${t('pageTitle')} | ResuBox`,
+    title: t('pageTitle'),
     description: t('pageDescription'),
     alternates: { canonical: '/cv-voorbeelden' },
     openGraph: {

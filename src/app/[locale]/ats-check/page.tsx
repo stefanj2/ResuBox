@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'AtsCheck' });
   return {
-    title: `${t('title')} | ResuBox`,
+    title: t('title'),
     description: t('subtitle'),
     alternates: { canonical: '/ats-check' },
     openGraph: {
