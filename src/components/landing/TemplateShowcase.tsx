@@ -17,18 +17,10 @@ const TEMPLATE_IDS: { id: TemplateId; nameKey: string; badge?: 'popular' }[] = [
   { id: 'tech', nameKey: 'tech' },
 ];
 
-const TEMPLATE_NAMES: Record<TemplateId, string> = {
-  modern: 'Modern',
-  zakelijk: 'Zakelijk',
-  creatief: 'Creatief',
-  minimalist: 'Minimalist',
-  executive: 'Executive',
-  tech: 'Tech',
-};
-
 export function TemplateShowcase() {
   const t = useTranslations('TemplateShowcase');
   const tHero = useTranslations('Hero');
+  const tSelector = useTranslations('TemplateSelector');
 
   return (
     <section id="templates" className="py-24 bg-gradient-to-b from-white to-slate-50 scroll-mt-20">
@@ -67,7 +59,7 @@ export function TemplateShowcase() {
 
               <div className="text-center">
                 <h3 className="font-semibold text-slate-900 mb-0.5 sm:mb-1 text-sm sm:text-base">
-                  {TEMPLATE_NAMES[template.id]}
+                  {tSelector(`templateNames.${template.id}`)}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 line-clamp-2">
                   {t(`descriptions.${template.nameKey}`)}
