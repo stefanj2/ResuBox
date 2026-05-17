@@ -18,9 +18,7 @@ export function isSectionComplete(id: number, cv: CVData): boolean {
       return !!(
         cv.personal.firstName &&
         cv.personal.lastName &&
-        cv.personal.email &&
-        cv.personal.postalCode &&
-        cv.personal.houseNumber
+        cv.personal.email
       );
     case 1: // Werkervaring
       return cv.experience.length > 0 && cv.experience.some((e) => e.jobTitle && e.company);
