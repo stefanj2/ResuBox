@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { Check, LucideIcon } from 'lucide-react';
 
 export interface StepperStep {
@@ -19,17 +18,11 @@ interface FunnelStepperProps {
 }
 
 /**
- * Adaptive top stepper for the builder funnel. One row of dots with labels,
- * connectors that fill emerald as the user advances, and click-back support
- * for already-completed steps. On mobile the labels shrink to icons + active
- * label; on desktop full labels are visible inline.
+ * Compact dots-and-connectors stepper. Designed to sit inline inside the
+ * editor header — no nav wrapper, no labels-below-dots, no meta row. The
+ * caller is expected to render the "Stap X / Y · label" text elsewhere.
  */
 export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChange }: FunnelStepperProps) {
-  const t = useTranslations('Builder.ui');
-  const tProgress = useTranslations('BuilderProgress');
-
-  const completedCount = perStepComplete.filter((v, i) => v && i < steps.length - 1).length;
-
   // Celebrate when a step flips from incomplete → complete
   const prevCompleteRef = useRef<boolean[]>(perStepComplete);
   const [celebrateIdx, setCelebrateIdx] = useState<number | null>(null);
@@ -46,114 +39,53 @@ export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChang
   }, [perStepComplete]);
 
   return (
-    <nav
+    <ol
+      className="flex items-center gap-0 w-full min-w-0"
       aria-label="CV builder voortgang"
-      className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5"
     >
-      {/* Top meta row */}
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs sm:text-sm font-medium text-slate-700">
-          {t('stepOf', { n: currentStep + 1, total: steps.length })}
-          <span className="hidden sm:inline text-slate-400 font-normal">
-            {' · '}{steps[currentStep]?.label}
-          </span>
-        </p>
-        <p className="text-xs font-semibold text-emerald-700 tabular-nums">
-          {Math.round((completedCount / (steps.length - 1)) * 100)}%
-        </p>
-      </div>
+      {steps.map((step, index) => {
+        const isComplete = perStepComplete[index];
+        const isActive = index === currentStep;
+        const isPast = index < currentStep;
+        const isClickable = isComplete || isPast || isActive;
+        const connectorActive = index < currentStep || (index === currentStep && isComplete);
 
-      {/* Stepper row */}
-      <ol className="flex items-center gap-0 sm:gap-1">
-        {steps.map((step, index) => {
-          const isComplete = perStepComplete[index];
-          const isActive = index === currentStep;
-          const isPast = index < currentStep;
-          const isClickable = isComplete || isPast || isActive;
-          const Icon = step.icon;
-
-          // Connector colour: filled if next dot is reached/done
-          const connectorActive = index < currentStep || (index === currentStep && isComplete);
-
-          return (
-            <li key={step.id} className="flex-1 flex items-center min-w-0">
-              <button
-                type="button"
-                onClick={() => isClickable && onStepChange(step.id)}
-                disabled={!isClickable}
-                aria-current={isActive ? 'step' : undefined}
-                aria-label={`${step.label} (stap ${index + 1} van ${steps.length})`}
-                className={`group flex flex-col items-center gap-1 min-w-0 flex-shrink-0 ${
-                  isClickable ? 'cursor-pointer' : 'cursor-not-allowed'
-                }`}
-              >
-                <span
-                  className={`relative inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full font-semibold text-xs sm:text-sm transition-all duration-200 ${
-                    isActive
-                      ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 shadow-sm'
-                      : isComplete || isPast
-                        ? 'bg-emerald-500 text-white group-hover:bg-emerald-600'
-                        : 'bg-slate-100 text-slate-400 border border-slate-200'
-                  } ${celebrateIdx === index ? 'animate-step-celebrate' : ''}`}
-                >
-                  {isComplete && !isActive ? (
-                    <Check className="w-4 h-4" strokeWidth={3} />
-                  ) : isActive ? (
-                    <Icon className="w-4 h-4" />
-                  ) : (
-                    <span>{index + 1}</span>
-                  )}
-                </span>
-                <span
-                  className={`hidden md:block text-[11px] font-medium leading-tight text-center max-w-[80px] truncate ${
-                    isActive
-                      ? 'text-emerald-700'
-                      : isComplete || isPast
-                        ? 'text-slate-700'
-                        : 'text-slate-400'
-                  }`}
-                >
-                  {step.shortLabel}
-                </span>
-              </button>
-
-              {index < steps.length - 1 && (
-                <span
-                  className={`flex-1 h-0.5 mx-1 sm:mx-2 transition-colors duration-300 ${
-                    connectorActive ? 'bg-emerald-500' : 'bg-slate-200'
-                  }`}
-                  aria-hidden
-                />
-              )}
-            </li>
-          );
-        })}
-      </ol>
-
-      {/* Affirmation microcopy — varies per progress phase to keep momentum */}
-      {(() => {
-        const fillableTotal = steps.length - 1; // exclude review step
-        const remainingFill = Math.max(0, fillableTotal - completedCount);
-        if (completedCount === 0 && currentStep === 0) return null;
-        const ratio = completedCount / fillableTotal;
-        const key =
-          completedCount === fillableTotal
-            ? 'allDone'
-            : ratio < 0.4
-              ? 'encourageEarly'
-              : ratio < 0.75
-                ? 'encourageMid'
-                : 'encourageLate';
         return (
-          <p className="hidden sm:block text-xs text-slate-500 mt-2 text-center">
-            {tProgress(key, {
-              completed: completedCount,
-              total: fillableTotal,
-              remaining: remainingFill,
-            })}
-          </p>
+          <li key={step.id} className="flex-1 flex items-center min-w-0 first:flex-initial last:flex-initial">
+            <button
+              type="button"
+              onClick={() => isClickable && onStepChange(step.id)}
+              disabled={!isClickable}
+              aria-current={isActive ? 'step' : undefined}
+              aria-label={`${step.label} (stap ${index + 1} van ${steps.length})`}
+              className={`relative inline-flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[10px] sm:text-xs font-semibold flex-shrink-0 transition-all duration-200 ${
+                isActive
+                  ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 shadow-sm'
+                  : isComplete || isPast
+                    ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                    : 'bg-slate-100 text-slate-400 border border-slate-200'
+              } ${isClickable ? 'cursor-pointer' : 'cursor-not-allowed'} ${
+                celebrateIdx === index ? 'animate-step-celebrate' : ''
+              }`}
+            >
+              {isComplete && !isActive ? (
+                <Check className="w-3 h-3" strokeWidth={3} />
+              ) : (
+                <span>{index + 1}</span>
+              )}
+            </button>
+
+            {index < steps.length - 1 && (
+              <span
+                className={`flex-1 h-px sm:h-0.5 mx-1 sm:mx-1.5 transition-colors duration-300 ${
+                  connectorActive ? 'bg-emerald-500' : 'bg-slate-200'
+                }`}
+                aria-hidden
+              />
+            )}
+          </li>
         );
-      })()}
-    </nav>
+      })}
+    </ol>
   );
 }

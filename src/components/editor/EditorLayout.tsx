@@ -154,50 +154,66 @@ export function EditorLayout() {
     <>
       <LiveScorePanel />
       <div className="min-h-screen bg-slate-50 flex flex-col">
-        {/* Header — stripped during fill flow */}
-        <header className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between sticky top-0 z-30">
-          <Link href="/" className="flex items-center" aria-label="ResuBox home">
-            <Image
-              src="/resubox-logo.svg"
-              alt="ResuBox"
-              width={110}
-              height={28}
-              className="h-7 w-auto"
-              priority
-            />
-          </Link>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <LanguageSwitcher />
-            <div className="hidden sm:block">
-              <SyncStatusPill />
+        {/* Integrated header: logo + inline stepper + right controls in one bar. */}
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+          <div className="px-3 sm:px-6 lg:px-8 py-2 flex items-center gap-3 sm:gap-4">
+            <Link href="/" className="flex items-center flex-shrink-0" aria-label="ResuBox home">
+              <Image
+                src="/resubox-logo.svg"
+                alt="ResuBox"
+                width={100}
+                height={24}
+                className="h-6 w-auto"
+                priority
+              />
+            </Link>
+
+            <div className="hidden md:block w-px h-6 bg-slate-200 flex-shrink-0" aria-hidden />
+
+            {/* Stepper occupies the middle space */}
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <FunnelStepper
+                steps={steps}
+                currentStep={currentSection}
+                perStepComplete={perStepComplete}
+                onStepChange={(id) => {
+                  const target = SECTION_DEFS.find((s) => s.id === id);
+                  if (!target) return;
+                  if (id <= currentSection || perStepComplete[id]) {
+                    setCurrentSection(id);
+                  }
+                }}
+              />
+              <p className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-500 truncate">
+                <span className="font-medium text-slate-700 tabular-nums">
+                  {tUi('stepOf', { n: currentSection + 1, total: steps.length })}
+                </span>
+                <span className="text-slate-300">·</span>
+                <span className="truncate">{steps[currentSection]?.label}</span>
+                <span className="text-slate-300">·</span>
+                <span className="tabular-nums text-emerald-700 font-medium">
+                  {Math.round((perStepComplete.filter((v, i) => v && i < steps.length - 1).length / (steps.length - 1)) * 100)}%
+                </span>
+              </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowPreview(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs sm:text-sm font-medium transition-colors lg:hidden"
-              aria-label={tUi('openPreview')}
-            >
-              <Eye className="w-4 h-4" />
-              <span className="hidden sm:inline">{tUi('viewCv')}</span>
-            </button>
+
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+              <LanguageSwitcher />
+              <div className="hidden sm:block">
+                <SyncStatusPill />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPreview(true)}
+                className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs sm:text-sm font-medium transition-colors lg:hidden"
+                aria-label={tUi('openPreview')}
+              >
+                <Eye className="w-4 h-4" />
+                <span className="hidden sm:inline">{tUi('viewCv')}</span>
+              </button>
+            </div>
           </div>
         </header>
-
-        {/* Stepper */}
-        <FunnelStepper
-          steps={steps}
-          currentStep={currentSection}
-          perStepComplete={perStepComplete}
-          onStepChange={(id) => {
-            // Allow navigating back to completed or earlier steps freely;
-            // forward navigation only to the next-uncompleted gate.
-            const target = SECTION_DEFS.find((s) => s.id === id);
-            if (!target) return;
-            if (id <= currentSection || perStepComplete[id]) {
-              setCurrentSection(id);
-            }
-          }}
-        />
 
         {/* Onboarding tooltip pointing to preview button */}
         {showPreviewTooltip && (
@@ -237,6 +253,7 @@ export function EditorLayout() {
         <BuilderStickyCTA
           currentStep={currentSection}
           totalSteps={steps.length}
+          completedCount={perStepComplete.filter((v, i) => v && i < steps.length - 1).length}
           isCurrentStepComplete={currentStepComplete}
           isLastStep={isReviewStep}
           showValidationHint={showValidationHint}

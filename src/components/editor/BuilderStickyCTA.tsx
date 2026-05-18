@@ -7,6 +7,8 @@ import { ArrowLeft, ArrowRight, Download, AlertCircle } from 'lucide-react';
 interface BuilderStickyCTAProps {
   currentStep: number;
   totalSteps: number;
+  /** How many fillable steps the user has completed so far */
+  completedCount: number;
   isCurrentStepComplete: boolean;
   isLastStep: boolean;
   /** Hint shown when user clicks Next while step is incomplete */
@@ -25,6 +27,7 @@ interface BuilderStickyCTAProps {
 export function BuilderStickyCTA({
   currentStep,
   totalSteps,
+  completedCount,
   isCurrentStepComplete,
   isLastStep,
   showValidationHint = false,
@@ -34,8 +37,27 @@ export function BuilderStickyCTA({
 }: BuilderStickyCTAProps) {
   const t = useTranslations('SectionFooter');
   const tUi = useTranslations('Builder.ui');
+  const tProgress = useTranslations('BuilderProgress');
   const tDownload = useTranslations('Download');
   const isFirstStep = currentStep === 0;
+
+  // Pick an encouragement message that matches progress phase
+  const fillable = totalSteps - 1;
+  const remaining = Math.max(0, fillable - completedCount);
+  const ratio = fillable === 0 ? 0 : completedCount / fillable;
+  const encouragementKey =
+    completedCount === 0
+      ? null
+      : completedCount === fillable
+        ? 'allDone'
+        : ratio < 0.4
+          ? 'encourageEarly'
+          : ratio < 0.75
+            ? 'encourageMid'
+            : 'encourageLate';
+  const encouragement = encouragementKey
+    ? tProgress(encouragementKey, { completed: completedCount, total: fillable, remaining })
+    : null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_-4px_rgba(15,23,42,0.08)]">
@@ -65,9 +87,9 @@ export function BuilderStickyCTA({
           <span className="hidden sm:inline">{t('previous')}</span>
         </button>
 
-        {/* Center: step counter (desktop only) */}
-        <p className="hidden md:block text-xs text-slate-500 tabular-nums">
-          {tUi('stepOf', { n: currentStep + 1, total: totalSteps })}
+        {/* Center: encouragement microcopy (desktop) or step counter fallback */}
+        <p className="hidden md:block text-xs text-slate-500 text-center truncate px-2">
+          {encouragement ?? tUi('stepOf', { n: currentStep + 1, total: totalSteps })}
         </p>
 
         {/* Next / Download button */}
