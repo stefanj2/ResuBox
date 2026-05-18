@@ -1,7 +1,8 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Check } from 'lucide-react';
+import { FieldTooltip } from './FieldTooltip';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -10,6 +11,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: LucideIcon | React.ReactElement;
   success?: boolean;
   successMessage?: string;
+  /** Small helper popover next to the label */
+  tooltip?: string;
+  /** Show a green check inside the input when it has a value and no error */
+  showValidCheck?: boolean;
 }
 
 // Check if icon is already a rendered React element
@@ -18,7 +23,9 @@ function isReactElement(icon: LucideIcon | React.ReactElement): icon is React.Re
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, icon, success, successMessage, className = '', ...props }, ref) => {
+  ({ label, error, hint, icon, success, successMessage, tooltip, showValidCheck, className = '', ...props }, ref) => {
+    const hasValue = typeof props.value === 'string' && props.value.trim().length > 0;
+    const validNow = showValidCheck && hasValue && !error;
     const renderIcon = () => {
       if (!icon) return null;
       if (isReactElement(icon)) {
@@ -34,6 +41,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
             {label}
             {props.required && <span className="text-red-500 ml-1">*</span>}
+            {tooltip && <FieldTooltip content={tooltip} label={`Uitleg ${label}`} />}
           </label>
         )}
         <div className="relative">
@@ -46,13 +54,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             className={`
               block w-full rounded-lg border bg-white
-              ${icon ? 'pl-10' : 'pl-4'} pr-4 py-3
+              ${icon ? 'pl-10' : 'pl-4'} ${validNow ? 'pr-10' : 'pr-4'} py-3
               text-slate-900 placeholder-slate-400
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-offset-0
               ${error
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                : success
+                : success || validNow
                   ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/20'
                   : 'border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20 hover:border-slate-300'
               }
@@ -61,6 +69,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             `}
             {...props}
           />
+          {validNow && (
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <Check className="w-4 h-4 text-emerald-500" strokeWidth={3} aria-hidden />
+            </div>
+          )}
         </div>
         {error && (
           <p className="mt-1.5 text-sm text-red-600 flex items-center gap-1">

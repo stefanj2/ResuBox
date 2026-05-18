@@ -1,21 +1,25 @@
 'use client';
 
 import React, { forwardRef } from 'react';
+import { FieldTooltip } from './FieldTooltip';
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
   hint?: string;
+  /** Small helper popover next to the label */
+  tooltip?: string;
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ label, error, hint, className = '', ...props }, ref) => {
+  ({ label, error, hint, tooltip, className = '', ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
           <label className="block text-sm font-medium text-slate-700 mb-1.5">
             {label}
             {props.required && <span className="text-red-500 ml-1">*</span>}
+            {tooltip && <FieldTooltip content={tooltip} label={`Uitleg ${label}`} />}
           </label>
         )}
         <textarea

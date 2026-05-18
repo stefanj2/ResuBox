@@ -3,5 +3,6 @@ export { Input } from './Input';
 export { TextArea } from './TextArea';
 export { Modal } from './Modal';
 export { Card } from './Card';
+export { FieldTooltip } from './FieldTooltip';
 export { SocialProofToast } from './SocialProofToast';
 export { PreviewTooltip, shouldShowPreviewTooltip } from './PreviewTooltip';

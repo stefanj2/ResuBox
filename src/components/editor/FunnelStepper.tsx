@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check, LucideIcon } from 'lucide-react';
 
@@ -29,6 +29,21 @@ export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChang
   const tProgress = useTranslations('BuilderProgress');
 
   const completedCount = perStepComplete.filter((v, i) => v && i < steps.length - 1).length;
+
+  // Celebrate when a step flips from incomplete → complete
+  const prevCompleteRef = useRef<boolean[]>(perStepComplete);
+  const [celebrateIdx, setCelebrateIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    const prev = prevCompleteRef.current;
+    const flipped = perStepComplete.findIndex((c, i) => c && !prev[i]);
+    prevCompleteRef.current = perStepComplete;
+    if (flipped !== -1) {
+      setCelebrateIdx(flipped);
+      const t = setTimeout(() => setCelebrateIdx(null), 750);
+      return () => clearTimeout(t);
+    }
+  }, [perStepComplete]);
 
   return (
     <nav
@@ -79,7 +94,7 @@ export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChang
                       : isComplete || isPast
                         ? 'bg-emerald-500 text-white group-hover:bg-emerald-600'
                         : 'bg-slate-100 text-slate-400 border border-slate-200'
-                  }`}
+                  } ${celebrateIdx === index ? 'animate-step-celebrate' : ''}`}
                 >
                   {isComplete && !isActive ? (
                     <Check className="w-4 h-4" strokeWidth={3} />

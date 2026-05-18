@@ -229,3 +229,15 @@ body {
 .animate-cta-pulse {
   animation: ctaPulse 2s ease-in-out infinite;
 }
+
+/* Step-completion celebration — short pulse + scale when a step turns green */
+@keyframes stepCelebrate {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  40%  { transform: scale(1.18); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.animate-step-celebrate {
+  animation: stepCelebrate 700ms ease-out 1;
+}
+

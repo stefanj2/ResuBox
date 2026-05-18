@@ -215,10 +215,22 @@
       "lookingUpAddress": "Adresse wird gesucht...",
       "addressNotFound": "Adresse nicht gefunden",
       "optionalSection": "Zusatzinfos",
-      "showOptional": "+ Zusatzinfos hinzufügen (optional)",
-      "hideOptional": "Verbergen",
+      "optionalSuffix": "(optional)",
       "magicLinkSentInfo": "Tipp: Wir haben Ihnen einen Wiederherstellungslink an diese Adresse gesendet. Damit können Sie später jederzeit weitermachen.",
-      "sendingMagicLink": "Einen Moment, wir senden Ihnen einen Wiederherstellungslink..."
+      "sendingMagicLink": "Einen Moment, wir senden Ihnen einen Wiederherstellungslink...",
+      "tooltips": {
+        "firstName": "Ihr Vorname, wie Recruiter Sie im Gespräch ansprechen werden.",
+        "lastName": "Ihr Nachname, wie er auf offiziellen Dokumenten erscheint.",
+        "email": "Recruiter nutzen das als Hauptkontaktkanal — wählen Sie eine professionelle Adresse (z. B. vorname.nachname@…).",
+        "phone": "Mobilnummer für ein erstes Telefon-Screening.",
+        "postalCode": "Wir füllen Straße und Ort automatisch aus, sobald Postleitzahl und Hausnummer eingegeben sind.",
+        "houseNumber": "Zusammen mit der Postleitzahl finden wir Straße und Ort automatisch.",
+        "dateOfBirth": "Optional — wird zunehmend weggelassen, um Altersdiskriminierung zu vermeiden.",
+        "nationality": "Optional — vor allem bei internationalen oder visumrelevanten Rollen wichtig.",
+        "linkedIn": "Recruiter schauen oft zuerst hier. Aufnehmen, wenn Ihr Profil aktuell ist.",
+        "website": "Portfolio, Blog oder GitHub — stark bei kreativen, Marketing- oder Tech-Rollen.",
+        "photo": "In DE/NL nicht erforderlich. In UK/US lieber weglassen, um Bias zu vermeiden."
+      }
     },
     "profileSection": {
       "title": "Kurzprofil",
@@ -228,7 +240,7 @@
       "aiButton": "Für mich schreiben",
       "aiButtonLoading": "Wird geschrieben...",
       "label": "Ihr Kurzprofil",
-      "placeholder": "Beschreiben Sie in 2-3 Sätzen, wer Sie sind, was Sie können und was Sie suchen.",
+      "placeholder": "z. B. 'Senior Marketing Manager mit 8 Jahren Erfahrung in B2B-SaaS. Verbindet datengetriebene Strategie mit starker Umsetzung. Sucht eine Rolle, in der Teams aufgebaut und Wachstum beschleunigt werden können.'",
       "charCounter": "{count}/500 Zeichen",
       "tipsTitle": "Tipps für ein starkes Profil",
       "tip1": "Beginnen Sie mit Ihrer wichtigsten Qualität oder Spezialisierung",
@@ -236,7 +248,8 @@
       "tip3": "Halten Sie es zwischen 50-150 Wörtern",
       "tip4": "Stimmen Sie es auf die Stelle ab, auf die Sie sich bewerben",
       "errorEmpty": "Tragen Sie zuerst Berufserfahrung, Ausbildung oder Kenntnisse ein, damit die KI ein passendes Profil schreiben kann.",
-      "errorGeneration": "Generierung fehlgeschlagen"
+      "errorGeneration": "Generierung fehlgeschlagen",
+      "summaryTooltip": "Recruiter lesen das zuerst — seien Sie konkret zu Expertise und Zielrolle. 2-3 Sätze sind ideal."
     },
     "experienceSection": {
       "title": "Berufserfahrung",
@@ -251,14 +264,20 @@
       "endDate": "Ende",
       "currentPosition": "Aktuell tätig",
       "description": "Beschreibung",
-      "descriptionPlaceholder": "Beschreiben Sie Ihre Rolle und Verantwortlichkeiten...",
+      "descriptionPlaceholder": "z. B. 'Leitete die Marketingfunktion eines schnell wachsenden B2B-SaaS-Startups, Schwerpunkt Demand Generation und Content.'",
       "tasks": "Wichtige Aufgaben",
       "addTaskPlaceholder": "Aufgabe hinzufügen und Enter drücken...",
       "addNew": "Berufserfahrung hinzufügen",
       "delete": "Diese Position löschen",
       "improveBullet": "Diesen Punkt mit KI verbessern",
       "aiHint": "Klicken Sie auf einen Vorschlag, um ihn Ihrem Lebenslauf hinzuzufügen",
-      "showSuggestions": "KI-Vorschläge anzeigen"
+      "showSuggestions": "KI-Vorschläge anzeigen",
+      "tooltips": {
+        "jobTitle": "Offizielle Berufsbezeichnung. Seien Sie konkret (z. B. 'Senior Marketing Manager' statt 'Marketing').",
+        "company": "Name des Arbeitgebers oder der Organisation.",
+        "description": "Optional — 1-2 Sätze zum Unternehmen oder weiteren Kontext der Rolle.",
+        "tasks": "Verantwortlichkeiten und Ergebnisse. Nutzen Sie Zahlen (z. B. 'Umsatz um 30% gesteigert')."
+      }
     },
     "educationSection": {
       "title": "Ausbildung",

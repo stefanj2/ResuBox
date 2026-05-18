@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Check, Wand2, Loader2 } from 'lucide-react';
-import { Input, TextArea, Button, Card } from '@/components/ui';
+import { Input, TextArea, Button, Card, FieldTooltip } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { createEmptyExperience } from '@/types/cv';
 import type { Locale } from '@/i18n/routing';
@@ -54,6 +54,7 @@ function classifyTitle(title: string): SuggestionCategory {
 export function ExperienceSection() {
   const { cvData, addExperience, updateExperience, removeExperience } = useCVData();
   const t = useTranslations('Builder.experienceSection');
+  const tip = useTranslations('Builder.experienceSection.tooltips');
   const tProfile = useTranslations('Builder.profileSection');
   const locale = useLocale() as Locale;
   const [expandedId, setExpandedId] = useState<string | null>(
@@ -182,6 +183,8 @@ export function ExperienceSection() {
                     value={exp.jobTitle}
                     onChange={(e) => updateExperience(exp.id, { jobTitle: e.target.value })}
                     required
+                    tooltip={tip('jobTitle')}
+                    showValidCheck
                   />
                   <Input
                     label={t('company')}
@@ -189,6 +192,8 @@ export function ExperienceSection() {
                     value={exp.company}
                     onChange={(e) => updateExperience(exp.id, { company: e.target.value })}
                     required
+                    tooltip={tip('company')}
+                    showValidCheck
                   />
                 </div>
 
@@ -237,11 +242,13 @@ export function ExperienceSection() {
                   value={exp.description}
                   onChange={(e) => updateExperience(exp.id, { description: e.target.value })}
                   rows={3}
+                  tooltip={tip('description')}
                 />
 
                 <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-2">
+                  <label className="text-sm font-medium text-slate-700 mb-2 inline-flex items-center">
                     {t('tasks')}
+                    <FieldTooltip content={tip('tasks')} label={`Uitleg ${t('tasks')}`} />
                   </label>
 
                   {!hiddenSuggestions.has(exp.id) && (

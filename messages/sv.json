@@ -215,10 +215,22 @@
       "lookingUpAddress": "Söker adress...",
       "addressNotFound": "Adressen hittades inte",
       "optionalSection": "Extra info",
-      "showOptional": "+ Lägg till extra info (valfritt)",
-      "hideOptional": "Dölj",
+      "optionalSuffix": "(valfritt)",
       "magicLinkSentInfo": "Tips: vi har skickat en återställningslänk till denna adress. Med den kan du alltid fortsätta senare.",
-      "sendingMagicLink": "Ett ögonblick, vi skickar en återställningslänk..."
+      "sendingMagicLink": "Ett ögonblick, vi skickar en återställningslänk...",
+      "tooltips": {
+        "firstName": "Ditt förnamn som rekryterare tilltalar dig med i samtal.",
+        "lastName": "Ditt efternamn som det står i officiella dokument.",
+        "email": "Rekryterare använder detta som främsta kontaktkanal — välj en professionell adress (t.ex. fornamn.efternamn@…).",
+        "phone": "Mobilnummer för en första telefonscreening.",
+        "postalCode": "Vi fyller i gata och ort automatiskt så snart du anger postnummer och husnummer.",
+        "houseNumber": "Tillsammans med postnumret hittar vi gata och ort automatiskt.",
+        "dateOfBirth": "Valfritt — utelämnas alltmer för att undvika ålders­bias.",
+        "nationality": "Valfritt — mest relevant vid internationella eller visumkänsliga roller.",
+        "linkedIn": "Rekryterare tittar ofta här först. Lägg till om din profil är uppdaterad.",
+        "website": "Portfolio, blogg eller GitHub — starkt för kreativa, marknads- eller tech-roller.",
+        "photo": "Inte obligatoriskt. I UK/US är det ofta bättre att utelämna för att undvika bias."
+      }
     },
     "profileSection": {
       "title": "Profil",
@@ -228,7 +240,7 @@
       "aiButton": "Skriv åt mig",
       "aiButtonLoading": "Skriver...",
       "label": "Din profil",
-      "placeholder": "Beskriv på 2-3 meningar vem du är, vad du kan och vad du söker.",
+      "placeholder": "T.ex. 'Senior marketing manager med 8 års erfarenhet av B2B SaaS. Kombinerar data­driven strategi med stark exekvering. Söker en roll där jag kan bygga team och accelerera tillväxt.'",
       "charCounter": "{count}/500 tecken",
       "tipsTitle": "Tips för en stark profil",
       "tip1": "Börja med din viktigaste kvalitet eller specialisering",
@@ -236,7 +248,8 @@
       "tip3": "Håll det mellan 50-150 ord",
       "tip4": "Anpassa till tjänsten du söker",
       "errorEmpty": "Fyll först i arbetslivserfarenhet, utbildning eller kompetenser så att AI:n kan skriva en passande profil.",
-      "errorGeneration": "Generering misslyckades"
+      "errorGeneration": "Generering misslyckades",
+      "summaryTooltip": "Rekryterare läser detta först — var specifik om din expertis och vad du söker. 2-3 meningar fungerar bäst."
     },
     "experienceSection": {
       "title": "Arbetslivserfarenhet",
@@ -251,14 +264,20 @@
       "endDate": "Slutdatum",
       "currentPosition": "Pågående anställning",
       "description": "Beskrivning",
-      "descriptionPlaceholder": "Beskriv din roll och ansvarsområden...",
+      "descriptionPlaceholder": "T.ex. 'Ledde marknadsfunktionen på en snabbväxande B2B-SaaS-startup, med fokus på demand generation och content.'",
       "tasks": "Viktigaste ansvarsområden",
       "addTaskPlaceholder": "Lägg till en punkt och tryck Enter...",
       "addNew": "Lägg till arbetslivserfarenhet",
       "delete": "Ta bort denna anställning",
       "improveBullet": "Förbättra denna punkt med AI",
       "aiHint": "Klicka på ett förslag för att lägga till det i ditt CV",
-      "showSuggestions": "Visa AI-förslag"
+      "showSuggestions": "Visa AI-förslag",
+      "tooltips": {
+        "jobTitle": "Officiell jobbtitel. Var specifik (t.ex. 'Senior Marketing Manager' istället för 'Marketing').",
+        "company": "Arbetsgivarens eller organisationens namn.",
+        "description": "Valfritt — 1-2 meningar om företaget eller rollens bredare sammanhang.",
+        "tasks": "Ansvar och resultat. Använd siffror där du kan (t.ex. 'ökade omsättningen med 30%')."
+      }
     },
     "educationSection": {
       "title": "Utbildning",

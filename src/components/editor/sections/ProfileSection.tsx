@@ -85,6 +85,7 @@ export function ProfileSection() {
         onChange={(e) => updateProfile(e.target.value)}
         rows={6}
         hint={t('charCounter', { count: cvData.profile.summary.length })}
+        tooltip={t('summaryTooltip')}
       />
 
       <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">

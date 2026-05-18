@@ -215,10 +215,22 @@
       "lookingUpAddress": "Søger adresse...",
       "addressNotFound": "Adressen blev ikke fundet",
       "optionalSection": "Ekstra info",
-      "showOptional": "+ Tilføj ekstra info (valgfrit)",
-      "hideOptional": "Skjul",
+      "optionalSuffix": "(valgfrit)",
       "magicLinkSentInfo": "Tip: vi har sendt et gendannelses-link til denne adresse. Hermed kan du altid fortsætte senere.",
-      "sendingMagicLink": "Et øjeblik, vi sender et gendannelses-link..."
+      "sendingMagicLink": "Et øjeblik, vi sender et gendannelses-link...",
+      "tooltips": {
+        "firstName": "Dit fornavn som rekrutterere vil tiltale dig med.",
+        "lastName": "Dit efternavn som det fremgår af officielle dokumenter.",
+        "email": "Rekrutterere bruger dette som primær kontaktkanal — vælg en professionel adresse (f.eks. fornavn.efternavn@…).",
+        "phone": "Mobilnummer til en første telefonscreening.",
+        "postalCode": "Vi udfylder automatisk gade og by, så snart du angiver postnummer og husnummer.",
+        "houseNumber": "Sammen med postnummeret finder vi gade og by automatisk.",
+        "dateOfBirth": "Valgfrit — udelades oftere for at undgå aldersbias.",
+        "nationality": "Valgfrit — mest relevant ved internationale eller visumfølsomme stillinger.",
+        "linkedIn": "Rekrutterere ser ofte her først. Tilføj hvis din profil er opdateret.",
+        "website": "Portfolio, blog eller GitHub — stærkt ved kreative, marketing- eller tech-roller.",
+        "photo": "Ikke obligatorisk. I UK/US ofte bedre at udelade for at undgå bias."
+      }
     },
     "profileSection": {
       "title": "Profil",
@@ -228,7 +240,7 @@
       "aiButton": "Skriv for mig",
       "aiButtonLoading": "Skriver...",
       "label": "Din profil",
-      "placeholder": "Beskriv i 2-3 sætninger, hvem du er, hvad du kan, og hvad du søger.",
+      "placeholder": "F.eks. 'Senior marketing manager med 8 års erfaring fra B2B SaaS. Kombinerer data­drevet strategi med stærk eksekvering. Søger en rolle, hvor jeg kan bygge teams og accelerere væksten.'",
       "charCounter": "{count}/500 tegn",
       "tipsTitle": "Tips til en stærk profil",
       "tip1": "Start med din vigtigste kvalitet eller specialisering",
@@ -236,7 +248,8 @@
       "tip3": "Hold det mellem 50-150 ord",
       "tip4": "Tilpas til den stilling, du søger",
       "errorEmpty": "Udfyld først erhvervserfaring, uddannelse eller færdigheder, så AI kan skrive en passende profil.",
-      "errorGeneration": "Generering mislykkedes"
+      "errorGeneration": "Generering mislykkedes",
+      "summaryTooltip": "Rekrutterere læser dette først — vær konkret om din ekspertise og hvad du søger. 2-3 sætninger virker bedst."
     },
     "experienceSection": {
       "title": "Erhvervserfaring",
@@ -251,14 +264,20 @@
       "endDate": "Slutdato",
       "currentPosition": "Nuværende stilling",
       "description": "Beskrivelse",
-      "descriptionPlaceholder": "Beskriv din rolle og dine ansvarsområder...",
+      "descriptionPlaceholder": "F.eks. 'Ledede marketing­funktionen i en hurtigtvoksende B2B-SaaS-startup med fokus på demand generation og indhold.'",
       "tasks": "Vigtigste ansvarsområder",
       "addTaskPlaceholder": "Tilføj et punkt og tryk Enter...",
       "addNew": "Tilføj erhvervserfaring",
       "delete": "Slet denne stilling",
       "improveBullet": "Forbedr dette punkt med AI",
       "aiHint": "Klik på et forslag for at tilføje det til dit CV",
-      "showSuggestions": "Vis AI-forslag"
+      "showSuggestions": "Vis AI-forslag",
+      "tooltips": {
+        "jobTitle": "Officiel jobtitel. Vær specifik (f.eks. 'Senior Marketing Manager' i stedet for 'Marketing').",
+        "company": "Arbejdsgiverens eller organisationens navn.",
+        "description": "Valgfrit — 1-2 sætninger om virksomheden eller rollens bredere kontekst.",
+        "tasks": "Ansvar og resultater. Brug tal hvor du kan (f.eks. 'øgede omsætning med 30%')."
+      }
     },
     "educationSection": {
       "title": "Uddannelse",

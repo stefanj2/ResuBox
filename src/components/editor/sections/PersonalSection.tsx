@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, CheckCircle, Camera, X, Loader2, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, CheckCircle, Camera, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 
@@ -42,21 +42,13 @@ async function resizeProfilePhoto(file: File): Promise<string> {
 export function PersonalSection() {
   const { cvData, updatePersonal, triggerMagicLink, magicLinkSent } = useCVData();
   const t = useTranslations('Builder.personalSection');
+  const tip = useTranslations('Builder.personalSection.tooltips');
   const locale = useLocale();
   const [emailTouched, setEmailTouched] = useState(false);
   const [sendingMagicLink, setSendingMagicLink] = useState(false);
   const [lookingUpAddress, setLookingUpAddress] = useState(false);
   const [addressError, setAddressError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Show optional fields when any of them already has a value; otherwise
-  // hide behind a "+ Toon meer velden" trigger to keep the step focused.
-  const hasOptionalData =
-    !!cvData.personal.dateOfBirth ||
-    !!cvData.personal.nationality ||
-    !!cvData.personal.linkedIn ||
-    !!cvData.personal.website;
-  const [showOptional, setShowOptional] = useState(hasOptionalData);
 
   const supportsAddressLookup = ADDRESS_LOOKUP_LOCALES.has(locale);
 
@@ -201,12 +193,16 @@ export function PersonalSection() {
           value={cvData.personal.firstName}
           onChange={(e) => updatePersonal('firstName', e.target.value)}
           required
+          tooltip={tip('firstName')}
+          showValidCheck
         />
         <Input
           label={t('lastName')}
           value={cvData.personal.lastName}
           onChange={(e) => updatePersonal('lastName', e.target.value)}
           required
+          tooltip={tip('lastName')}
+          showValidCheck
         />
       </div>
 
@@ -219,6 +215,8 @@ export function PersonalSection() {
           onChange={(e) => updatePersonal('email', e.target.value)}
           onBlur={handleEmailBlur}
           required
+          tooltip={tip('email')}
+          showValidCheck={!magicLinkSent}
           success={magicLinkSent && emailTouched}
           successMessage={t('magicLinkSentInfo')}
         />
@@ -236,6 +234,7 @@ export function PersonalSection() {
         icon={Phone}
         value={cvData.personal.phone}
         onChange={(e) => updatePersonal('phone', e.target.value)}
+        tooltip={tip('phone')}
       />
 
       <div>
@@ -245,11 +244,13 @@ export function PersonalSection() {
             icon={MapPin}
             value={cvData.personal.postalCode}
             onChange={(e) => handlePostcodeChange(e.target.value)}
+            tooltip={supportsAddressLookup ? tip('postalCode') : undefined}
           />
           <Input
             label={t('houseNumber')}
             value={cvData.personal.houseNumber}
             onChange={(e) => handleHouseNumberChange(e.target.value)}
+            tooltip={supportsAddressLookup ? tip('houseNumber') : undefined}
           />
         </div>
 
@@ -286,60 +287,41 @@ export function PersonalSection() {
       </div>
 
       <div className="pt-4 border-t border-slate-200">
-        {!showOptional ? (
-          <button
-            type="button"
-            onClick={() => setShowOptional(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            {t('showOptional')}
-          </button>
-        ) : (
-          <>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-slate-500">{t('optionalSection')}</h3>
-              <button
-                type="button"
-                onClick={() => setShowOptional(false)}
-                className="text-xs text-slate-500 hover:text-slate-700 inline-flex items-center gap-1"
-              >
-                {t('hideOptional')}
-                <ChevronUp className="w-3.5 h-3.5" />
-              </button>
-            </div>
+        <h3 className="text-sm font-medium text-slate-500 mb-4">{t('optionalSection')}</h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                type="date"
-                label={t('dateOfBirth')}
-                icon={Calendar}
-                value={cvData.personal.dateOfBirth}
-                onChange={(e) => updatePersonal('dateOfBirth', e.target.value)}
-              />
-              <Input
-                label={t('nationality')}
-                value={cvData.personal.nationality}
-                onChange={(e) => updatePersonal('nationality', e.target.value)}
-              />
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Input
+            type="date"
+            label={`${t('dateOfBirth')} ${t('optionalSuffix')}`}
+            icon={Calendar}
+            value={cvData.personal.dateOfBirth}
+            onChange={(e) => updatePersonal('dateOfBirth', e.target.value)}
+            tooltip={tip('dateOfBirth')}
+          />
+          <Input
+            label={`${t('nationality')} ${t('optionalSuffix')}`}
+            value={cvData.personal.nationality}
+            onChange={(e) => updatePersonal('nationality', e.target.value)}
+            tooltip={tip('nationality')}
+          />
+        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              <Input
-                label={t('linkedIn')}
-                icon={Linkedin}
-                value={cvData.personal.linkedIn}
-                onChange={(e) => updatePersonal('linkedIn', e.target.value)}
-              />
-              <Input
-                label={t('website')}
-                icon={Globe}
-                value={cvData.personal.website}
-                onChange={(e) => updatePersonal('website', e.target.value)}
-              />
-            </div>
-          </>
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <Input
+            label={`${t('linkedIn')} ${t('optionalSuffix')}`}
+            icon={Linkedin}
+            value={cvData.personal.linkedIn}
+            onChange={(e) => updatePersonal('linkedIn', e.target.value)}
+            tooltip={tip('linkedIn')}
+          />
+          <Input
+            label={`${t('website')} ${t('optionalSuffix')}`}
+            icon={Globe}
+            value={cvData.personal.website}
+            onChange={(e) => updatePersonal('website', e.target.value)}
+            tooltip={tip('website')}
+          />
+        </div>
       </div>
     </div>
   );

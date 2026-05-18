@@ -215,10 +215,22 @@
       "lookingUpAddress": "Looking up address...",
       "addressNotFound": "Address not found",
       "optionalSection": "Extra info",
-      "showOptional": "+ Add extra info (optional)",
-      "hideOptional": "Hide",
+      "optionalSuffix": "(optional)",
       "magicLinkSentInfo": "Tip: we've sent you a recovery link to this address. You can use it to pick up where you left off later.",
-      "sendingMagicLink": "One moment, we're sending you a recovery link..."
+      "sendingMagicLink": "One moment, we're sending you a recovery link...",
+      "tooltips": {
+        "firstName": "Your first name as recruiters will address you in conversation.",
+        "lastName": "Your last name as it appears on official documents.",
+        "email": "Recruiters use this as the main contact channel — pick a professional address (e.g. firstname.lastname@…).",
+        "phone": "Mobile number for an initial screening call.",
+        "postalCode": "We'll auto-fill your street and city as soon as you enter postcode and house number.",
+        "houseNumber": "Together with your postcode we find the street and city automatically.",
+        "dateOfBirth": "Optional — increasingly omitted to avoid age bias, especially in the EU.",
+        "nationality": "Optional — mainly relevant for international or visa-sensitive roles.",
+        "linkedIn": "Recruiters often check this first. Add it if your profile is up to date.",
+        "website": "Portfolio, blog, or GitHub — strong for creative, marketing or tech roles.",
+        "photo": "Not required in NL/DE. In UK/US it's often better to leave it off to avoid bias."
+      }
     },
     "profileSection": {
       "title": "Professional summary",
@@ -228,7 +240,7 @@
       "aiButton": "Write it for me",
       "aiButtonLoading": "Writing...",
       "label": "Your summary",
-      "placeholder": "Describe in 2-3 sentences who you are, what you do and what you're looking for.",
+      "placeholder": "e.g. 'Senior marketing manager with 8 years' experience in B2B SaaS. Pairs data-driven strategy with strong execution. Looking for a role where I can grow teams and accelerate revenue.'",
       "charCounter": "{count}/500 characters",
       "tipsTitle": "Tips for a strong summary",
       "tip1": "Lead with your most important quality or specialisation",
@@ -236,7 +248,8 @@
       "tip3": "Keep it between 50-150 words",
       "tip4": "Tailor it to the role you're applying for",
       "errorEmpty": "Fill in some work experience, education or skills first so the AI can write a fitting summary.",
-      "errorGeneration": "Generation failed"
+      "errorGeneration": "Generation failed",
+      "summaryTooltip": "Recruiters read this first — be specific about your expertise and what you're looking for. 2-3 sentences works best."
     },
     "experienceSection": {
       "title": "Work experience",
@@ -251,14 +264,20 @@
       "endDate": "End date",
       "currentPosition": "I still work here",
       "description": "Description",
-      "descriptionPlaceholder": "Describe your role and responsibilities...",
+      "descriptionPlaceholder": "e.g. 'Led the marketing function at a fast-growing B2B SaaS startup, focused on demand generation and content.'",
       "tasks": "Key responsibilities",
       "addTaskPlaceholder": "Add a bullet and press Enter...",
       "addNew": "Add work experience",
       "delete": "Delete this work experience",
       "improveBullet": "Improve this bullet with AI",
       "aiHint": "Click a suggestion to add it to your CV",
-      "showSuggestions": "Show AI suggestions"
+      "showSuggestions": "Show AI suggestions",
+      "tooltips": {
+        "jobTitle": "Your official job title. Be specific (e.g. 'Senior Marketing Manager' rather than 'Marketing').",
+        "company": "Name of the employer or organisation.",
+        "description": "Optional — 1-2 sentences about the company or the broader context of your role.",
+        "tasks": "Responsibilities and results. Use numbers where you can (e.g. 'grew revenue by 30%')."
+      }
     },
     "educationSection": {
       "title": "Education",

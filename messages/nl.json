@@ -215,10 +215,22 @@
       "lookingUpAddress": "Adres opzoeken...",
       "addressNotFound": "Adres niet gevonden",
       "optionalSection": "Extra info",
-      "showOptional": "+ Voeg extra info toe (optioneel)",
-      "hideOptional": "Verberg",
+      "optionalSuffix": "(optioneel)",
       "magicLinkSentInfo": "Handig: we hebben een herstel-link naar dit adres gestuurd. Hiermee kun je later altijd verdergaan waar je gebleven was.",
-      "sendingMagicLink": "Even geduld, we sturen je een herstel-link..."
+      "sendingMagicLink": "Even geduld, we sturen je een herstel-link...",
+      "tooltips": {
+        "firstName": "Je voornaam zoals recruiters je in een gesprek gaan aanspreken.",
+        "lastName": "Je achternaam zoals die op officiële documenten staat.",
+        "email": "Recruiters gebruiken dit als primair contactkanaal — kies een professioneel adres (bijv. voornaam.achternaam@...).",
+        "phone": "Mobiel nummer voor een eerste telefonische screening of belafspraak.",
+        "postalCode": "We vullen automatisch je straatnaam en woonplaats in zodra je postcode én huisnummer invult.",
+        "houseNumber": "Samen met je postcode vinden we automatisch je straat en woonplaats.",
+        "dateOfBirth": "Optioneel — in Nederland niet verplicht. Steeds vaker weggelaten om leeftijdsbias te voorkomen.",
+        "nationality": "Optioneel — vooral relevant bij internationale of visum-gevoelige rollen.",
+        "linkedIn": "Recruiters kijken hier vaak als eerste. Voeg toe als je profiel up-to-date is.",
+        "website": "Portfolio, blog of GitHub — sterk bij creatieve, marketing- of tech-rollen.",
+        "photo": "Niet verplicht in NL/DE. In de UK/US juist liever weglaten om bias te voorkomen."
+      }
     },
     "profileSection": {
       "title": "Profielschets",
@@ -228,7 +240,7 @@
       "aiButton": "Schrijf voor mij",
       "aiButtonLoading": "Schrijven...",
       "label": "Jouw profielschets",
-      "placeholder": "Beschrijf in 2-3 zinnen wie je bent, wat je kunt en wat je zoekt.",
+      "placeholder": "Bijv. 'Senior marketing manager met 8 jaar ervaring in B2B SaaS. Combineer datagedreven strategie met sterke executie. Zoek een rol waarin ik teams kan opbouwen en groei kan versnellen.'",
       "charCounter": "{count}/500 karakters",
       "tipsTitle": "Tips voor een sterk profiel",
       "tip1": "Begin met je belangrijkste kwaliteit of specialisatie",
@@ -236,7 +248,8 @@
       "tip3": "Houd het tussen de 50-150 woorden",
       "tip4": "Stem af op de functie waarvoor je solliciteert",
       "errorEmpty": "Vul eerst werkervaring, opleiding of vaardigheden in zodat AI een passend profiel kan schrijven.",
-      "errorGeneration": "Generatie mislukt"
+      "errorGeneration": "Generatie mislukt",
+      "summaryTooltip": "Recruiters lezen dit als eerste — wees specifiek over je expertise en wat je zoekt. 2-3 zinnen werken het beste."
     },
     "experienceSection": {
       "title": "Werkervaring",
@@ -251,14 +264,20 @@
       "endDate": "Einddatum",
       "currentPosition": "Ik werk hier nog",
       "description": "Beschrijving",
-      "descriptionPlaceholder": "Beschrijf je rol en verantwoordelijkheden...",
+      "descriptionPlaceholder": "Bijv. 'Verantwoordelijk voor de marketingstrategie van een snelgroeiende SaaS-startup, met focus op demand generation en content.'",
       "tasks": "Belangrijkste taken",
       "addTaskPlaceholder": "Voeg een taak toe en druk Enter...",
       "addNew": "Werkervaring toevoegen",
       "delete": "Verwijder deze werkervaring",
       "improveBullet": "Verbeter deze bullet met AI",
       "aiHint": "Klik op een suggestie om deze toe te voegen aan je CV",
-      "showSuggestions": "AI-suggesties tonen"
+      "showSuggestions": "AI-suggesties tonen",
+      "tooltips": {
+        "jobTitle": "Officiële functietitel. Wees specifiek (bijv. 'Senior Marketing Manager' i.p.v. 'Marketing').",
+        "company": "Naam van het bedrijf of de organisatie waar je werkte.",
+        "description": "Optioneel — 1-2 zinnen over het bedrijf of de bredere context van je rol.",
+        "tasks": "Verantwoordelijkheden én resultaten. Gebruik cijfers waar je kunt (bijv. 'verhoogde omzet met 30%')."
+      }
     },
     "educationSection": {
       "title": "Opleiding",

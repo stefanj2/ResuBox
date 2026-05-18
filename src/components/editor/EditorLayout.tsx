@@ -168,7 +168,9 @@ export function EditorLayout() {
             <button
               type="button"
               onClick={() => setShowPreview(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs sm:text-sm font-medium transition-colors"
+              className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 text-xs sm:text-sm font-medium transition-colors ${
+                isReviewStep ? '' : 'lg:hidden'
+              }`}
               aria-label={tUi('openPreview')}
             >
               <Eye className="w-4 h-4" />
@@ -204,15 +206,31 @@ export function EditorLayout() {
           />
         )}
 
-        {/* Editor content — full-width, max 3xl centred, generous bottom padding for sticky CTA */}
-        <main
-          ref={contentRef}
-          className="flex-1 overflow-y-auto"
-        >
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32">
-            <CurrentSectionComponent />
-          </div>
-        </main>
+        {/* Main area — single column below lg, 60/40 split on lg+ with live preview right.
+            Review step uses single column on desktop too because it already shows its own preview. */}
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+          <main
+            ref={contentRef}
+            className={`flex-1 overflow-y-auto ${isReviewStep ? '' : 'lg:basis-3/5 lg:flex-grow-0'}`}
+          >
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32">
+              <CurrentSectionComponent />
+            </div>
+          </main>
+
+          {!isReviewStep && (
+            <aside className="hidden lg:flex lg:basis-2/5 bg-slate-100 border-l border-slate-200 overflow-y-auto p-4 xl:p-6 justify-center flex-shrink-0">
+              <div className="sticky top-4">
+                <div
+                  className="origin-top shadow-2xl scale-[0.48] xl:scale-[0.58] 2xl:scale-[0.65]"
+                  style={{ width: '210mm', height: '297mm' }}
+                >
+                  <CVPreview />
+                </div>
+              </div>
+            </aside>
+          )}
+        </div>
 
         {/* Sticky bottom CTA */}
         <BuilderStickyCTA
