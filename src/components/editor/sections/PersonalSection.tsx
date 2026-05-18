@@ -8,10 +8,40 @@ import { useCVData } from '@/context/CVContext';
 
 const ADDRESS_LOOKUP_LOCALES = new Set(['nl']);
 
+const PROFILE_PHOTO_MAX_DIMENSION = 600;
+const PROFILE_PHOTO_JPEG_QUALITY = 0.85;
+
+async function resizeProfilePhoto(file: File): Promise<string> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error ?? new Error('FileReader error'));
+    reader.readAsDataURL(file);
+  });
+
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('Could not decode image'));
+    image.src = dataUrl;
+  });
+
+  const scale = Math.min(1, PROFILE_PHOTO_MAX_DIMENSION / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas not supported');
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL('image/jpeg', PROFILE_PHOTO_JPEG_QUALITY);
+}
+
 export function PersonalSection() {
   const { cvData, updatePersonal, triggerMagicLink, magicLinkSent } = useCVData();
   const t = useTranslations('Builder.personalSection');
-  const tCommon = useTranslations('Common');
   const locale = useLocale();
   const [emailTouched, setEmailTouched] = useState(false);
   const [sendingMagicLink, setSendingMagicLink] = useState(false);
@@ -60,26 +90,25 @@ export function PersonalSection() {
     if (cvData.personal.postalCode) lookupAddress(cvData.personal.postalCode, value);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      alert(t('photoTooLarge'));
-      return;
-    }
-
     if (!file.type.startsWith('image/')) {
       alert(t('onlyImages'));
+      if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const base64 = event.target?.result as string;
-      updatePersonal('profilePhoto', base64);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const resized = await resizeProfilePhoto(file);
+      updatePersonal('profilePhoto', resized);
+    } catch (err) {
+      console.error('Photo resize failed:', err);
+      alert(t('photoUploadFailed'));
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const removePhoto = () => {
@@ -279,11 +308,6 @@ export function PersonalSection() {
             onChange={(e) => updatePersonal('website', e.target.value)}
           />
         </div>
-      </div>
-
-      <div className="flex items-center gap-2 text-sm text-slate-500 pt-4">
-        <CheckCircle className="w-4 h-4 text-emerald-500" />
-        <span>{tCommon('saving')}</span>
       </div>
     </div>
   );
