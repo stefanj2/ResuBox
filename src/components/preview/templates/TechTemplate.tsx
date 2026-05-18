@@ -154,6 +154,23 @@ export function TechTemplate({ cvData, colorScheme, locale }: TemplateProps) {
           flexShrink: 0,
         }}
       >
+        {personal.profilePhoto && (
+          <div style={{ marginBottom: '14pt' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={personal.profilePhoto}
+              alt=""
+              style={{
+                width: '36mm',
+                height: '36mm',
+                borderRadius: '2pt',
+                objectFit: 'cover',
+                border: `1pt solid ${accent}`,
+                display: 'block',
+              }}
+            />
+          </div>
+        )}
         {/* Name as terminal prompt */}
         <div style={{ marginBottom: '16pt' }}>
           <h1

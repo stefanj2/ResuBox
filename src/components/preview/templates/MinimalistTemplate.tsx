@@ -103,31 +103,47 @@ export function MinimalistTemplate({ cvData, locale }: TemplateProps) {
         WebkitFontSmoothing: 'antialiased',
       }}
     >
-      <header style={{ marginBottom: '32pt' }}>
-        <h1
-          style={{
-            fontFamily: fonts.sans,
-            fontSize: '22pt',
-            fontWeight: 600,
-            letterSpacing: '-0.015em',
-            color: c.ink,
-            margin: 0,
-            lineHeight: 1.1,
-          }}
-        >
-          <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
-          {personal.firstName && personal.lastName ? ' ' : ''}
-          <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
-        </h1>
-        {contact.length > 0 && (
-          <div style={{ fontFamily: fonts.sans, fontSize: '9.5pt', color: c.muted, marginTop: '8pt', lineHeight: 1.6 }}>
-            {contact.map((item, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <span style={{ color: c.faint, margin: '0 8pt' }}>·</span>}
-                <span>{item}</span>
-              </React.Fragment>
-            ))}
-          </div>
+      <header style={{ marginBottom: '32pt', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '14pt' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h1
+            style={{
+              fontFamily: fonts.sans,
+              fontSize: '22pt',
+              fontWeight: 600,
+              letterSpacing: '-0.015em',
+              color: c.ink,
+              margin: 0,
+              lineHeight: 1.1,
+            }}
+          >
+            <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
+            {personal.firstName && personal.lastName ? ' ' : ''}
+            <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
+          </h1>
+          {contact.length > 0 && (
+            <div style={{ fontFamily: fonts.sans, fontSize: '9.5pt', color: c.muted, marginTop: '8pt', lineHeight: 1.6 }}>
+              {contact.map((item, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <span style={{ color: c.faint, margin: '0 8pt' }}>·</span>}
+                  <span>{item}</span>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+        </div>
+        {personal.profilePhoto && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={personal.profilePhoto}
+            alt=""
+            style={{
+              width: '22mm',
+              height: '22mm',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              flexShrink: 0,
+            }}
+          />
         )}
       </header>
 

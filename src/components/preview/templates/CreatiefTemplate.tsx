@@ -104,22 +104,40 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
           borderBottom: `3pt solid ${accent}`,
         }}
       >
-        <h1
-          style={{
-            fontFamily: fonts.serif,
-            fontSize: '40pt',
-            fontWeight: 500,
-            fontStyle: 'italic',
-            letterSpacing: '-0.02em',
-            color: c.ink,
-            margin: 0,
-            lineHeight: 1.02,
-          }}
-        >
-          <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
-          {personal.firstName && personal.lastName ? ' ' : ''}
-          <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14pt' }}>
+          <h1
+            style={{
+              flex: 1,
+              fontFamily: fonts.serif,
+              fontSize: '40pt',
+              fontWeight: 500,
+              fontStyle: 'italic',
+              letterSpacing: '-0.02em',
+              color: c.ink,
+              margin: 0,
+              lineHeight: 1.02,
+            }}
+          >
+            <span style={{ color: isPlaceholder.firstName ? c.placeholder : c.ink }}>{personal.firstName}</span>
+            {personal.firstName && personal.lastName ? ' ' : ''}
+            <span style={{ color: isPlaceholder.lastName ? c.placeholder : c.ink }}>{personal.lastName}</span>
+          </h1>
+          {personal.profilePhoto && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={personal.profilePhoto}
+              alt=""
+              style={{
+                width: '28mm',
+                height: '28mm',
+                borderRadius: '4pt',
+                objectFit: 'cover',
+                flexShrink: 0,
+                border: `1.5pt solid ${accent}`,
+              }}
+            />
+          )}
+        </div>
         <div
           style={{
             display: 'flex',

@@ -57,6 +57,22 @@ export function ZakelijkTemplate({ cvData, locale }: TemplateProps) {
     >
       {/* HEADER — centered, classic */}
       <header style={{ textAlign: 'center', marginBottom: '14pt' }}>
+        {personal.profilePhoto && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10pt' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={personal.profilePhoto}
+              alt=""
+              style={{
+                width: '24mm',
+                height: '24mm',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: `0.75pt solid ${c.muted}`,
+              }}
+            />
+          </div>
+        )}
         <h1
           style={{
             fontFamily: fonts.serif,

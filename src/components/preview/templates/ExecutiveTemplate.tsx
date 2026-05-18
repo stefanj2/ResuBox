@@ -103,12 +103,20 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
           padding: '18mm 20mm',
           color: 'white',
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          gap: '18pt',
           borderBottom: `1pt solid ${hairline}`,
           boxSizing: 'border-box',
         }}
       >
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minWidth: 0,
+          }}
+        >
         <div>
           <h1
             style={{
@@ -163,6 +171,23 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
             <div style={{ textAlign: 'right' }}>
               {rightContact.length > 0 && renderPipeRow(rightContact)}
             </div>
+          </div>
+        )}
+        </div>
+        {personal.profilePhoto && (
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={personal.profilePhoto}
+              alt=""
+              style={{
+                width: '34mm',
+                height: '34mm',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2pt solid rgba(255,255,255,0.85)',
+              }}
+            />
           </div>
         )}
       </header>
