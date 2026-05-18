@@ -161,7 +161,9 @@
       "workShort": "Beruf",
       "educationShort": "Bildung",
       "skillsShort": "Skills",
-      "profileShort": "Profil"
+      "profileShort": "Profil",
+      "review": "Prüfen & Download",
+      "reviewShort": "Prüfen"
     },
     "ui": {
       "sectionsLabel": "Abschnitte",
@@ -176,7 +178,17 @@
       "close": "Schließen",
       "previewTooltip": "Tipp: Hier tippen, um Ihren Lebenslauf anzusehen",
       "viewPreviewButton": "Vorschau ansehen",
-      "loadingBuilder": "Lebenslauf-Builder wird geladen..."
+      "loadingBuilder": "Lebenslauf-Builder wird geladen...",
+      "viewCv": "Lebenslauf ansehen",
+      "openPreview": "Lebenslauf-Vorschau öffnen"
+    },
+    "reviewSection": {
+      "title": "Fast geschafft — prüfe deinen Lebenslauf",
+      "subtitle": "Sieh dir an, wie dein Lebenslauf gerade aussieht und passe Vorlage, Farbe oder eine Sektion an, bevor du herunterlädst.",
+      "incompleteTitle": "Noch {remaining} Sektion(en) offen",
+      "incompleteHint": "Klicke unten auf eine Sektion, um sie abzuschließen — herunterladen kannst du erst, wenn alles ausgefüllt ist.",
+      "templateLabel": "Vorlage",
+      "reviewSections": "Sektionen zum Prüfen"
     },
     "personalSection": {
       "title": "Persönliche Daten",
@@ -202,7 +214,9 @@
       "photoHint": "Fügen Sie ein professionelles Foto zu Ihrem Lebenslauf hinzu.",
       "lookingUpAddress": "Adresse wird gesucht...",
       "addressNotFound": "Adresse nicht gefunden",
-      "optionalSection": "Optional",
+      "optionalSection": "Zusatzinfos",
+      "showOptional": "+ Zusatzinfos hinzufügen (optional)",
+      "hideOptional": "Verbergen",
       "magicLinkSentInfo": "Tipp: Wir haben Ihnen einen Wiederherstellungslink an diese Adresse gesendet. Damit können Sie später jederzeit weitermachen.",
       "sendingMagicLink": "Einen Moment, wir senden Ihnen einen Wiederherstellungslink..."
     },
@@ -777,6 +791,9 @@
   "BuilderProgress": {
     "getStarted": "Willkommen! Füllen Sie {total} kurze Abschnitte aus, um Ihren Lebenslauf abzuschließen",
     "progress": "{completed}/{total} Abschnitte fertig — noch {remaining}",
+    "encourageEarly": "Schöner Start — noch {remaining} Schritte",
+    "encourageMid": "Über die Hälfte — weiter so!",
+    "encourageLate": "Fast geschafft — noch {remaining} Schritt(e)",
     "allDone": "Fertig! Ihr Lebenslauf ist bereit zum Herunterladen",
     "progressLabel": "Fortschritt"
   },

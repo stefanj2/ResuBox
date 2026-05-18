@@ -161,7 +161,9 @@
       "workShort": "Werk",
       "educationShort": "Studie",
       "skillsShort": "Skills",
-      "profileShort": "Profiel"
+      "profileShort": "Profiel",
+      "review": "Controle & download",
+      "reviewShort": "Controle"
     },
     "ui": {
       "sectionsLabel": "Secties",
@@ -176,7 +178,17 @@
       "close": "Sluiten",
       "previewTooltip": "Tip: tik hier om je CV te bekijken",
       "viewPreviewButton": "Bekijk voorbeeld",
-      "loadingBuilder": "CV-builder laden..."
+      "loadingBuilder": "CV-builder laden...",
+      "viewCv": "Bekijk je CV",
+      "openPreview": "CV-voorbeeld openen"
+    },
+    "reviewSection": {
+      "title": "Bijna klaar — controleer je CV",
+      "subtitle": "Bekijk hoe je CV er nu uitziet en pas eventueel nog het sjabloon, de kleur of een sectie aan voordat je downloadt.",
+      "incompleteTitle": "Nog {remaining} sectie(s) niet ingevuld",
+      "incompleteHint": "Klik op een sectie hieronder om deze af te ronden — je kunt pas downloaden als alles klaar is.",
+      "templateLabel": "Sjabloon",
+      "reviewSections": "Loop je secties nog even na"
     },
     "personalSection": {
       "title": "Persoonsgegevens",
@@ -202,7 +214,9 @@
       "photoHint": "Voeg een professionele foto toe aan je CV.",
       "lookingUpAddress": "Adres opzoeken...",
       "addressNotFound": "Adres niet gevonden",
-      "optionalSection": "Optioneel",
+      "optionalSection": "Extra info",
+      "showOptional": "+ Voeg extra info toe (optioneel)",
+      "hideOptional": "Verberg",
       "magicLinkSentInfo": "Handig: we hebben een herstel-link naar dit adres gestuurd. Hiermee kun je later altijd verdergaan waar je gebleven was.",
       "sendingMagicLink": "Even geduld, we sturen je een herstel-link..."
     },
@@ -778,6 +792,9 @@
   "BuilderProgress": {
     "getStarted": "Welkom! Vul {total} korte secties in om je CV af te maken",
     "progress": "{completed}/{total} secties klaar — nog {remaining} te gaan",
+    "encourageEarly": "Mooi begin — nog {remaining} stappen tot je CV klaar is",
+    "encourageMid": "Je bent over de helft, ga zo door!",
+    "encourageLate": "Bijna klaar — nog {remaining} stap(pen)",
     "allDone": "Klaar! Je CV is klaar om te downloaden",
     "progressLabel": "Voortgang"
   },

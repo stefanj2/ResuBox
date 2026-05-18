@@ -1,2 +1,3 @@
 export { EditorLayout } from './EditorLayout';
-export { Sidebar } from './Sidebar';
+export { FunnelStepper } from './FunnelStepper';
+export { BuilderStickyCTA } from './BuilderStickyCTA';

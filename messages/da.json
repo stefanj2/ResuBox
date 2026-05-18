@@ -161,7 +161,9 @@
       "workShort": "Job",
       "educationShort": "Uddannelse",
       "skillsShort": "Færdigheder",
-      "profileShort": "Profil"
+      "profileShort": "Profil",
+      "review": "Gennemgå & download",
+      "reviewShort": "Gennemgå"
     },
     "ui": {
       "sectionsLabel": "Sektioner",
@@ -176,7 +178,17 @@
       "close": "Luk",
       "previewTooltip": "Tip: tryk her for at se dit CV",
       "viewPreviewButton": "Vis forhåndsvisning",
-      "loadingBuilder": "Indlæser CV-bygger..."
+      "loadingBuilder": "Indlæser CV-bygger...",
+      "viewCv": "Se dit CV",
+      "openPreview": "Åbn CV-forhåndsvisning"
+    },
+    "reviewSection": {
+      "title": "Næsten færdig — gennemgå dit CV",
+      "subtitle": "Se hvordan dit CV ser ud lige nu, og juster skabelon, farve eller en sektion, før du downloader.",
+      "incompleteTitle": "{remaining} sektion(er) mangler",
+      "incompleteHint": "Klik på en sektion nedenfor for at færdiggøre den — du kan først downloade, når alt er udfyldt.",
+      "templateLabel": "Skabelon",
+      "reviewSections": "Sektioner at gennemgå"
     },
     "personalSection": {
       "title": "Personlige oplysninger",
@@ -202,7 +214,9 @@
       "photoHint": "Tilføj et professionelt billede til dit CV.",
       "lookingUpAddress": "Søger adresse...",
       "addressNotFound": "Adressen blev ikke fundet",
-      "optionalSection": "Valgfri",
+      "optionalSection": "Ekstra info",
+      "showOptional": "+ Tilføj ekstra info (valgfrit)",
+      "hideOptional": "Skjul",
       "magicLinkSentInfo": "Tip: vi har sendt et gendannelses-link til denne adresse. Hermed kan du altid fortsætte senere.",
       "sendingMagicLink": "Et øjeblik, vi sender et gendannelses-link..."
     },
@@ -778,6 +792,9 @@
   "BuilderProgress": {
     "getStarted": "Velkommen! Udfyld {total} korte sektioner for at færdiggøre dit CV",
     "progress": "{completed}/{total} sektioner klar — {remaining} tilbage",
+    "encourageEarly": "Flot start — {remaining} skridt tilbage",
+    "encourageMid": "Over halvvejs — fortsæt!",
+    "encourageLate": "Næsten færdig — {remaining} skridt tilbage",
     "allDone": "Færdig! Dit CV er klar til download",
     "progressLabel": "Fremskridt"
   },

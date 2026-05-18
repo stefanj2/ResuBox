@@ -161,7 +161,9 @@
       "workShort": "Work",
       "educationShort": "Education",
       "skillsShort": "Skills",
-      "profileShort": "Summary"
+      "profileShort": "Summary",
+      "review": "Review & download",
+      "reviewShort": "Review"
     },
     "ui": {
       "sectionsLabel": "Sections",
@@ -176,7 +178,17 @@
       "close": "Close",
       "previewTooltip": "Tip: tap here to view your CV",
       "viewPreviewButton": "View preview",
-      "loadingBuilder": "Loading CV builder..."
+      "loadingBuilder": "Loading CV builder...",
+      "viewCv": "View your CV",
+      "openPreview": "Open CV preview"
+    },
+    "reviewSection": {
+      "title": "Almost there — review your CV",
+      "subtitle": "See how your CV looks right now and adjust the template, colour or any section before you download.",
+      "incompleteTitle": "{remaining} section(s) still missing",
+      "incompleteHint": "Click a section below to finish it — you can only download once everything is complete.",
+      "templateLabel": "Template",
+      "reviewSections": "Sections to review"
     },
     "personalSection": {
       "title": "Personal details",
@@ -202,7 +214,9 @@
       "photoHint": "Add a professional photo to your CV.",
       "lookingUpAddress": "Looking up address...",
       "addressNotFound": "Address not found",
-      "optionalSection": "Optional",
+      "optionalSection": "Extra info",
+      "showOptional": "+ Add extra info (optional)",
+      "hideOptional": "Hide",
       "magicLinkSentInfo": "Tip: we've sent you a recovery link to this address. You can use it to pick up where you left off later.",
       "sendingMagicLink": "One moment, we're sending you a recovery link..."
     },
@@ -778,6 +792,9 @@
   "BuilderProgress": {
     "getStarted": "Welcome! Fill in {total} short sections to complete your CV",
     "progress": "{completed}/{total} sections done — {remaining} to go",
+    "encourageEarly": "Nice start — {remaining} steps to go",
+    "encourageMid": "Past halfway, keep going!",
+    "encourageLate": "Almost there — {remaining} step(s) left",
     "allDone": "All set! Your CV is ready to download",
     "progressLabel": "Progress"
   },

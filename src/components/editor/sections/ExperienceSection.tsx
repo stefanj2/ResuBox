@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Check, Wand2, Loader2 } from 'lucide-react';
 import { Input, TextArea, Button, Card } from '@/components/ui';
@@ -61,6 +61,22 @@ export function ExperienceSection() {
   );
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set());
   const [improvingKey, setImprovingKey] = useState<string | null>(null);
+  const autoCreatedRef = useRef(false);
+
+  // Empty-state fix: when the user lands on this step with no experience entries,
+  // auto-create the first one expanded so they never face a blank "+ Add" wall.
+  useEffect(() => {
+    if (autoCreatedRef.current) return;
+    if (cvData.experience.length === 0) {
+      autoCreatedRef.current = true;
+      const first = createEmptyExperience();
+      addExperience(first);
+      setExpandedId(first.id);
+    } else {
+      autoCreatedRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleImproveTask = async (experienceId: string, taskIndex: number) => {
     const exp = cvData.experience.find((e) => e.id === experienceId);

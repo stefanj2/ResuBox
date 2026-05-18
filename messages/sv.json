@@ -161,7 +161,9 @@
       "workShort": "Arbete",
       "educationShort": "Utbildning",
       "skillsShort": "Kompetens",
-      "profileShort": "Profil"
+      "profileShort": "Profil",
+      "review": "Granska & hämta",
+      "reviewShort": "Granska"
     },
     "ui": {
       "sectionsLabel": "Sektioner",
@@ -176,7 +178,17 @@
       "close": "Stäng",
       "previewTooltip": "Tips: tryck här för att visa ditt CV",
       "viewPreviewButton": "Visa förhandsvisning",
-      "loadingBuilder": "Laddar CV-byggare..."
+      "loadingBuilder": "Laddar CV-byggare...",
+      "viewCv": "Visa ditt CV",
+      "openPreview": "Öppna CV-förhandsvisning"
+    },
+    "reviewSection": {
+      "title": "Nästan klart — granska ditt CV",
+      "subtitle": "Se hur ditt CV ser ut just nu och justera mall, färg eller en sektion innan du hämtar.",
+      "incompleteTitle": "{remaining} sektion(er) saknas",
+      "incompleteHint": "Klicka på en sektion nedan för att slutföra den — du kan ladda ner först när allt är klart.",
+      "templateLabel": "Mall",
+      "reviewSections": "Sektioner att granska"
     },
     "personalSection": {
       "title": "Personuppgifter",
@@ -202,7 +214,9 @@
       "photoHint": "Lägg till en professionell bild till ditt CV.",
       "lookingUpAddress": "Söker adress...",
       "addressNotFound": "Adressen hittades inte",
-      "optionalSection": "Valfritt",
+      "optionalSection": "Extra info",
+      "showOptional": "+ Lägg till extra info (valfritt)",
+      "hideOptional": "Dölj",
       "magicLinkSentInfo": "Tips: vi har skickat en återställningslänk till denna adress. Med den kan du alltid fortsätta senare.",
       "sendingMagicLink": "Ett ögonblick, vi skickar en återställningslänk..."
     },
@@ -778,6 +792,9 @@
   "BuilderProgress": {
     "getStarted": "Välkommen! Fyll i {total} korta avsnitt för att slutföra ditt CV",
     "progress": "{completed}/{total} avsnitt klara — {remaining} kvar",
+    "encourageEarly": "Bra start — {remaining} steg kvar",
+    "encourageMid": "Över halvvägs — fortsätt!",
+    "encourageLate": "Nästan klart — {remaining} steg kvar",
     "allDone": "Klart! Ditt CV är redo att laddas ner",
     "progressLabel": "Framsteg"
   },
