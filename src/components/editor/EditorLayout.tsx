@@ -66,7 +66,6 @@ export function EditorLayout() {
   const [showPreview, setShowPreview] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showPreviewTooltip, setShowPreviewTooltip] = useState(false);
-  const [showValidationHint, setShowValidationHint] = useState(false);
 
   const { trackSectionView, trackSectionComplete, trackDownloadInitiated } = useAnalytics();
 
@@ -78,15 +77,10 @@ export function EditorLayout() {
     i === REVIEW_STEP_ID ? progress.isComplete : isSectionComplete(i, cvData)
   );
 
-  // Whether the current step is "complete" enough to advance
-  const currentStepComplete = isReviewStep ? progress.isComplete : isSectionComplete(currentSection, cvData);
-
   useEffect(() => {
     trackSectionView(currentSection);
     // Scroll editor back to top on step change so the user always starts at the title
     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-    // Clear validation hint when leaving a step
-    setShowValidationHint(false);
   }, [currentSection, trackSectionView]);
 
   useEffect(() => {
@@ -111,11 +105,9 @@ export function EditorLayout() {
   }, [currentSection, cvData.personal.firstName, showPreviewTooltip]);
 
   const goToNextSection = () => {
-    if (!currentStepComplete && !isReviewStep) {
-      setShowValidationHint(true);
-      scrollToFirstInvalidField();
-      return;
-    }
+    // Always advance — fields stay informational (* + green check) but never
+    // block the funnel. Per UX principle: users should be able to skip and
+    // come back later from the Review step.
     if (currentSection < REVIEW_STEP_ID) {
       setCurrentSection(currentSection + 1);
     }
@@ -124,24 +116,6 @@ export function EditorLayout() {
   const goToPrevSection = () => {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1);
-    }
-  };
-
-  const scrollToFirstInvalidField = () => {
-    // Find first required input that has no value and scroll/focus it
-    const root = contentRef.current;
-    if (!root) return;
-    const required = root.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-      'input[required]:not([disabled]), textarea[required]:not([disabled])'
-    );
-    if (required && !required.value) {
-      required.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      required.focus({ preventScroll: true });
-      // Visual flash via a temporary class
-      required.classList.add('ring-2', 'ring-red-400', 'ring-offset-2');
-      setTimeout(() => {
-        required.classList.remove('ring-2', 'ring-red-400', 'ring-offset-2');
-      }, 1800);
     }
   };
 
@@ -242,9 +216,7 @@ export function EditorLayout() {
           currentStep={currentSection}
           totalSteps={steps.length}
           completedCount={perStepComplete.filter((v, i) => v && i < steps.length - 1).length}
-          isCurrentStepComplete={currentStepComplete}
           isLastStep={isReviewStep}
-          showValidationHint={showValidationHint}
           onPrev={goToPrevSection}
           onNext={goToNextSection}
           onDownload={handleOpenDownloadModal}

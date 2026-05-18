@@ -147,32 +147,25 @@ export function ExperienceSection() {
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {cvData.experience.map((exp, index) => (
           <Card key={exp.id} padding="none" className="overflow-hidden">
             <button
               onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
-              className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+              className="w-full flex items-center justify-between gap-3 p-3.5 hover:bg-slate-50 transition-colors"
             >
-              <div className="flex items-center gap-3 text-left">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 font-semibold">
+              <div className="flex items-center gap-3 text-left min-w-0">
+                <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 font-semibold text-sm flex-shrink-0">
                   {index + 1}
                 </div>
-                <div>
-                  <h3 className="font-medium text-slate-900">
-                    {exp.jobTitle || t('newEntry')}
-                  </h3>
-                  <p className="text-sm text-slate-500">
-                    {exp.company || t('company')}
-                    {exp.startDate && ` • ${exp.startDate}`}
-                    {exp.endDate && ` - ${exp.endDate}`}
-                  </p>
-                </div>
+                <h3 className="font-medium text-slate-900 truncate min-w-0">
+                  {exp.company || t('newEntry')}
+                </h3>
               </div>
               {expandedId === exp.id ? (
-                <ChevronUp className="w-5 h-5 text-slate-400" />
+                <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-slate-400" />
+                <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
               )}
             </button>
 
@@ -374,9 +367,14 @@ export function ExperienceSection() {
         ))}
       </div>
 
-      <Button variant="outline" icon={Plus} onClick={handleAddExperience} fullWidth>
+      <button
+        type="button"
+        onClick={handleAddExperience}
+        className="w-full mt-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 text-sm font-medium transition-colors"
+      >
+        <Plus className="w-4 h-4" />
         {t('addNew')}
-      </Button>
+      </button>
     </div>
   );
 }

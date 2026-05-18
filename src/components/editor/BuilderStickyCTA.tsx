@@ -2,17 +2,14 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, ArrowRight, Download, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
 
 interface BuilderStickyCTAProps {
   currentStep: number;
   totalSteps: number;
   /** How many fillable steps the user has completed so far */
   completedCount: number;
-  isCurrentStepComplete: boolean;
   isLastStep: boolean;
-  /** Hint shown when user clicks Next while step is incomplete */
-  showValidationHint?: boolean;
   onPrev: () => void;
   onNext: () => void;
   onDownload: () => void;
@@ -28,9 +25,7 @@ export function BuilderStickyCTA({
   currentStep,
   totalSteps,
   completedCount,
-  isCurrentStepComplete,
   isLastStep,
-  showValidationHint = false,
   onPrev,
   onNext,
   onDownload,
@@ -61,16 +56,6 @@ export function BuilderStickyCTA({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_-4px_rgba(15,23,42,0.08)]">
-      {/* Validation hint above bar */}
-      {showValidationHint && !isCurrentStepComplete && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center">
-          <p className="text-xs text-amber-800 inline-flex items-center gap-1.5">
-            <AlertCircle className="w-3.5 h-3.5" />
-            {t('incompleteHint')}
-          </p>
-        </div>
-      )}
-
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
         {/* Prev button — hidden on first step */}
         <button
@@ -92,7 +77,7 @@ export function BuilderStickyCTA({
           {encouragement ?? tUi('stepOf', { n: currentStep + 1, total: totalSteps })}
         </p>
 
-        {/* Next / Download button */}
+        {/* Next / Download button — always clickable, never gates the funnel */}
         {isLastStep ? (
           <button
             type="button"
@@ -106,13 +91,7 @@ export function BuilderStickyCTA({
           <button
             type="button"
             onClick={onNext}
-            className={`inline-flex items-center gap-2 font-semibold rounded-xl px-5 sm:px-6 py-3 transition-all duration-150 ${
-              isCurrentStepComplete
-                ? 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-lg shadow-emerald-500/25 active:scale-[0.98]'
-                : 'bg-slate-200 text-slate-500 cursor-pointer hover:bg-slate-300'
-            }`}
-            aria-disabled={!isCurrentStepComplete}
-            title={!isCurrentStepComplete ? t('incompleteHint') : undefined}
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold rounded-xl px-5 sm:px-6 py-3 shadow-lg shadow-emerald-500/25 transition-all duration-150 active:scale-[0.98]"
           >
             <span>{tUi('nextSection')}</span>
             <ArrowRight className="w-5 h-5" />
