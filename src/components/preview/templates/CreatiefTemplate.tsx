@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, formatYearRange } from './tokens';
+import { fonts, palette, formatYearRange, formatPostcode } from './tokens';
 import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.default;
@@ -44,7 +44,7 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
   if (personal.email) sidecarContact.push({ value: personal.email, placeholder: isPlaceholder.email });
   if (personal.phone) sidecarContact.push({ value: personal.phone, placeholder: isPlaceholder.phone });
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
-  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  const cityLine = [formatPostcode(personal.postalCode), personal.city].filter(Boolean).join(' ');
   if (street) sidecarContact.push({ value: street, placeholder: isPlaceholder.address });
   if (cityLine) sidecarContact.push({ value: cityLine, placeholder: isPlaceholder.city });
   if (personal.linkedIn) sidecarContact.push({ value: personal.linkedIn, placeholder: isPlaceholder.linkedIn });

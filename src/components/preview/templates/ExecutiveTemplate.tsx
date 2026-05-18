@@ -1,7 +1,7 @@
 import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, type, formatYearRange } from './tokens';
+import { fonts, palette, type, formatYearRange, formatPostcode } from './tokens';
 import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.executive;
@@ -35,14 +35,16 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
   if (personal.email) leftContact.push(personal.email);
   if (personal.phone) leftContact.push(personal.phone);
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
-  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
-  const fullAddress = [street, cityLine].filter(Boolean).join(', ');
-  if (fullAddress) leftContact.push(fullAddress);
+  const cityLine = [formatPostcode(personal.postalCode), personal.city].filter(Boolean).join(' ');
+  if (street) leftContact.push(street);
+  if (cityLine) leftContact.push(cityLine);
 
   const rightContact: string[] = [];
   if (personal.linkedIn) rightContact.push(personal.linkedIn);
   if (personal.website) rightContact.push(personal.website);
-  if (!fullAddress && personal.city && !headlineParts.includes(personal.city)) rightContact.push(personal.city);
+  if (!street && !cityLine && personal.city && !headlineParts.includes(personal.city)) {
+    rightContact.push(personal.city);
+  }
 
   const SectionHeading = ({ label }: { label: string }) => (
     <h2

@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette } from './tokens';
+import { fonts, palette, formatPostcode } from './tokens';
 import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 import type { SkillLevel } from '@/types/cv';
 
@@ -43,7 +43,7 @@ export function TechTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   if (personal.linkedIn) sidebarContact.push(personal.linkedIn);
   if (personal.website) sidebarContact.push(personal.website);
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
-  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  const cityLine = [formatPostcode(personal.postalCode), personal.city].filter(Boolean).join(' ');
   if (street) sidebarContact.push(street);
   if (cityLine) sidebarContact.push(cityLine);
   else if (personal.city) sidebarContact.push(personal.city);

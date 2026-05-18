@@ -186,6 +186,19 @@ export function formatDateRange(
   return `${s} — ${e}`;
 }
 
+/**
+ * Format Dutch postal codes as "1234 AB" (4 digits + space + 2 letters).
+ * Leaves non-Dutch formats untouched.
+ */
+export function formatPostcode(postcode: string): string {
+  if (!postcode) return '';
+  const cleaned = postcode.replace(/\s/g, '').toUpperCase();
+  if (/^[1-9][0-9]{3}[A-Z]{2}$/.test(cleaned)) {
+    return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
+  }
+  return postcode;
+}
+
 export function formatYear(dateStr: string): string {
   if (!dateStr) return '';
   return dateStr.split('-')[0] ?? '';

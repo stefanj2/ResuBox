@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, type, formatYearRange } from './tokens';
+import { fonts, palette, type, formatYearRange, formatPostcode } from './tokens';
 import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.default;
@@ -30,13 +30,14 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   const initials = `${(personal.firstName || '').charAt(0)}${(personal.lastName || '').charAt(0)}`.toUpperCase();
 
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
-  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
-  const fullAddress = [street, cityLine].filter(Boolean).join(', ');
+  const cityLine = [formatPostcode(personal.postalCode), personal.city].filter(Boolean).join(' ');
 
   const contactItems: Array<{ label: string; value: string; placeholder?: boolean }> = [];
   if (personal.email) contactItems.push({ label: 'E', value: personal.email, placeholder: isPlaceholder.email });
   if (personal.phone) contactItems.push({ label: 'T', value: personal.phone, placeholder: isPlaceholder.phone });
-  if (fullAddress) contactItems.push({ label: 'A', value: fullAddress, placeholder: isPlaceholder.address || isPlaceholder.city });
+  if (street) contactItems.push({ label: 'A', value: street, placeholder: isPlaceholder.address });
+  if (cityLine) contactItems.push({ label: 'A', value: cityLine, placeholder: isPlaceholder.city });
+  else if (!street && personal.city) contactItems.push({ label: 'A', value: personal.city, placeholder: isPlaceholder.city });
   if (personal.linkedIn) contactItems.push({ label: 'L', value: personal.linkedIn, placeholder: isPlaceholder.linkedIn });
   if (personal.website) contactItems.push({ label: 'W', value: personal.website, placeholder: isPlaceholder.website });
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
-import { fonts, palette, space } from './tokens';
+import { fonts, palette, space, formatPostcode } from './tokens';
 import { getTemplateLabels, formatDateRangeLocalized } from './labels';
 
 const c = palette.zakelijk;
@@ -17,9 +17,10 @@ export function ZakelijkTemplate({ cvData, locale }: TemplateProps) {
   if (personal.email) contact.push(personal.email);
   if (personal.phone) contact.push(personal.phone);
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
-  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
-  const addr = [street, cityLine].filter(Boolean).join(', ');
-  if (addr) contact.push(addr);
+  const cityLine = [formatPostcode(personal.postalCode), personal.city].filter(Boolean).join(' ');
+  if (street) contact.push(street);
+  if (cityLine) contact.push(cityLine);
+  else if (!street && personal.city) contact.push(personal.city);
   if (personal.linkedIn) contact.push(personal.linkedIn);
   if (personal.website) contact.push(personal.website);
 
