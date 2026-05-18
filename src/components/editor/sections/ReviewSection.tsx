@@ -37,10 +37,10 @@ export function ReviewSection() {
   const currentTemplate = TEMPLATES[selectedTemplateId];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 
@@ -61,8 +61,8 @@ export function ReviewSection() {
         </div>
       )}
 
-      {/* Preview */}
-      <div className="bg-slate-100 rounded-xl border border-slate-200 p-4 sm:p-6 overflow-hidden">
+      {/* Inline preview — mobile/tablet only. On lg+ the side panel already shows it. */}
+      <div className="lg:hidden bg-slate-100 rounded-xl border border-slate-200 p-4 sm:p-6 overflow-hidden">
         <div className="flex justify-center overflow-x-auto">
           <div
             className="origin-top shadow-2xl scale-[0.45] sm:scale-[0.55] md:scale-[0.6] mb-[-200pt] sm:mb-[-160pt] md:mb-[-130pt]"

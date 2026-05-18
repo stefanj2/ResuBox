@@ -88,9 +88,9 @@ export function SkillsSection() {
   }, {} as Record<string, typeof cvData.skills>);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 
@@ -166,7 +166,7 @@ export function SkillsSection() {
       </div>
 
       {cvData.skills.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {Object.entries(groupedSkills).map(([category, skills]) => (
             <div key={category}>
               <h3 className="text-sm font-medium text-slate-500 mb-3">{category}</h3>

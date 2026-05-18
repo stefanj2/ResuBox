@@ -48,10 +48,10 @@ export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChang
   return (
     <nav
       aria-label="CV builder voortgang"
-      className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4"
+      className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5"
     >
       {/* Top meta row */}
-      <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+      <div className="flex items-center justify-between mb-2">
         <p className="text-xs sm:text-sm font-medium text-slate-700">
           {t('stepOf', { n: currentStep + 1, total: steps.length })}
           <span className="hidden sm:inline text-slate-400 font-normal">
@@ -145,7 +145,7 @@ export function FunnelStepper({ steps, currentStep, perStepComplete, onStepChang
                 ? 'encourageMid'
                 : 'encourageLate';
         return (
-          <p className="text-[11px] sm:text-xs text-slate-500 mt-2 sm:mt-3 text-center">
+          <p className="hidden sm:block text-xs text-slate-500 mt-2 text-center">
             {tProgress(key, {
               completed: completedCount,
               total: fillableTotal,

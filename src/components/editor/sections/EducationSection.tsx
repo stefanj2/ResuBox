@@ -33,9 +33,9 @@ export function EducationSection() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 

@@ -140,9 +140,9 @@ export function ExperienceSection() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
 
@@ -252,54 +252,52 @@ export function ExperienceSection() {
                   </label>
 
                   {!hiddenSuggestions.has(exp.id) && (
-                    <div className="mb-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200 shadow-sm">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Sparkles className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-emerald-900 text-sm">
-                            {tProfile('aiTitle')}
-                          </h4>
-                          <p className="text-xs text-emerald-700 mt-0.5">
-                            {t('aiHint')}
-                          </p>
-                        </div>
+                    <div className="mb-3 rounded-lg bg-emerald-50/60 border border-emerald-200 px-3 py-2.5">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800">
+                          <Sparkles className="w-3.5 h-3.5" />
+                          {t('aiHint')}
+                        </span>
                         <button
+                          type="button"
                           onClick={() => setHiddenSuggestions((prev) => new Set(prev).add(exp.id))}
-                          className="text-emerald-400 hover:text-emerald-600 transition-colors"
+                          className="text-emerald-400 hover:text-emerald-600"
+                          aria-label="Verberg suggesties"
                         >
-                          <ChevronUp className="w-5 h-5" />
+                          <ChevronUp className="w-4 h-4" />
                         </button>
                       </div>
-                      <div className="grid grid-cols-1 gap-1.5">
-                        {getSuggestions(exp.jobTitle).map((task, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleAddTask(exp.id, task)}
-                            disabled={exp.tasks.includes(task)}
-                            className={`w-full text-left text-sm p-2.5 rounded-lg transition-all ${
-                              exp.tasks.includes(task)
-                                ? 'bg-emerald-200/50 text-emerald-700 cursor-not-allowed'
-                                : 'bg-white hover:bg-emerald-100 hover:shadow-sm text-slate-700 border border-emerald-100'
-                            }`}
-                          >
-                            <span className="flex items-center gap-2">
-                              {exp.tasks.includes(task) ? (
-                                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <div className="flex flex-wrap gap-1.5">
+                        {getSuggestions(exp.jobTitle).map((task, i) => {
+                          const added = exp.tasks.includes(task);
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => handleAddTask(exp.id, task)}
+                              disabled={added}
+                              className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full transition-all ${
+                                added
+                                  ? 'bg-emerald-200/60 text-emerald-700 cursor-not-allowed'
+                                  : 'bg-white hover:bg-emerald-100 text-slate-700 border border-emerald-200'
+                              }`}
+                            >
+                              {added ? (
+                                <Check className="w-3 h-3 text-emerald-600 flex-shrink-0" />
                               ) : (
-                                <Plus className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                                <Plus className="w-3 h-3 text-emerald-500 flex-shrink-0" />
                               )}
-                              <span className="line-clamp-2">{task}</span>
-                            </span>
-                          </button>
-                        ))}
+                              <span className="line-clamp-1">{task}</span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
 
                   {hiddenSuggestions.has(exp.id) && (
                     <button
+                      type="button"
                       onClick={() =>
                         setHiddenSuggestions((prev) => {
                           const next = new Set(prev);
@@ -307,11 +305,10 @@ export function ExperienceSection() {
                           return next;
                         })
                       }
-                      className="mb-3 flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+                      className="mb-2 inline-flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700"
                     >
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-3.5 h-3.5" />
                       <span>{t('showSuggestions')}</span>
-                      <ChevronDown className="w-4 h-4" />
                     </button>
                   )}
 

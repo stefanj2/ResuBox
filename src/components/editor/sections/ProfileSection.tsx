@@ -45,58 +45,57 @@ export function ProfileSection() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('title')}</h2>
-        <p className="text-slate-600">{t('subtitle')}</p>
+    <div className="space-y-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
+          <p className="text-sm text-slate-600">{t('subtitle')}</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleGenerateProfile}
+          disabled={isGenerating || !canGenerate}
+          title={canGenerate ? t('aiSubtitle') : t('errorEmpty')}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-violet-50 hover:bg-violet-100 border border-violet-200 text-violet-700 text-xs sm:text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+        >
+          {isGenerating ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Sparkles className="w-4 h-4" />
+          )}
+          <span className="whitespace-nowrap">{isGenerating ? t('aiButtonLoading') : t('aiButton')}</span>
+        </button>
       </div>
 
-      <div className="rounded-xl border border-violet-200 bg-violet-50/40 p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-violet-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-slate-900 mb-1">{t('aiTitle')}</h3>
-            <p className="text-xs text-slate-600 mb-3">{t('aiSubtitle')}</p>
-            <Button
-              variant="outline"
-              icon={isGenerating ? Loader2 : Sparkles}
-              onClick={handleGenerateProfile}
-              disabled={isGenerating || !canGenerate}
-              className={isGenerating ? '[&>svg]:animate-spin' : ''}
-            >
-              {isGenerating ? t('aiButtonLoading') : t('aiButton')}
-            </Button>
-            {error && (
-              <div className="mt-3 flex items-start gap-2 text-sm text-red-700">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            )}
-          </div>
+      {error && (
+        <div className="flex items-start gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
-      </div>
+      )}
 
       <TextArea
         label={t('label')}
         placeholder={t('placeholder')}
         value={cvData.profile.summary}
         onChange={(e) => updateProfile(e.target.value)}
-        rows={6}
+        rows={5}
         hint={t('charCounter', { count: cvData.profile.summary.length })}
         tooltip={t('summaryTooltip')}
       />
 
-      <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-        <h4 className="font-medium text-blue-900 mb-2">{t('tipsTitle')}</h4>
-        <ul className="text-sm text-blue-800 space-y-1">
+      <details className="text-sm">
+        <summary className="cursor-pointer text-blue-700 hover:text-blue-900 font-medium inline-flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5" />
+          {t('tipsTitle')}
+        </summary>
+        <ul className="mt-2 text-xs text-slate-600 space-y-1 list-disc pl-5">
           <li>{t('tip1')}</li>
           <li>{t('tip2')}</li>
           <li>{t('tip3')}</li>
           <li>{t('tip4')}</li>
         </ul>
-      </div>
+      </details>
     </div>
   );
 }
