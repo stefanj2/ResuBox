@@ -162,6 +162,12 @@
       "educationShort": "Uddannelse",
       "skillsShort": "Færdigheder",
       "profileShort": "Profil",
+      "personalBasics": "Om dig",
+      "personalContact": "Kontakt",
+      "personalExtra": "Ekstra info",
+      "personalBasicsShort": "Om",
+      "personalContactShort": "Kontakt",
+      "personalExtraShort": "Ekstra",
       "review": "Gennemgå & download",
       "reviewShort": "Gennemgå"
     },
@@ -189,6 +195,18 @@
       "incompleteHint": "Klik på en sektion nedenfor for at færdiggøre den — du kan først downloade, når alt er udfyldt.",
       "templateLabel": "Skabelon",
       "reviewSections": "Sektioner at gennemgå"
+    },
+    "personalBasics": {
+      "title": "Lad os lære dig at kende",
+      "subtitle": "Tilføj et billede (valgfrit) og dit navn. Vises øverst på dit CV."
+    },
+    "personalContact": {
+      "title": "Hvordan når vi dig?",
+      "subtitle": "E-mail er påkrævet, så vi altid kan gendanne dit CV. Telefon og adresse er valgfrie."
+    },
+    "personalExtra": {
+      "title": "Ekstra info (valgfrit)",
+      "subtitle": "Ingen obligatoriske felter — tilføj hvad der er relevant for dit fagområde, eller spring over."
     },
     "personalSection": {
       "title": "Personlige oplysninger",

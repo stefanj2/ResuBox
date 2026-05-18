@@ -4,7 +4,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { PersonalSection } from './sections/PersonalSection';
+import { PersonalBasicsSection } from './sections/PersonalBasicsSection';
+import { PersonalContactSection } from './sections/PersonalContactSection';
+import { PersonalExtraSection } from './sections/PersonalExtraSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { EducationSection } from './sections/EducationSection';
@@ -16,6 +18,8 @@ import { useCVData } from '@/context/CVContext';
 import {
   Eye,
   User,
+  Mail,
+  Sparkles,
   FileText,
   Briefcase,
   GraduationCap,
@@ -32,15 +36,17 @@ import { BuilderStickyCTA } from './BuilderStickyCTA';
 import { getCvProgress, isSectionComplete, SECTION_COUNT } from '@/lib/cvProgress';
 import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
 
-const REVIEW_STEP_ID = SECTION_COUNT; // 5
+const REVIEW_STEP_ID = SECTION_COUNT; // 7
 
 const SECTION_DEFS = [
-  { id: 0, key: 'personal', shortKey: 'personalShort', icon: User, component: PersonalSection },
-  { id: 1, key: 'work', shortKey: 'workShort', icon: Briefcase, component: ExperienceSection },
-  { id: 2, key: 'education', shortKey: 'educationShort', icon: GraduationCap, component: EducationSection },
-  { id: 3, key: 'skills', shortKey: 'skillsShort', icon: Wrench, component: SkillsSection },
-  { id: 4, key: 'profile', shortKey: 'profileShort', icon: FileText, component: ProfileSection },
-  { id: 5, key: 'review', shortKey: 'reviewShort', icon: CheckCircle2, component: ReviewSection },
+  { id: 0, key: 'personalBasics', shortKey: 'personalBasicsShort', icon: User, component: PersonalBasicsSection },
+  { id: 1, key: 'personalContact', shortKey: 'personalContactShort', icon: Mail, component: PersonalContactSection },
+  { id: 2, key: 'personalExtra', shortKey: 'personalExtraShort', icon: Sparkles, component: PersonalExtraSection },
+  { id: 3, key: 'work', shortKey: 'workShort', icon: Briefcase, component: ExperienceSection },
+  { id: 4, key: 'education', shortKey: 'educationShort', icon: GraduationCap, component: EducationSection },
+  { id: 5, key: 'skills', shortKey: 'skillsShort', icon: Wrench, component: SkillsSection },
+  { id: 6, key: 'profile', shortKey: 'profileShort', icon: FileText, component: ProfileSection },
+  { id: 7, key: 'review', shortKey: 'reviewShort', icon: CheckCircle2, component: ReviewSection },
 ] as const;
 
 export function EditorLayout() {
@@ -84,7 +90,7 @@ export function EditorLayout() {
   }, [currentSection, trackSectionView]);
 
   useEffect(() => {
-    for (let i = 0; i <= 4; i++) {
+    for (let i = 0; i < SECTION_COUNT; i++) {
       if (isSectionComplete(i, cvData)) {
         trackSectionComplete(i);
       }

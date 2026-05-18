@@ -162,6 +162,12 @@
       "educationShort": "Education",
       "skillsShort": "Skills",
       "profileShort": "Summary",
+      "personalBasics": "About you",
+      "personalContact": "Contact",
+      "personalExtra": "Extra info",
+      "personalBasicsShort": "About",
+      "personalContactShort": "Contact",
+      "personalExtraShort": "Extra",
       "review": "Review & download",
       "reviewShort": "Review"
     },
@@ -189,6 +195,18 @@
       "incompleteHint": "Click a section below to finish it — you can only download once everything is complete.",
       "templateLabel": "Template",
       "reviewSections": "Sections to review"
+    },
+    "personalBasics": {
+      "title": "Let's get to know you",
+      "subtitle": "Add a photo (optional) and your name. This appears at the top of your CV."
+    },
+    "personalContact": {
+      "title": "How can we reach you?",
+      "subtitle": "Email is required so we can always recover your CV. Phone and address are optional."
+    },
+    "personalExtra": {
+      "title": "Extra info (optional)",
+      "subtitle": "No required fields — add what's relevant for your field or skip this step."
     },
     "personalSection": {
       "title": "Personal details",

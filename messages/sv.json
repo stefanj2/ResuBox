@@ -162,6 +162,12 @@
       "educationShort": "Utbildning",
       "skillsShort": "Kompetens",
       "profileShort": "Profil",
+      "personalBasics": "Om dig",
+      "personalContact": "Kontakt",
+      "personalExtra": "Extra info",
+      "personalBasicsShort": "Om",
+      "personalContactShort": "Kontakt",
+      "personalExtraShort": "Extra",
       "review": "Granska & hämta",
       "reviewShort": "Granska"
     },
@@ -189,6 +195,18 @@
       "incompleteHint": "Klicka på en sektion nedan för att slutföra den — du kan ladda ner först när allt är klart.",
       "templateLabel": "Mall",
       "reviewSections": "Sektioner att granska"
+    },
+    "personalBasics": {
+      "title": "Vi lär känna dig",
+      "subtitle": "Lägg till en bild (valfritt) och ditt namn. Visas högst upp på ditt CV."
+    },
+    "personalContact": {
+      "title": "Hur når vi dig?",
+      "subtitle": "E-post är obligatorisk så att vi alltid kan återställa ditt CV. Telefon och adress är valfria."
+    },
+    "personalExtra": {
+      "title": "Extra info (valfritt)",
+      "subtitle": "Inga obligatoriska fält — lägg till det som är relevant för din bransch eller hoppa över steget."
     },
     "personalSection": {
       "title": "Personuppgifter",

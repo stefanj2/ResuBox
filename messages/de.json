@@ -162,6 +162,12 @@
       "educationShort": "Bildung",
       "skillsShort": "Skills",
       "profileShort": "Profil",
+      "personalBasics": "Über Sie",
+      "personalContact": "Kontakt",
+      "personalExtra": "Zusatzinfos",
+      "personalBasicsShort": "Über",
+      "personalContactShort": "Kontakt",
+      "personalExtraShort": "Extra",
       "review": "Prüfen & Download",
       "reviewShort": "Prüfen"
     },
@@ -189,6 +195,18 @@
       "incompleteHint": "Klicke unten auf eine Sektion, um sie abzuschließen — herunterladen kannst du erst, wenn alles ausgefüllt ist.",
       "templateLabel": "Vorlage",
       "reviewSections": "Sektionen zum Prüfen"
+    },
+    "personalBasics": {
+      "title": "Lass uns dich kennenlernen",
+      "subtitle": "Foto (optional) und Name. Erscheint oben auf deinem Lebenslauf."
+    },
+    "personalContact": {
+      "title": "Wie erreichen wir dich?",
+      "subtitle": "E-Mail ist erforderlich, damit wir deinen Lebenslauf wiederherstellen können. Telefon und Adresse sind optional."
+    },
+    "personalExtra": {
+      "title": "Zusatzinfos (optional)",
+      "subtitle": "Keine Pflichtfelder — füge hinzu, was für dein Berufsfeld relevant ist, oder überspringe diesen Schritt."
     },
     "personalSection": {
       "title": "Persönliche Daten",

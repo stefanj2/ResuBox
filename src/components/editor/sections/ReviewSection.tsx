@@ -10,7 +10,16 @@ import { ColorPicker, TemplateSelector } from '@/components/templateSelector';
 import { Modal } from '@/components/ui';
 import { isSectionComplete, getCvProgress } from '@/lib/cvProgress';
 
-const SECTION_KEYS = ['personal', 'work', 'education', 'skills', 'profile'] as const;
+// Review jump-back grid. Index in this array maps to a stepper id (0-6).
+const REVIEW_LINKS: Array<{ stepId: number; key: string }> = [
+  { stepId: 0, key: 'personalBasics' },
+  { stepId: 1, key: 'personalContact' },
+  { stepId: 2, key: 'personalExtra' },
+  { stepId: 3, key: 'work' },
+  { stepId: 4, key: 'education' },
+  { stepId: 5, key: 'skills' },
+  { stepId: 6, key: 'profile' },
+];
 
 /**
  * Final step of the funnel. Shows a large preview, lets the user adjust
@@ -96,13 +105,13 @@ export function ReviewSection() {
           {t('reviewSections')}
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {SECTION_KEYS.map((key, index) => {
-            const done = isSectionComplete(index, cvData);
+          {REVIEW_LINKS.map(({ stepId, key }) => {
+            const done = isSectionComplete(stepId, cvData);
             return (
               <button
                 key={key}
                 type="button"
-                onClick={() => setCurrentSection(index)}
+                onClick={() => setCurrentSection(stepId)}
                 className="flex items-center justify-between gap-2 bg-white border border-slate-200 hover:border-emerald-400 rounded-lg px-3 py-2.5 transition-colors"
               >
                 <span className="flex items-center gap-2 min-w-0">

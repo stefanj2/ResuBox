@@ -7,12 +7,14 @@ import { db, isDbConfigured } from './db';
 import { analyticsEvents } from '@/db/schema';
 
 const SECTION_NAMES = [
-  'Persoonsgegevens',
+  'Persoonlijk basis',
+  'Persoonlijk contact',
+  'Persoonlijk extra',
   'Werkervaring',
   'Opleiding',
   'Vaardigheden',
   'Profiel',
-  'Download',
+  'Controle',
 ];
 
 const EVENTS_FILE = join(process.cwd(), '.analytics-events.json');
@@ -158,7 +160,8 @@ function calculateFunnelStats(
 
   const totalSessions = sessionEvents.size;
 
-  const stepCounts = [0, 0, 0, 0, 0, 0];
+  const stepCounts = SECTION_NAMES.map(() => 0);
+  const fillableCount = SECTION_NAMES.length - 1; // last entry is the download/review step
   let completedSessions = 0;
 
   for (const [, sessionEventList] of sessionEvents) {
@@ -179,14 +182,14 @@ function calculateFunnelStats(
       }
     }
 
-    for (let i = 0; i <= 4; i++) {
+    for (let i = 0; i < fillableCount; i++) {
       if (sectionsViewed.has(i)) {
         stepCounts[i]++;
       }
     }
 
     if (downloadInitiated || downloadCompleted) {
-      stepCounts[5]++;
+      stepCounts[fillableCount]++;
     }
   }
 

@@ -2,14 +2,16 @@ import { AnalyticsEvent, AnalyticsEventType } from '@/types/admin';
 
 const STORAGE_KEY = 'cv_analytics_events';
 
-// Section names for the funnel
+// Section names for the funnel — order matches stepper indices in EditorLayout.
 const SECTION_NAMES = [
-  'Persoonsgegevens',
+  'Persoonlijk basis',
+  'Persoonlijk contact',
+  'Persoonlijk extra',
   'Werkervaring',
   'Opleiding',
   'Vaardigheden',
   'Profiel',
-  'Download',
+  'Controle',
 ];
 
 // Generate UUID for session/event IDs

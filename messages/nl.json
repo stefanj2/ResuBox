@@ -153,11 +153,17 @@
   "Builder": {
     "sections": {
       "personal": "Persoonsgegevens",
+      "personalBasics": "Persoonlijk",
+      "personalContact": "Contact",
+      "personalExtra": "Extra info",
       "work": "Werkervaring",
       "education": "Opleiding",
       "skills": "Vaardigheden",
       "profile": "Profielschets",
       "personalShort": "Persoon",
+      "personalBasicsShort": "Persoon",
+      "personalContactShort": "Contact",
+      "personalExtraShort": "Extra",
       "workShort": "Werk",
       "educationShort": "Studie",
       "skillsShort": "Skills",
@@ -189,6 +195,18 @@
       "incompleteHint": "Klik op een sectie hieronder om deze af te ronden — je kunt pas downloaden als alles klaar is.",
       "templateLabel": "Sjabloon",
       "reviewSections": "Loop je secties nog even na"
+    },
+    "personalBasics": {
+      "title": "Even kennismaken",
+      "subtitle": "Voeg een foto toe (optioneel) en vul je naam in. Dit verschijnt bovenaan je CV."
+    },
+    "personalContact": {
+      "title": "Hoe bereiken we je?",
+      "subtitle": "Email is verplicht zodat we je CV altijd kunnen herstellen. Telefoon en adres zijn optioneel."
+    },
+    "personalExtra": {
+      "title": "Extra info (optioneel)",
+      "subtitle": "Geen verplichte velden — vul aan wat relevant is voor jouw werkveld of sla deze stap over."
     },
     "personalSection": {
       "title": "Persoonsgegevens",
