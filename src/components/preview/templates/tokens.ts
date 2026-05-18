@@ -39,7 +39,7 @@ export const type = {
     fontSize: '8.5pt',
     fontWeight: 600,
     lineHeight: 1,
-    letterSpacing: '0.18em',
+    letterSpacing: '0.14em',
     textTransform: 'uppercase' as const,
   },
   sectionLabelSerif: {
@@ -47,7 +47,7 @@ export const type = {
     fontSize: '11pt',
     fontWeight: 600,
     lineHeight: 1.2,
-    letterSpacing: '0.04em',
+    letterSpacing: '0.06em',
     textTransform: 'uppercase' as const,
   },
   // Lead summary — the "positioning statement" treatment used by Pender/Creatief
@@ -137,11 +137,11 @@ export const palette = {
   },
   // Zakelijk — classic Harvard / Word-doc neutrality
   zakelijk: {
-    ink: '#000000',
+    ink: '#0a0a0a',    // near-black, less harsh than pure #000
     body: '#1f2937',
     muted: '#4b5563',
     faint: '#9ca3af',
-    rule: '#000000',   // section dividers are full black hairlines
+    rule: '#1f2937',   // warmer near-black hairlines
     placeholder: '#cbd5e1',
     page: '#ffffff',
   },

@@ -42,7 +42,11 @@ export function TechTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   if (personal.phone) sidebarContact.push(personal.phone);
   if (personal.linkedIn) sidebarContact.push(personal.linkedIn);
   if (personal.website) sidebarContact.push(personal.website);
-  if (personal.city) sidebarContact.push(personal.city);
+  const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
+  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  if (street) sidebarContact.push(street);
+  if (cityLine) sidebarContact.push(cityLine);
+  else if (personal.city) sidebarContact.push(personal.city);
 
   // === Sidebar section heading: "// label" comment-style ===
   const SidebarHeading = ({ label }: { label: string }) => (

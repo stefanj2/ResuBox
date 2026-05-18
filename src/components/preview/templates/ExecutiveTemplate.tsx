@@ -34,11 +34,15 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
   const leftContact: string[] = [];
   if (personal.email) leftContact.push(personal.email);
   if (personal.phone) leftContact.push(personal.phone);
+  const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
+  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  const fullAddress = [street, cityLine].filter(Boolean).join(', ');
+  if (fullAddress) leftContact.push(fullAddress);
 
   const rightContact: string[] = [];
   if (personal.linkedIn) rightContact.push(personal.linkedIn);
   if (personal.website) rightContact.push(personal.website);
-  if (personal.city && !headlineParts.includes(personal.city)) rightContact.push(personal.city);
+  if (!fullAddress && personal.city && !headlineParts.includes(personal.city)) rightContact.push(personal.city);
 
   const SectionHeading = ({ label }: { label: string }) => (
     <h2
@@ -59,7 +63,7 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
         fontSize: '8pt',
         fontWeight: 700,
         textTransform: 'uppercase',
-        letterSpacing: '0.22em',
+        letterSpacing: '0.14em',
         color: c.ink,
         margin: '0 0 8pt 0',
         paddingBottom: '4pt',

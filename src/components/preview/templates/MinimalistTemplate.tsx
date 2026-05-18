@@ -17,7 +17,10 @@ export function MinimalistTemplate({ cvData, locale }: TemplateProps) {
   const contact: string[] = [];
   if (personal.email) contact.push(personal.email);
   if (personal.phone) contact.push(personal.phone);
-  if (personal.city) contact.push(personal.city);
+  const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
+  const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  const addr = [street, cityLine].filter(Boolean).join(', ') || personal.city;
+  if (addr) contact.push(addr);
   if (personal.linkedIn) contact.push(personal.linkedIn);
   if (personal.website) contact.push(personal.website);
 
@@ -28,7 +31,7 @@ export function MinimalistTemplate({ cvData, locale }: TemplateProps) {
         fontSize: '8.5pt',
         fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '0.24em',
+        letterSpacing: '0.16em',
         color: c.ink,
         margin: '0 0 14pt 0',
       }}

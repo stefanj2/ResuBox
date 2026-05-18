@@ -31,11 +31,11 @@ export function ZakelijkTemplate({ cvData, locale }: TemplateProps) {
         fontSize: '11pt',
         fontWeight: 700,
         textTransform: 'uppercase',
-        letterSpacing: '0.12em',
+        letterSpacing: '0.10em',
         color: c.ink,
         margin: '0 0 6pt 0',
         paddingBottom: '4pt',
-        borderBottom: `0.75pt solid ${c.ink}`,
+        borderBottom: `0.5pt solid ${c.ink}`,
       }}
     >
       {label}

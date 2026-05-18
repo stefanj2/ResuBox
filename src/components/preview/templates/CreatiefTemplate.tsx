@@ -45,8 +45,8 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
   if (personal.phone) sidecarContact.push({ value: personal.phone, placeholder: isPlaceholder.phone });
   const street = [personal.address, personal.houseNumber].filter(Boolean).join(' ');
   const cityLine = [personal.postalCode, personal.city].filter(Boolean).join(' ');
+  if (street) sidecarContact.push({ value: street, placeholder: isPlaceholder.address });
   if (cityLine) sidecarContact.push({ value: cityLine, placeholder: isPlaceholder.city });
-  else if (street) sidecarContact.push({ value: street, placeholder: isPlaceholder.address });
   if (personal.linkedIn) sidecarContact.push({ value: personal.linkedIn, placeholder: isPlaceholder.linkedIn });
   if (personal.website) sidecarContact.push({ value: personal.website, placeholder: isPlaceholder.website });
 
@@ -58,7 +58,7 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
         fontSize: '10pt',
         fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '0.28em',
+        letterSpacing: '0.18em',
         color: accent,
         margin: '0 0 10pt 0',
       }}
@@ -75,7 +75,7 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
         fontSize: '9.5pt',
         fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '0.26em',
+        letterSpacing: '0.16em',
         color: c.ink,
         margin: '0 0 8pt 0',
       }}
@@ -101,7 +101,7 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
       <header
         style={{
           padding: '0 18mm 18pt 18mm',
-          borderBottom: `3pt solid ${accent}`,
+          borderBottom: `2pt solid ${accent}`,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '14pt' }}>

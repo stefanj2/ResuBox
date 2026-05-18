@@ -50,11 +50,11 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
         fontSize: '8.5pt',
         fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '0.22em',
-        color: 'rgba(255,255,255,0.7)',
+        letterSpacing: '0.14em',
+        color: 'rgba(255,255,255,0.78)',
         marginBottom: '10pt',
         paddingBottom: '6pt',
-        borderBottom: '1pt solid rgba(255,255,255,0.25)',
+        borderBottom: '0.75pt solid rgba(255,255,255,0.22)',
       }}
     >
       {children}
@@ -70,14 +70,14 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
           fontSize: '9pt',
           fontWeight: 700,
           textTransform: 'uppercase',
-          letterSpacing: '0.22em',
+          letterSpacing: '0.14em',
           color: accent,
           margin: 0,
         }}
       >
         {children}
       </h2>
-      <span style={{ flex: 1, height: '1px', backgroundColor: c.rule }} />
+      <span style={{ flex: 1, height: '0.75pt', backgroundColor: c.rule }} />
     </div>
   );
 
@@ -298,10 +298,10 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
           )}
           <div
             style={{
-              width: '32pt',
-              height: '2pt',
+              width: '28pt',
+              height: '1.5pt',
               backgroundColor: accent,
-              marginTop: '12pt',
+              marginTop: '14pt',
             }}
           />
         </header>
@@ -413,10 +413,10 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
                           }}
                         >
                           <span
-                            style={{ position: 'absolute', left: '-12pt', color: accent }}
+                            style={{ position: 'absolute', left: '-10pt', color: accent, fontWeight: 700 }}
                             aria-hidden
                           >
-                            •
+                            ·
                           </span>
                           {task}
                         </li>
