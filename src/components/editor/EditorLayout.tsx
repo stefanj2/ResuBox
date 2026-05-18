@@ -171,7 +171,20 @@ export function EditorLayout() {
             <div className="hidden md:block w-px h-6 bg-slate-200 flex-shrink-0" aria-hidden />
 
             {/* Stepper occupies the middle space */}
-            <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+              {/* Where am I — prominent meta line, visible on all viewports */}
+              <div className="flex items-baseline gap-1.5 text-xs sm:text-sm">
+                <span className="text-slate-400 tabular-nums flex-shrink-0">
+                  {tUi('stepOf', { n: currentSection + 1, total: steps.length })}
+                </span>
+                <span className="text-slate-300" aria-hidden>·</span>
+                <span className="font-semibold text-slate-900 truncate min-w-0">
+                  {steps[currentSection]?.label}
+                </span>
+                <span className="ml-auto tabular-nums text-emerald-700 font-semibold text-xs flex-shrink-0">
+                  {Math.round((perStepComplete.filter((v, i) => v && i < steps.length - 1).length / (steps.length - 1)) * 100)}%
+                </span>
+              </div>
               <FunnelStepper
                 steps={steps}
                 currentStep={currentSection}
@@ -184,17 +197,6 @@ export function EditorLayout() {
                   }
                 }}
               />
-              <p className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-500 truncate">
-                <span className="font-medium text-slate-700 tabular-nums">
-                  {tUi('stepOf', { n: currentSection + 1, total: steps.length })}
-                </span>
-                <span className="text-slate-300">·</span>
-                <span className="truncate">{steps[currentSection]?.label}</span>
-                <span className="text-slate-300">·</span>
-                <span className="tabular-nums text-emerald-700 font-medium">
-                  {Math.round((perStepComplete.filter((v, i) => v && i < steps.length - 1).length / (steps.length - 1)) * 100)}%
-                </span>
-              </p>
             </div>
 
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">

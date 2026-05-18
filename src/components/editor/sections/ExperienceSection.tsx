@@ -56,6 +56,7 @@ export function ExperienceSection() {
   const t = useTranslations('Builder.experienceSection');
   const tip = useTranslations('Builder.experienceSection.tooltips');
   const tProfile = useTranslations('Builder.profileSection');
+  const tPersonal = useTranslations('Builder.personalSection');
   const locale = useLocale() as Locale;
   const [expandedId, setExpandedId] = useState<string | null>(
     cvData.experience.length > 0 ? cvData.experience[0].id : null
@@ -176,8 +177,8 @@ export function ExperienceSection() {
             </button>
 
             {expandedId === exp.id && (
-              <div className="px-4 pb-4 space-y-4 border-t border-slate-100 pt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
                     label={t('jobTitle')}
                     value={exp.jobTitle}
@@ -197,51 +198,49 @@ export function ExperienceSection() {
                   />
                 </div>
 
-                <Input
-                  label={t('location')}
-                  placeholder={t('locationPlaceholder')}
-                  value={exp.location}
-                  onChange={(e) => updateExperience(exp.id, { location: e.target.value })}
-                />
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <Input
                     type="month"
                     label={t('startDate')}
                     value={exp.startDate}
                     onChange={(e) => updateExperience(exp.id, { startDate: e.target.value })}
                   />
-                  <div>
-                    <Input
-                      type="month"
-                      label={t('endDate')}
-                      value={exp.endDate}
-                      onChange={(e) => updateExperience(exp.id, { endDate: e.target.value })}
-                      disabled={exp.current}
-                    />
-                    <label className="flex items-center gap-2 mt-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={exp.current}
-                        onChange={(e) =>
-                          updateExperience(exp.id, {
-                            current: e.target.checked,
-                            endDate: e.target.checked ? '' : exp.endDate,
-                          })
-                        }
-                        className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span className="text-sm text-slate-600">{t('currentPosition')}</span>
-                    </label>
-                  </div>
+                  <Input
+                    type="month"
+                    label={t('endDate')}
+                    value={exp.endDate}
+                    onChange={(e) => updateExperience(exp.id, { endDate: e.target.value })}
+                    disabled={exp.current}
+                  />
+                  <Input
+                    label={`${t('location')} ${tPersonal('optionalSuffix')}`}
+                    placeholder={t('locationPlaceholder')}
+                    value={exp.location}
+                    onChange={(e) => updateExperience(exp.id, { location: e.target.value })}
+                    className="col-span-2 sm:col-span-1"
+                  />
                 </div>
+                <label className="flex items-center gap-2 -mt-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={exp.current}
+                    onChange={(e) =>
+                      updateExperience(exp.id, {
+                        current: e.target.checked,
+                        endDate: e.target.checked ? '' : exp.endDate,
+                      })
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-xs text-slate-600">{t('currentPosition')}</span>
+                </label>
 
                 <TextArea
                   label={t('description')}
                   placeholder={t('descriptionPlaceholder')}
                   value={exp.description}
                   onChange={(e) => updateExperience(exp.id, { description: e.target.value })}
-                  rows={3}
+                  rows={2}
                   tooltip={tip('description')}
                 />
 
