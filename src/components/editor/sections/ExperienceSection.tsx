@@ -141,11 +141,22 @@ export function ExperienceSection() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div>
         <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
         <p className="text-slate-600">{t('subtitle')}</p>
       </div>
+
+      {/* Always-visible Add button — sticks to the top of the scroll viewport
+          so it stays accessible no matter how many entries the user has. */}
+      <button
+        type="button"
+        onClick={handleAddExperience}
+        className="sticky top-0 z-10 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-slate-300 hover:border-emerald-400 bg-slate-50/90 hover:bg-emerald-50/80 backdrop-blur text-slate-600 hover:text-emerald-700 text-sm font-medium transition-colors"
+      >
+        <Plus className="w-4 h-4" />
+        {t('addNew')}
+      </button>
 
       <div className="space-y-3">
         {cvData.experience.map((exp, index) => (
@@ -367,14 +378,6 @@ export function ExperienceSection() {
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={handleAddExperience}
-        className="w-full mt-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 text-sm font-medium transition-colors"
-      >
-        <Plus className="w-4 h-4" />
-        {t('addNew')}
-      </button>
     </div>
   );
 }
