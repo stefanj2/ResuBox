@@ -23,8 +23,13 @@ export function isSectionComplete(id: number, cv: CVData): boolean {
   switch (id) {
     case 0: // Persoonlijk basis
       return !!(cv.personal.firstName && cv.personal.lastName);
-    case 1: // Persoonlijk contact (email is required for download flow / magic link)
-      return !!cv.personal.email && cv.personal.email.includes('@');
+    case 1: // Persoonlijk contact — recruiter needs to be able to reach + locate the candidate
+      return (
+        !!cv.personal.email &&
+        cv.personal.email.includes('@') &&
+        !!cv.personal.phone?.trim() &&
+        !!cv.personal.city?.trim()
+      );
     case 2: // Persoonlijk extra — all fields are optional
       return true;
     case 3: // Werkervaring

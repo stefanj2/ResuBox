@@ -2,13 +2,19 @@
 
 import React, { useCallback, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Mail, Phone, MapPin, CheckCircle, Loader2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 
 const ADDRESS_LOOKUP_LOCALES = new Set(['nl']);
 
-/** Second personal sub-step: email, phone, address. Fits one viewport. */
+/**
+ * Second personal sub-step: email, phone, address. Email/phone/city are
+ * required because recruiters can't reach the candidate without them.
+ * Postcode + house number remain helpers — they auto-fill street and city
+ * via PDOK lookup on NL, but the candidate can also type the address
+ * manually if the lookup fails or doesn't apply to their locale.
+ */
 export function PersonalContactSection() {
   const { cvData, updatePersonal, triggerMagicLink, magicLinkSent } = useCVData();
   const t = useTranslations('Builder.personalSection');
@@ -79,86 +85,91 @@ export function PersonalContactSection() {
     <div className="space-y-4">
       <div>
         <h2 className="text-xl font-bold text-slate-900 mb-1">{tStep('title')}</h2>
-        <p className="text-slate-600">{tStep('subtitle')}</p>
+        <p className="text-slate-600 text-sm">{tStep('subtitle')}</p>
       </div>
 
-      <div>
-        <Input
-          type="email"
-          label={t('email')}
-          icon={Mail}
-          value={cvData.personal.email}
-          onChange={(e) => updatePersonal('email', e.target.value)}
-          onBlur={handleEmailBlur}
-          required
-          tooltip={tip('email')}
-          showValidCheck={!magicLinkSent}
-          success={magicLinkSent && emailTouched}
-          successMessage={t('magicLinkSentInfo')}
-        />
-        {sendingMagicLink && (
-          <p className="mt-1.5 text-sm text-slate-500 flex items-center gap-1">
-            <Loader2 className="animate-spin w-4 h-4" />
-            {t('sendingMagicLink')}
-          </p>
-        )}
-      </div>
-
-      <Input
-        type="tel"
-        label={`${t('phone')} ${t('optionalSuffix')}`}
-        icon={Phone}
-        value={cvData.personal.phone}
-        onChange={(e) => updatePersonal('phone', e.target.value)}
-        tooltip={tip('phone')}
-      />
-
-      <div>
-        <div className="grid grid-cols-2 gap-4">
+      {/* Email + phone — primary contact */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
           <Input
-            label={`${t('postalCode')} ${t('optionalSuffix')}`}
-            icon={MapPin}
-            value={cvData.personal.postalCode}
-            onChange={(e) => handlePostcodeChange(e.target.value)}
-            tooltip={supportsAddressLookup ? tip('postalCode') : undefined}
+            type="email"
+            label={t('email')}
+            icon={Mail}
+            value={cvData.personal.email}
+            onChange={(e) => updatePersonal('email', e.target.value)}
+            onBlur={handleEmailBlur}
+            required
+            tooltip={tip('email')}
+            showValidCheck={!magicLinkSent}
+            success={magicLinkSent && emailTouched}
+            successMessage={t('magicLinkSentInfo')}
+          />
+          {sendingMagicLink && (
+            <p className="mt-1 text-xs text-slate-500 flex items-center gap-1">
+              <Loader2 className="animate-spin w-3.5 h-3.5" />
+              {t('sendingMagicLink')}
+            </p>
+          )}
+        </div>
+
+        <Input
+          type="tel"
+          label={t('phone')}
+          icon={Phone}
+          value={cvData.personal.phone}
+          onChange={(e) => updatePersonal('phone', e.target.value)}
+          required
+          tooltip={tip('phone')}
+          showValidCheck
+        />
+      </div>
+
+      {/* Address — postcode + house number trigger auto-lookup, street + city
+          remain visible and editable so the candidate can always correct or
+          enter the address manually. */}
+      <div>
+        {supportsAddressLookup && (
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <Input
+              label={t('postalCode')}
+              icon={MapPin}
+              value={cvData.personal.postalCode}
+              onChange={(e) => handlePostcodeChange(e.target.value)}
+              tooltip={tip('postalCode')}
+            />
+            <Input
+              label={t('houseNumber')}
+              value={cvData.personal.houseNumber}
+              onChange={(e) => handleHouseNumberChange(e.target.value)}
+              tooltip={tip('houseNumber')}
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Input
+            label={t('address')}
+            icon={supportsAddressLookup ? undefined : MapPin}
+            value={cvData.personal.address}
+            onChange={(e) => updatePersonal('address', e.target.value)}
           />
           <Input
-            label={`${t('houseNumber')} ${t('optionalSuffix')}`}
-            value={cvData.personal.houseNumber}
-            onChange={(e) => handleHouseNumberChange(e.target.value)}
-            tooltip={supportsAddressLookup ? tip('houseNumber') : undefined}
+            label={t('city')}
+            value={cvData.personal.city}
+            onChange={(e) => updatePersonal('city', e.target.value)}
+            required
+            showValidCheck
           />
         </div>
 
-        {!supportsAddressLookup && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <Input
-              label={`${t('address')} ${t('optionalSuffix')}`}
-              value={cvData.personal.address}
-              onChange={(e) => updatePersonal('address', e.target.value)}
-            />
-            <Input
-              label={`${t('city')} ${t('optionalSuffix')}`}
-              value={cvData.personal.city}
-              onChange={(e) => updatePersonal('city', e.target.value)}
-            />
-          </div>
-        )}
-
         {supportsAddressLookup && lookingUpAddress && (
-          <div className="flex items-center gap-2 mt-2 text-sm text-slate-500">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>{t('lookingUpAddress')}</span>
-          </div>
-        )}
-        {supportsAddressLookup && !lookingUpAddress && cvData.personal.address && cvData.personal.city && (
-          <div className="flex items-center gap-2 mt-2 text-sm text-emerald-600">
-            <CheckCircle className="w-4 h-4" />
-            <span>{cvData.personal.address} {cvData.personal.houseNumber}, {cvData.personal.city}</span>
-          </div>
+          <p className="flex items-center gap-1.5 mt-2 text-xs text-slate-500">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            {t('lookingUpAddress')}
+          </p>
         )}
         {addressError && (
-          <div className="mt-2 text-sm text-amber-600">{addressError}</div>
+          <p className="mt-2 text-xs text-amber-700">{addressError}</p>
         )}
       </div>
     </div>
