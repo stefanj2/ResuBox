@@ -61,99 +61,92 @@ export function EducationSection() {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {cvData.education.map((edu) => (
           <Card key={edu.id} padding="none" className="overflow-hidden">
             <button
               onClick={() => setExpandedId(expandedId === edu.id ? null : edu.id)}
-              className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+              className="w-full flex items-center justify-between gap-3 p-3.5 hover:bg-slate-50 transition-colors"
             >
-              <div className="flex items-center gap-3 text-left">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
-                  <GraduationCap className="w-5 h-5" />
+              <div className="flex items-center gap-3 text-left min-w-0">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <GraduationCap className="w-4 h-4" />
                 </div>
-                <div>
-                  <h3 className="font-medium text-slate-900">
-                    {edu.degree || t('newEntry')}
-                  </h3>
-                  <p className="text-sm text-slate-500">
-                    {edu.institution || t('institution')}
-                    {edu.startDate && ` • ${edu.startDate}`}
-                    {edu.endDate && ` - ${edu.endDate}`}
-                  </p>
-                </div>
+                <h3 className="font-medium text-slate-900 truncate min-w-0">
+                  {edu.institution || t('newEntry')}
+                </h3>
               </div>
               {expandedId === edu.id ? (
-                <ChevronUp className="w-5 h-5 text-slate-400" />
+                <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-slate-400" />
+                <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
               )}
             </button>
 
             {expandedId === edu.id && (
-              <div className="px-4 pb-4 space-y-4 border-t border-slate-100 pt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
                     label={t('degree')}
                     value={edu.degree}
                     onChange={(e) => updateEducation(edu.id, { degree: e.target.value })}
                     required
+                    showValidCheck
                   />
                   <Input
                     label={t('institution')}
                     value={edu.institution}
                     onChange={(e) => updateEducation(edu.id, { institution: e.target.value })}
                     required
+                    showValidCheck
                   />
                 </div>
 
-                <Input
-                  label={t('location')}
-                  value={edu.location}
-                  onChange={(e) => updateEducation(edu.id, { location: e.target.value })}
-                />
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <Input
                     type="month"
                     label={t('startDate')}
                     value={edu.startDate}
                     onChange={(e) => updateEducation(edu.id, { startDate: e.target.value })}
                   />
-                  <div>
-                    <Input
-                      type="month"
-                      label={t('endDate')}
-                      value={edu.endDate}
-                      onChange={(e) => updateEducation(edu.id, { endDate: e.target.value })}
-                      disabled={edu.current}
-                    />
-                    <label className="flex items-center gap-2 mt-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={edu.current}
-                        onChange={(e) =>
-                          updateEducation(edu.id, {
-                            current: e.target.checked,
-                            endDate: e.target.checked ? '' : edu.endDate,
-                          })
-                        }
-                        className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <span className="text-sm text-slate-600">{t('currentEducation')}</span>
-                    </label>
-                  </div>
+                  <Input
+                    type="month"
+                    label={t('endDate')}
+                    value={edu.endDate}
+                    onChange={(e) => updateEducation(edu.id, { endDate: e.target.value })}
+                    disabled={edu.current}
+                  />
+                  <Input
+                    label={t('location')}
+                    value={edu.location}
+                    onChange={(e) => updateEducation(edu.id, { location: e.target.value })}
+                    className="col-span-2 sm:col-span-1"
+                  />
                 </div>
+                <label className="flex items-center gap-2 -mt-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={edu.current}
+                    onChange={(e) =>
+                      updateEducation(edu.id, {
+                        current: e.target.checked,
+                        endDate: e.target.checked ? '' : edu.endDate,
+                      })
+                    }
+                    className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="text-xs text-slate-600">{t('currentEducation')}</span>
+                </label>
 
                 <TextArea
                   label={t('description')}
                   placeholder={t('descriptionPlaceholder')}
                   value={edu.description}
                   onChange={(e) => updateEducation(edu.id, { description: e.target.value })}
-                  rows={3}
+                  rows={2}
                 />
 
-                <div className="pt-4 border-t border-slate-100">
+                <div className="pt-3 border-t border-slate-100">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -170,9 +163,14 @@ export function EducationSection() {
         ))}
       </div>
 
-      <Button variant="outline" icon={Plus} onClick={handleAddEducation} fullWidth>
+      <button
+        type="button"
+        onClick={handleAddEducation}
+        className="w-full mt-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-emerald-400 hover:bg-emerald-50/40 text-slate-600 hover:text-emerald-700 text-sm font-medium transition-colors"
+      >
+        <Plus className="w-4 h-4" />
         {t('addNew')}
-      </Button>
+      </button>
     </div>
   );
 }
