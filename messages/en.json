@@ -190,11 +190,13 @@
     },
     "reviewSection": {
       "title": "Almost there — review your CV",
-      "subtitle": "See how your CV looks right now and adjust the template, colour or any section before you download.",
+      "subtitle": "Check your CV in the preview and adjust the template or colour before you download.",
       "incompleteTitle": "{remaining} section(s) still missing",
-      "incompleteHint": "Click a section below to finish it — you can only download once everything is complete.",
+      "incompleteHint": "click Back to return and fill them in.",
       "templateLabel": "Template",
-      "reviewSections": "Sections to review"
+      "trustInstant": "Instant download",
+      "trustSecure": "Secure payment",
+      "trustPrivate": "Your data stays private"
     },
     "personalBasics": {
       "title": "Let's get to know you",

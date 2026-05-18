@@ -2,34 +2,23 @@
 
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, Pencil, Palette, FileText, AlertCircle } from 'lucide-react';
+import { Palette, FileText, AlertCircle, ShieldCheck, Zap, Lock } from 'lucide-react';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { TEMPLATES } from '@/components/preview/templates';
 import { ColorPicker, TemplateSelector } from '@/components/templateSelector';
 import { Modal } from '@/components/ui';
-import { isSectionComplete, getCvProgress } from '@/lib/cvProgress';
-
-// Review jump-back grid. Index in this array maps to a stepper id (0-6).
-const REVIEW_LINKS: Array<{ stepId: number; key: string }> = [
-  { stepId: 0, key: 'personalBasics' },
-  { stepId: 1, key: 'personalContact' },
-  { stepId: 2, key: 'personalExtra' },
-  { stepId: 3, key: 'work' },
-  { stepId: 4, key: 'education' },
-  { stepId: 5, key: 'skills' },
-  { stepId: 6, key: 'profile' },
-];
+import { getCvProgress } from '@/lib/cvProgress';
 
 /**
- * Final step of the funnel. Shows a large preview, lets the user adjust
- * template + color one last time, jump back to fix any section, and finally
- * surfaces the download CTA at the bottom (handled by BuilderStickyCTA).
+ * Final step of the funnel. A clean preview-first layout: large preview,
+ * sleek template + color controls, trust strip just above the sticky
+ * Download CTA. No more per-section jump-back grid — users can simply
+ * click Vorige or any earlier stepper position to revisit a section.
  */
 export function ReviewSection() {
-  const { cvData, setCurrentSection } = useCVData();
+  const { cvData } = useCVData();
   const t = useTranslations('Builder.reviewSection');
-  const tSections = useTranslations('Builder.sections');
   const progress = getCvProgress(cvData);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
 
@@ -38,31 +27,23 @@ export function ReviewSection() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div>
         <h2 className="text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
-        <p className="text-slate-600">{t('subtitle')}</p>
+        <p className="text-slate-600 text-sm">{t('subtitle')}</p>
       </div>
 
-      {/* Incomplete-sections warning */}
       {!progress.isComplete && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-amber-900 mb-1">
-                {t('incompleteTitle', { remaining: progress.remaining })}
-              </p>
-              <p className="text-xs text-amber-800">
-                {t('incompleteHint')}
-              </p>
-            </div>
-          </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-900">
+            <span className="font-medium">{t('incompleteTitle', { remaining: progress.remaining })}</span>
+            <span className="text-amber-800"> — {t('incompleteHint')}</span>
+          </p>
         </div>
       )}
 
       {/* Inline preview — mobile/tablet only. On lg+ the side panel already shows it. */}
-      <div className="lg:hidden bg-slate-100 rounded-xl border border-slate-200 p-4 sm:p-6 overflow-hidden">
+      <div className="lg:hidden bg-slate-100 rounded-xl border border-slate-200 p-4 overflow-hidden">
         <div className="flex justify-center overflow-x-auto">
           <div
             className="origin-top shadow-2xl scale-[0.45] sm:scale-[0.55] md:scale-[0.6] mb-[-200pt] sm:mb-[-160pt] md:mb-[-130pt]"
@@ -73,68 +54,46 @@ export function ReviewSection() {
         </div>
       </div>
 
-      {/* Template + Color row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Style controls — one tight card with template + colour side by side */}
+      <div className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 sm:divide-y-0 sm:divide-x sm:flex">
         <button
           type="button"
           onClick={() => setShowTemplateModal(true)}
-          className="text-left bg-white border border-slate-200 hover:border-emerald-400 hover:shadow-sm rounded-xl p-4 transition-all"
+          className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left sm:flex-1 min-w-0"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-              <FileText className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-slate-500 mb-0.5">{t('templateLabel')}</p>
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {currentTemplate?.nameNL ?? selectedTemplateId}
-              </p>
-            </div>
-            <Palette className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
+            <FileText className="w-4 h-4 text-emerald-600" />
           </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium leading-none mb-1">
+              {t('templateLabel')}
+            </p>
+            <p className="text-sm font-semibold text-slate-900 truncate">
+              {currentTemplate?.nameNL ?? selectedTemplateId}
+            </p>
+          </div>
+          <Palette className="w-4 h-4 text-slate-400 flex-shrink-0" />
         </button>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <div className="px-4 py-3 sm:flex-1">
           <ColorPicker compact />
         </div>
       </div>
 
-      {/* Per-section edit grid */}
-      <div>
-        <h3 className="text-sm font-semibold text-slate-700 mb-3">
-          {t('reviewSections')}
-        </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {REVIEW_LINKS.map(({ stepId, key }) => {
-            const done = isSectionComplete(stepId, cvData);
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setCurrentSection(stepId)}
-                className="flex items-center justify-between gap-2 bg-white border border-slate-200 hover:border-emerald-400 rounded-lg px-3 py-2.5 transition-colors"
-              >
-                <span className="flex items-center gap-2 min-w-0">
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      done ? 'bg-emerald-500' : 'bg-slate-200'
-                    }`}
-                  >
-                    {done ? (
-                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                    ) : (
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    )}
-                  </span>
-                  <span className="text-sm font-medium text-slate-700 truncate">
-                    {tSections(key)}
-                  </span>
-                </span>
-                <Pencil className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-              </button>
-            );
-          })}
-        </div>
+      {/* Trust strip — small icon row reinforcing the value before download */}
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 pt-1">
+        <span className="inline-flex items-center gap-1.5">
+          <Zap className="w-3.5 h-3.5 text-emerald-600" />
+          {t('trustInstant')}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+          {t('trustSecure')}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-emerald-600" />
+          {t('trustPrivate')}
+        </span>
       </div>
 
       {/* Template selector modal */}

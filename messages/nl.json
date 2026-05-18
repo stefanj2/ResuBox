@@ -190,11 +190,13 @@
     },
     "reviewSection": {
       "title": "Bijna klaar — controleer je CV",
-      "subtitle": "Bekijk hoe je CV er nu uitziet en pas eventueel nog het sjabloon, de kleur of een sectie aan voordat je downloadt.",
+      "subtitle": "Bekijk je CV in de preview en pas eventueel nog het sjabloon of de kleur aan voordat je downloadt.",
       "incompleteTitle": "Nog {remaining} sectie(s) niet ingevuld",
-      "incompleteHint": "Klik op een sectie hieronder om deze af te ronden — je kunt pas downloaden als alles klaar is.",
+      "incompleteHint": "klik op Vorige om terug te gaan en aan te vullen.",
       "templateLabel": "Sjabloon",
-      "reviewSections": "Loop je secties nog even na"
+      "trustInstant": "Direct download",
+      "trustSecure": "Veilig betalen via iDEAL",
+      "trustPrivate": "Je gegevens blijven privé"
     },
     "personalBasics": {
       "title": "Even kennismaken",

@@ -190,11 +190,13 @@
     },
     "reviewSection": {
       "title": "Næsten færdig — gennemgå dit CV",
-      "subtitle": "Se hvordan dit CV ser ud lige nu, og juster skabelon, farve eller en sektion, før du downloader.",
+      "subtitle": "Se dit CV i forhåndsvisningen og juster skabelon eller farve, før du downloader.",
       "incompleteTitle": "{remaining} sektion(er) mangler",
-      "incompleteHint": "Klik på en sektion nedenfor for at færdiggøre den — du kan først downloade, når alt er udfyldt.",
+      "incompleteHint": "Klik på Tilbage for at udfylde dem.",
       "templateLabel": "Skabelon",
-      "reviewSections": "Sektioner at gennemgå"
+      "trustInstant": "Direkte download",
+      "trustSecure": "Sikker betaling",
+      "trustPrivate": "Dine data forbliver private"
     },
     "personalBasics": {
       "title": "Lad os lære dig at kende",

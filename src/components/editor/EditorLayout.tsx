@@ -145,12 +145,17 @@ export function EditorLayout() {
             <div className="hidden md:block w-px h-6 bg-slate-200 flex-shrink-0" aria-hidden />
 
             {/* Minimal progress bar — fills as user advances */}
-            <div className="flex-1 min-w-0">
-              <FunnelStepper
-                steps={steps}
-                currentStep={currentSection}
-                perStepComplete={perStepComplete}
-              />
+            <div className="flex-1 min-w-0 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <FunnelStepper
+                  steps={steps}
+                  currentStep={currentSection}
+                  perStepComplete={perStepComplete}
+                />
+              </div>
+              <span className="text-xs sm:text-sm font-medium text-slate-600 tabular-nums flex-shrink-0 whitespace-nowrap">
+                {tUi('stepOf', { n: currentSection + 1, total: steps.length })}
+              </span>
             </div>
 
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">

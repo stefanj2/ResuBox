@@ -190,11 +190,13 @@
     },
     "reviewSection": {
       "title": "Fast geschafft — prüfe deinen Lebenslauf",
-      "subtitle": "Sieh dir an, wie dein Lebenslauf gerade aussieht und passe Vorlage, Farbe oder eine Sektion an, bevor du herunterlädst.",
+      "subtitle": "Sieh dir deinen Lebenslauf in der Vorschau an und passe Vorlage oder Farbe an, bevor du herunterlädst.",
       "incompleteTitle": "Noch {remaining} Sektion(en) offen",
-      "incompleteHint": "Klicke unten auf eine Sektion, um sie abzuschließen — herunterladen kannst du erst, wenn alles ausgefüllt ist.",
+      "incompleteHint": "Klicke auf Zurück, um sie auszufüllen.",
       "templateLabel": "Vorlage",
-      "reviewSections": "Sektionen zum Prüfen"
+      "trustInstant": "Sofort-Download",
+      "trustSecure": "Sichere Zahlung",
+      "trustPrivate": "Deine Daten bleiben privat"
     },
     "personalBasics": {
       "title": "Lass uns dich kennenlernen",

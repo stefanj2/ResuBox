@@ -190,11 +190,13 @@
     },
     "reviewSection": {
       "title": "Nästan klart — granska ditt CV",
-      "subtitle": "Se hur ditt CV ser ut just nu och justera mall, färg eller en sektion innan du hämtar.",
+      "subtitle": "Se ditt CV i förhandsvisningen och justera mall eller färg innan du laddar ner.",
       "incompleteTitle": "{remaining} sektion(er) saknas",
-      "incompleteHint": "Klicka på en sektion nedan för att slutföra den — du kan ladda ner först när allt är klart.",
+      "incompleteHint": "Klicka på Tillbaka för att fylla i dem.",
       "templateLabel": "Mall",
-      "reviewSections": "Sektioner att granska"
+      "trustInstant": "Direktnedladdning",
+      "trustSecure": "Säker betalning",
+      "trustPrivate": "Dina data är privata"
     },
     "personalBasics": {
       "title": "Vi lär känna dig",
