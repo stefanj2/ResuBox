@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { Check, AlertCircle, ShieldCheck, Zap, Lock } from 'lucide-react';
+import { Check, AlertCircle, Zap, Lock } from 'lucide-react';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { TEMPLATES } from '@/components/preview/templates';
@@ -116,10 +116,6 @@ export function ReviewSection() {
         <span className="inline-flex items-center gap-1.5">
           <Zap className="w-3.5 h-3.5 text-emerald-600" />
           {t('trustInstant')}
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          {t('trustSecure')}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <Lock className="w-3.5 h-3.5 text-emerald-600" />
