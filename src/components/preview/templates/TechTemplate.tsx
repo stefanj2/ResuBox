@@ -3,7 +3,7 @@ import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 import type { SkillLevel } from '@/types/cv';
 
 const c = palette.default;
@@ -47,6 +47,8 @@ export function TechTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   if (street) sidebarContact.push(street);
   if (cityLine) sidebarContact.push(cityLine);
   else if (personal.city) sidebarContact.push(personal.city);
+  if (personal.dateOfBirth) sidebarContact.push(`${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`);
+  if (personal.nationality) sidebarContact.push(`${labels.nationality}: ${personal.nationality}`);
 
   // === Sidebar section heading: "// label" comment-style ===
   const SidebarHeading = ({ label }: { label: string }) => (

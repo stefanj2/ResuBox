@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, space, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 
 // Minimalist uses absolutely no accent color — typography is the only voice.
 const c = palette.default;
@@ -24,6 +24,8 @@ export function MinimalistTemplate({ cvData, locale }: TemplateProps) {
   else if (!street && personal.city) contact.push(personal.city);
   if (personal.linkedIn) contact.push(personal.linkedIn);
   if (personal.website) contact.push(personal.website);
+  if (personal.dateOfBirth) contact.push(`${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`);
+  if (personal.nationality) contact.push(`${labels.nationality}: ${personal.nationality}`);
 
   const Heading = ({ label }: { label: string }) => (
     <h2

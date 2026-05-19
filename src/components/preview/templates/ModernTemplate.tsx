@@ -3,7 +3,7 @@ import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, type, formatYearRange, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 
 const c = palette.default;
 const placeholder: React.CSSProperties = { color: c.placeholder };
@@ -40,6 +40,12 @@ export function ModernTemplate({ cvData, colorScheme, locale }: TemplateProps) {
   else if (!street && personal.city) contactItems.push({ label: 'A', value: personal.city, placeholder: isPlaceholder.city });
   if (personal.linkedIn) contactItems.push({ label: 'L', value: personal.linkedIn, placeholder: isPlaceholder.linkedIn });
   if (personal.website) contactItems.push({ label: 'W', value: personal.website, placeholder: isPlaceholder.website });
+  if (personal.dateOfBirth) contactItems.push({
+    label: 'D',
+    value: `${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`,
+    placeholder: isPlaceholder.dateOfBirth,
+  });
+  if (personal.nationality) contactItems.push({ label: 'N', value: `${labels.nationality}: ${personal.nationality}` });
 
   const currentRole = experience.find((e) => e.current) || experience[0];
 

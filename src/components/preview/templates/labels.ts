@@ -16,6 +16,8 @@ export interface TemplateLabels {
   executiveSummary: string;
   coreCompetencies: string;
   cvHeader: string;
+  dateOfBirth: string;
+  nationality: string;
 }
 
 export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
@@ -29,6 +31,8 @@ export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
     executiveSummary: 'Executive Summary',
     coreCompetencies: 'Kerncompetenties',
     cvHeader: 'Curriculum Vitae',
+    dateOfBirth: 'Geboortedatum',
+    nationality: 'Nationaliteit',
   },
   en: {
     profile: 'Summary',
@@ -40,6 +44,8 @@ export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
     executiveSummary: 'Executive Summary',
     coreCompetencies: 'Core Competencies',
     cvHeader: 'Curriculum Vitae',
+    dateOfBirth: 'Date of birth',
+    nationality: 'Nationality',
   },
   de: {
     profile: 'Kurzprofil',
@@ -51,6 +57,8 @@ export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
     executiveSummary: 'Executive Summary',
     coreCompetencies: 'Kernkompetenzen',
     cvHeader: 'Lebenslauf',
+    dateOfBirth: 'Geburtsdatum',
+    nationality: 'Nationalität',
   },
   sv: {
     profile: 'Profil',
@@ -62,6 +70,8 @@ export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
     executiveSummary: 'Executive Summary',
     coreCompetencies: 'Kärnkompetenser',
     cvHeader: 'CV',
+    dateOfBirth: 'Födelsedatum',
+    nationality: 'Nationalitet',
   },
   da: {
     profile: 'Profil',
@@ -73,6 +83,8 @@ export const TEMPLATE_LABELS: Record<Locale, TemplateLabels> = {
     executiveSummary: 'Executive Summary',
     coreCompetencies: 'Kernekompetencer',
     cvHeader: 'CV',
+    dateOfBirth: 'Fødselsdato',
+    nationality: 'Nationalitet',
   },
 };
 
@@ -112,4 +124,50 @@ export function formatDateRangeLocalized(
   if (!s) return e;
   if (!e) return s;
   return `${s} — ${e}`;
+}
+
+/**
+ * Locale-aware full date format for birth dates.
+ * Accepts ISO 8601 (YYYY-MM-DD, what <input type="date"> produces) or
+ * the legacy DD-MM-YYYY / DD.MM.YYYY / DD/MM/YYYY shapes our older
+ * sample data uses. Falls through unchanged for anything unparseable.
+ */
+export function formatDateOfBirthLocalized(value: string, locale: Locale | string = 'nl'): string {
+  if (!value) return '';
+
+  let y: number | undefined;
+  let m: number | undefined;
+  let d: number | undefined;
+
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(value)) {
+    const [yy, mm, dd] = value.split('-');
+    y = Number(yy);
+    m = Number(mm);
+    d = Number(dd);
+  } else if (/^\d{1,2}[-./]\d{1,2}[-./]\d{4}$/.test(value)) {
+    const parts = value.split(/[-./]/);
+    d = Number(parts[0]);
+    m = Number(parts[1]);
+    y = Number(parts[2]);
+  }
+
+  if (!y || !m || !d || m < 1 || m > 12 || d < 1 || d > 31) return value;
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const dd = pad(d);
+  const mm = pad(m);
+  const yyyy = String(y);
+
+  switch (locale) {
+    case 'sv':
+      return `${yyyy}-${mm}-${dd}`;
+    case 'de':
+      return `${dd}.${mm}.${yyyy}`;
+    case 'en':
+      return `${dd}/${mm}/${yyyy}`;
+    case 'da':
+    case 'nl':
+    default:
+      return `${dd}-${mm}-${yyyy}`;
+  }
 }

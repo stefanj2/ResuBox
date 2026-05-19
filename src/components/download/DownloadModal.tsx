@@ -27,7 +27,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const { cvData } = useCVData();
   const locale = useLocale();
   const t = useTranslations('Download');
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState(true);
   const [format, setFormat] = useState<Format>('pdf');
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -150,7 +150,7 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const handleClose = () => {
     if (status === 'processing') return;
     setStatus('idle');
-    setAgreed(false);
+    setAgreed(true);
     setErrorMessage('');
     onClose();
   };

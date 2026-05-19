@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, type, formatYearRange, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 
 const c = palette.executive;
 const GOLD = '#c9a25a';
@@ -45,6 +45,8 @@ export function ExecutiveTemplate({ cvData, colorScheme, locale }: TemplateProps
   if (!street && !cityLine && personal.city && !headlineParts.includes(personal.city)) {
     rightContact.push(personal.city);
   }
+  if (personal.dateOfBirth) rightContact.push(`${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`);
+  if (personal.nationality) rightContact.push(`${labels.nationality}: ${personal.nationality}`);
 
   const SectionHeading = ({ label }: { label: string }) => (
     <h2

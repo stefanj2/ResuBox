@@ -3,7 +3,7 @@ import { TemplateProps } from './types';
 import { getColorScheme } from '@/lib/colorSchemes';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, formatYearRange, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 
 const c = palette.default;
 
@@ -49,6 +49,11 @@ export function CreatiefTemplate({ cvData, colorScheme, locale }: TemplateProps)
   if (cityLine) sidecarContact.push({ value: cityLine, placeholder: isPlaceholder.city });
   if (personal.linkedIn) sidecarContact.push({ value: personal.linkedIn, placeholder: isPlaceholder.linkedIn });
   if (personal.website) sidecarContact.push({ value: personal.website, placeholder: isPlaceholder.website });
+  if (personal.dateOfBirth) sidecarContact.push({
+    value: `${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`,
+    placeholder: isPlaceholder.dateOfBirth,
+  });
+  if (personal.nationality) sidecarContact.push({ value: `${labels.nationality}: ${personal.nationality}` });
 
   // Serif uppercase section heading used in main column
   const SerifHeading = ({ children }: { children: React.ReactNode }) => (

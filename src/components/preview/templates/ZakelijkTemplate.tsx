@@ -2,7 +2,7 @@ import React from 'react';
 import { TemplateProps } from './types';
 import { getMergedCVData } from '@/lib/placeholderData';
 import { fonts, palette, space, formatPostcode } from './tokens';
-import { getTemplateLabels, formatDateRangeLocalized } from './labels';
+import { getTemplateLabels, formatDateRangeLocalized, formatDateOfBirthLocalized } from './labels';
 
 const c = palette.zakelijk;
 
@@ -23,6 +23,8 @@ export function ZakelijkTemplate({ cvData, locale }: TemplateProps) {
   else if (!street && personal.city) contact.push(personal.city);
   if (personal.linkedIn) contact.push(personal.linkedIn);
   if (personal.website) contact.push(personal.website);
+  if (personal.dateOfBirth) contact.push(`${labels.dateOfBirth}: ${formatDateOfBirthLocalized(personal.dateOfBirth, locale)}`);
+  if (personal.nationality) contact.push(`${labels.nationality}: ${personal.nationality}`);
 
   // Harvard-style section header: small-caps + hairline rule beneath
   const Heading = ({ label }: { label: string }) => (
