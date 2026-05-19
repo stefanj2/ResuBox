@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Check, Wand2, Loader2 } from 'lucide-react';
-import { Input, TextArea, Button, Card, FieldTooltip } from '@/components/ui';
+import { Input, TextArea, Card, FieldTooltip } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { createEmptyExperience } from '@/types/cv';
 import type { Locale } from '@/i18n/routing';
@@ -161,24 +161,42 @@ export function ExperienceSection() {
       <div className="space-y-3">
         {cvData.experience.map((exp, index) => (
           <Card key={exp.id} padding="none" className="overflow-hidden">
-            <button
-              onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
-              className="w-full flex items-center justify-between gap-3 p-3.5 hover:bg-slate-50 transition-colors"
-            >
-              <div className="flex items-center gap-3 text-left min-w-0">
+            <div className="flex items-center gap-1 hover:bg-slate-50 transition-colors">
+              <button
+                type="button"
+                onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
+                className="flex-1 min-w-0 flex items-center gap-3 text-left p-3.5"
+                aria-expanded={expandedId === exp.id}
+              >
                 <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 font-semibold text-sm flex-shrink-0">
                   {index + 1}
                 </div>
                 <h3 className="font-medium text-slate-900 truncate min-w-0">
                   {exp.company || t('newEntry')}
                 </h3>
-              </div>
-              {expandedId === exp.id ? (
-                <ChevronUp className="w-5 h-5 text-slate-400 flex-shrink-0" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-slate-400 flex-shrink-0" />
-              )}
-            </button>
+              </button>
+              <button
+                type="button"
+                onClick={() => removeExperience(exp.id)}
+                className="p-2 mr-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                aria-label={t('delete')}
+                title={t('delete')}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setExpandedId(expandedId === exp.id ? null : exp.id)}
+                className="p-2 mr-1 text-slate-400 hover:text-slate-600 flex-shrink-0"
+                aria-label={expandedId === exp.id ? 'Inklappen' : 'Uitklappen'}
+              >
+                {expandedId === exp.id ? (
+                  <ChevronUp className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
+              </button>
+            </div>
 
             {expandedId === exp.id && (
               <div className="px-4 pb-4 space-y-3 border-t border-slate-100 pt-3">
@@ -359,18 +377,6 @@ export function ExperienceSection() {
                       }
                     }}
                   />
-                </div>
-
-                <div className="pt-4 border-t border-slate-100">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={Trash2}
-                    onClick={() => removeExperience(exp.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    {t('delete')}
-                  </Button>
                 </div>
               </div>
             )}
