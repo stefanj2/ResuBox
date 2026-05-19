@@ -1,29 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslations } from 'next-intl';
-import { Palette, FileText, AlertCircle, ShieldCheck, Zap, Lock } from 'lucide-react';
+import { Check, AlertCircle, ShieldCheck, Zap, Lock } from 'lucide-react';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { TEMPLATES } from '@/components/preview/templates';
-import { ColorPicker, TemplateSelector } from '@/components/templateSelector';
-import { Modal } from '@/components/ui';
+import { TemplateCard } from '@/components/templateSelector';
+import { COLOR_SCHEME_LIST } from '@/lib/colorSchemes';
 import { getCvProgress } from '@/lib/cvProgress';
 
 /**
- * Final step of the funnel. A clean preview-first layout: large preview,
- * sleek template + color controls, trust strip just above the sticky
- * Download CTA. No more per-section jump-back grid — users can simply
- * click Vorige or any earlier stepper position to revisit a section.
+ * Final step of the funnel. Surfaces all six templates as thumbnails and
+ * the colour palette as a compact swatch row, then a trust strip just
+ * above the sticky Download CTA.
  */
 export function ReviewSection() {
-  const { cvData } = useCVData();
+  const { cvData, setTemplate, setColorScheme } = useCVData();
   const t = useTranslations('Builder.reviewSection');
+  const tColor = useTranslations('ColorPicker');
   const progress = getCvProgress(cvData);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   const selectedTemplateId = cvData.meta.selectedTemplate ?? 'modern';
-  const currentTemplate = TEMPLATES[selectedTemplateId];
+  const selectedColor = cvData.meta.selectedColorScheme ?? 'emerald';
+  const templateList = Object.values(TEMPLATES);
 
   return (
     <div className="space-y-4">
@@ -54,31 +54,62 @@ export function ReviewSection() {
         </div>
       </div>
 
-      {/* Style controls — one tight card with template + colour side by side */}
-      <div className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 sm:divide-y-0 sm:divide-x sm:flex">
-        <button
-          type="button"
-          onClick={() => setShowTemplateModal(true)}
-          className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left sm:flex-1 min-w-0"
-        >
-          <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] uppercase tracking-wide text-slate-500 font-medium leading-none mb-1">
-              {t('templateLabel')}
-            </p>
-            <p className="text-sm font-semibold text-slate-900 truncate">
-              {currentTemplate?.nameNL ?? selectedTemplateId}
-            </p>
-          </div>
-          <Palette className="w-4 h-4 text-slate-400 flex-shrink-0" />
-        </button>
-
-        <div className="px-4 py-3 sm:flex-1">
-          <ColorPicker compact />
+      {/* Templates — all six visible as thumbnails so the user can switch in one click */}
+      <section>
+        <h3 className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+          {t('templateLabel')}
+        </h3>
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          {templateList.map((template) => (
+            <TemplateCard
+              key={template.id}
+              template={template}
+              isSelected={selectedTemplateId === template.id}
+              onSelect={setTemplate}
+              compact
+              showPopularBadge={template.id === 'modern'}
+            />
+          ))}
         </div>
-      </div>
+      </section>
+
+      {/* Colour scheme — single tight row of swatches */}
+      <section>
+        <h3 className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2">
+          {tColor('heading')}
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {COLOR_SCHEME_LIST.map((scheme) => {
+            const active = selectedColor === scheme.id;
+            return (
+              <button
+                key={scheme.id}
+                type="button"
+                onClick={() => setColorScheme(scheme.id)}
+                className={`relative inline-flex items-center gap-1.5 rounded-full border transition-all px-2.5 py-1 ${
+                  active
+                    ? 'border-slate-900 bg-slate-50 shadow-sm'
+                    : 'border-slate-200 bg-white hover:border-slate-300'
+                }`}
+                title={tColor(`names.${scheme.id}`)}
+              >
+                <span
+                  className="w-4 h-4 rounded-full ring-1 ring-inset ring-black/5 flex-shrink-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${scheme.gradient.from}, ${scheme.gradient.to})`,
+                  }}
+                />
+                <span className="text-xs font-medium text-slate-700">
+                  {tColor(`names.${scheme.id}`)}
+                </span>
+                {active && (
+                  <Check className="w-3 h-3 text-emerald-600" strokeWidth={3} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       {/* Trust strip — small icon row reinforcing the value before download */}
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 pt-1">
@@ -95,17 +126,6 @@ export function ReviewSection() {
           {t('trustPrivate')}
         </span>
       </div>
-
-      {/* Template selector modal */}
-      <Modal
-        isOpen={showTemplateModal}
-        onClose={() => setShowTemplateModal(false)}
-        title={t('templateLabel')}
-        size="xl"
-        mobileFullScreen
-      >
-        <TemplateSelector mode="inline" onSelect={() => setShowTemplateModal(false)} />
-      </Modal>
     </div>
   );
 }
