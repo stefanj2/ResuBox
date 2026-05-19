@@ -126,7 +126,6 @@ export function EditorLayout() {
 
   return (
     <>
-      <LiveScorePanel />
       <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
         {/* Integrated header: logo + inline stepper + right controls in one bar. */}
         <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
@@ -159,6 +158,7 @@ export function EditorLayout() {
             </div>
 
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+              <LiveScorePanel />
               <LanguageSwitcher />
               <div className="hidden sm:block">
                 <SyncStatusPill />
