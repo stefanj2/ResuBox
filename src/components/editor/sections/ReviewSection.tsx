@@ -28,9 +28,9 @@ export function ReviewSection() {
   const templateList = Object.values(TEMPLATES);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3.5">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 mb-1 tracking-tight">{t('title')}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-0.5 tracking-tight">{t('title')}</h2>
         <p className="text-slate-600 text-sm">{t('subtitle')}</p>
       </div>
 
@@ -59,8 +59,8 @@ export function ReviewSection() {
       {/* Unified customise panel — template + colour in one card */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Template */}
-        <div className="p-4 sm:p-5">
-          <div className="flex items-baseline justify-between mb-3">
+        <div className="p-3 sm:p-4">
+          <div className="flex items-baseline justify-between mb-2.5">
             <h3 className="text-[11px] uppercase tracking-[0.08em] text-slate-500 font-semibold">
               {t('templateLabel')}
             </h3>
@@ -68,7 +68,7 @@ export function ReviewSection() {
               {tTemplate(`templateNames.${selectedTemplateId}`)}
             </span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-2.5">
             {templateList.map((template) => (
               <ReviewTemplateCard
                 key={template.id}
@@ -84,8 +84,8 @@ export function ReviewSection() {
         </div>
 
         {/* Colour */}
-        <div className="border-t border-slate-100 bg-slate-50/60 p-4 sm:p-5">
-          <div className="flex items-baseline justify-between mb-3">
+        <div className="border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4">
+          <div className="flex items-baseline justify-between mb-2.5">
             <h3 className="text-[11px] uppercase tracking-[0.08em] text-slate-500 font-semibold">
               {tColor('heading')}
             </h3>
@@ -167,13 +167,13 @@ function ReviewTemplateCard({ id, name, popularLabel, isSelected, isPopular, onC
       {/* Thumbnail framed in a subtle ring so dark templates don't overpower light ones */}
       <div className="relative overflow-hidden rounded-md ring-1 ring-slate-200/70 bg-white flex items-center justify-center mb-1.5 sm:mb-2">
         <div className="sm:hidden">
-          <TemplateThumbnail templateId={id} scale={0.16} />
+          <TemplateThumbnail templateId={id} scale={0.12} />
         </div>
         <div className="hidden sm:block xl:hidden">
-          <TemplateThumbnail templateId={id} scale={0.22} />
+          <TemplateThumbnail templateId={id} scale={0.14} />
         </div>
         <div className="hidden xl:block">
-          <TemplateThumbnail templateId={id} scale={0.26} />
+          <TemplateThumbnail templateId={id} scale={0.17} />
         </div>
 
         {isPopular && !isSelected && (
@@ -190,7 +190,7 @@ function ReviewTemplateCard({ id, name, popularLabel, isSelected, isPopular, onC
       </div>
 
       <span
-        className={`text-xs sm:text-sm font-semibold text-center truncate ${
+        className={`text-[10px] sm:text-xs font-semibold text-center truncate ${
           isSelected ? 'text-emerald-700' : 'text-slate-800'
         }`}
       >
