@@ -45,10 +45,10 @@ export function ReviewSection() {
       )}
 
       {/* Inline preview — mobile/tablet only. On lg+ the side panel already shows it. */}
-      <div className="lg:hidden bg-slate-100 rounded-xl border border-slate-200 p-4 overflow-hidden">
-        <div className="flex justify-center overflow-x-auto">
+      <div className="lg:hidden bg-slate-100 rounded-xl border border-slate-200 p-3 sm:p-4 overflow-hidden">
+        <div className="flex justify-center">
           <div
-            className="origin-top shadow-2xl scale-[0.45] sm:scale-[0.55] md:scale-[0.6] mb-[-200pt] sm:mb-[-160pt] md:mb-[-130pt]"
+            className="origin-top shadow-2xl scale-[0.4] sm:scale-[0.55] md:scale-[0.6] mb-[-210pt] sm:mb-[-160pt] md:mb-[-130pt]"
             style={{ width: '210mm', minHeight: '297mm' }}
           >
             <CVPreview />
@@ -93,7 +93,7 @@ export function ReviewSection() {
               {tColor(`names.${selectedColor}`)}
             </span>
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {COLOR_SCHEME_LIST.map((scheme) => {
               const active = selectedColor === scheme.id;
               return (
@@ -167,7 +167,7 @@ function ReviewTemplateCard({ id, name, popularLabel, isSelected, isPopular, onC
       {/* Thumbnail framed in a subtle ring so dark templates don't overpower light ones */}
       <div className="relative overflow-hidden rounded-md ring-1 ring-slate-200/70 bg-white flex items-center justify-center mb-1.5 sm:mb-2">
         <div className="sm:hidden">
-          <TemplateThumbnail templateId={id} scale={0.12} />
+          <TemplateThumbnail templateId={id} scale={0.11} />
         </div>
         <div className="hidden sm:block xl:hidden">
           <TemplateThumbnail templateId={id} scale={0.14} />
