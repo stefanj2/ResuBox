@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Download, CheckCircle, AlertCircle, FileText, Loader2, FileType } from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
+import { CVPreview } from '@/components/preview';
 import { createOrder } from '@/lib/api/orders';
 
 type Format = 'pdf' | 'docx';
@@ -180,14 +181,44 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
           </div>
         ) : (
           <>
-            <div className="text-center mb-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600" />
+            <div className="flex items-start gap-3 sm:gap-4 mb-4">
+              <div className="flex-1 min-w-0">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-emerald-100 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-1 leading-tight">{t('title')}</h2>
+                <p className="text-slate-600 text-xs sm:text-sm leading-snug">
+                  {t('subtitle', { email: cvData.personal.email || '—' })}
+                </p>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-1">{t('title')}</h2>
-              <p className="text-slate-600 text-xs sm:text-sm">
-                {t('subtitle', { email: cvData.personal.email || '—' })}
-              </p>
+
+              {/* Mini CV preview — visual reassurance of what's about to be downloaded */}
+              <div className="flex-shrink-0" aria-hidden="true">
+                {/* Mobile size */}
+                <div
+                  className="sm:hidden relative overflow-hidden bg-white rounded-lg shadow-md border border-slate-200"
+                  style={{ width: '24mm', height: '33.9mm' }}
+                >
+                  <div
+                    className="pointer-events-none origin-top-left"
+                    style={{ width: '210mm', height: '297mm', transform: 'scale(0.114)' }}
+                  >
+                    <CVPreview dataOverride={cvData} />
+                  </div>
+                </div>
+                {/* Desktop size */}
+                <div
+                  className="hidden sm:block relative overflow-hidden bg-white rounded-lg shadow-md border border-slate-200"
+                  style={{ width: '35mm', height: '49.5mm' }}
+                >
+                  <div
+                    className="pointer-events-none origin-top-left"
+                    style={{ width: '210mm', height: '297mm', transform: 'scale(0.167)' }}
+                  >
+                    <CVPreview dataOverride={cvData} />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mb-3 sm:mb-4">
