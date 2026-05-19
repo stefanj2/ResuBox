@@ -30,7 +30,6 @@ import {
 import { SocialProofToast, PreviewTooltip, shouldShowPreviewTooltip } from '@/components/ui';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { SyncStatusPill } from './SyncStatusPill';
-import { LiveScorePanel } from './LiveScorePanel';
 import { FunnelStepper, StepperStep } from './FunnelStepper';
 import { BuilderStickyCTA } from './BuilderStickyCTA';
 import { getCvProgress, isSectionComplete, SECTION_COUNT } from '@/lib/cvProgress';
@@ -158,7 +157,6 @@ export function EditorLayout() {
             </div>
 
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-              <LiveScorePanel />
               <LanguageSwitcher />
               <div className="hidden sm:block">
                 <SyncStatusPill />
