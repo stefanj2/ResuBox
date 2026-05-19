@@ -68,7 +68,7 @@ export function ReviewSection() {
               {tTemplate(`templateNames.${selectedTemplateId}`)}
             </span>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             {templateList.map((template) => (
               <ReviewTemplateCard
                 key={template.id}
@@ -167,10 +167,13 @@ function ReviewTemplateCard({ id, name, popularLabel, isSelected, isPopular, onC
       {/* Thumbnail framed in a subtle ring so dark templates don't overpower light ones */}
       <div className="relative overflow-hidden rounded-md ring-1 ring-slate-200/70 bg-white flex items-center justify-center mb-1.5 sm:mb-2">
         <div className="sm:hidden">
-          <TemplateThumbnail templateId={id} scale={0.09} />
+          <TemplateThumbnail templateId={id} scale={0.16} />
         </div>
-        <div className="hidden sm:block">
-          <TemplateThumbnail templateId={id} scale={0.12} />
+        <div className="hidden sm:block xl:hidden">
+          <TemplateThumbnail templateId={id} scale={0.22} />
+        </div>
+        <div className="hidden xl:block">
+          <TemplateThumbnail templateId={id} scale={0.26} />
         </div>
 
         {isPopular && !isSelected && (
@@ -187,7 +190,7 @@ function ReviewTemplateCard({ id, name, popularLabel, isSelected, isPopular, onC
       </div>
 
       <span
-        className={`text-[10px] sm:text-xs font-semibold text-center truncate ${
+        className={`text-xs sm:text-sm font-semibold text-center truncate ${
           isSelected ? 'text-emerald-700' : 'text-slate-800'
         }`}
       >
