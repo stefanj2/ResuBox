@@ -16,11 +16,11 @@ interface DownloadModalProps {
 }
 
 const PRICE_BY_LOCALE: Record<string, { value: number; currency: string; display: string }> = {
-  nl: { value: 42, currency: 'EUR', display: '€42' },
-  de: { value: 42, currency: 'EUR', display: '42 €' },
-  en: { value: 42, currency: 'GBP', display: '£42' },
-  sv: { value: 449, currency: 'SEK', display: '449 kr' },
-  da: { value: 315, currency: 'DKK', display: '315 kr' },
+  nl: { value: 42, currency: 'EUR', display: '42 EUR' },
+  de: { value: 42, currency: 'EUR', display: '42 EUR' },
+  en: { value: 42, currency: 'GBP', display: '42 GBP' },
+  sv: { value: 449, currency: 'SEK', display: '449 SEK' },
+  da: { value: 315, currency: 'DKK', display: '315 DKK' },
 };
 
 export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
