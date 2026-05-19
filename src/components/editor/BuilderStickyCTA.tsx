@@ -55,8 +55,8 @@ export function BuilderStickyCTA({
     : null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_-4px_rgba(15,23,42,0.08)]">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div className="fixed bottom-0 left-0 right-0 lg:right-auto lg:w-3/5 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_12px_-4px_rgba(15,23,42,0.08)]">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
         {/* Prev button — hidden on first step */}
         <button
           type="button"
