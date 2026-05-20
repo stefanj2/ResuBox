@@ -130,7 +130,7 @@ export function EducationSection() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 sm:gap-x-3 gap-y-3">
                   <Input
                     type="month"
                     label={t('startDate')}
