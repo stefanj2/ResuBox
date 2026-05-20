@@ -272,8 +272,53 @@ export function ExperienceSection() {
                     <FieldTooltip content={tip('tasks')} label={`Uitleg ${t('tasks')}`} />
                   </label>
 
+                  <div className="space-y-2">
+                    {exp.tasks.map((task, taskIndex) => {
+                      const key = `${exp.id}:${taskIndex}`;
+                      const isImproving = improvingKey === key;
+                      return (
+                        <div
+                          key={taskIndex}
+                          className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg group"
+                        >
+                          <span className="text-emerald-500 mt-0.5">•</span>
+                          <span className="flex-1 text-sm text-slate-700">{task}</span>
+                          <button
+                            onClick={() => handleImproveTask(exp.id, taskIndex)}
+                            disabled={isImproving}
+                            title={t('improveBullet')}
+                            className="opacity-0 group-hover:opacity-100 disabled:opacity-100 text-slate-400 hover:text-violet-600 transition-all disabled:text-violet-600"
+                          >
+                            {isImproving ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Wand2 className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleRemoveTask(exp.id, taskIndex)}
+                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <Input
+                    placeholder={t('addTaskPlaceholder')}
+                    className="mt-2"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                        handleAddTask(exp.id, e.currentTarget.value.trim());
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
+
                   {!hiddenSuggestions.has(exp.id) && (
-                    <div className="mb-3 rounded-lg bg-emerald-50/60 border border-emerald-200 px-3 py-2.5">
+                    <div className="mt-3 rounded-lg bg-emerald-50/60 border border-emerald-200 px-3 py-2.5">
                       <div className="flex items-center justify-between mb-2">
                         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800">
                           <Sparkles className="w-3.5 h-3.5" />
@@ -326,57 +371,12 @@ export function ExperienceSection() {
                           return next;
                         })
                       }
-                      className="mb-2 inline-flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700"
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>{t('showSuggestions')}</span>
                     </button>
                   )}
-
-                  <div className="space-y-2">
-                    {exp.tasks.map((task, taskIndex) => {
-                      const key = `${exp.id}:${taskIndex}`;
-                      const isImproving = improvingKey === key;
-                      return (
-                        <div
-                          key={taskIndex}
-                          className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg group"
-                        >
-                          <span className="text-emerald-500 mt-0.5">•</span>
-                          <span className="flex-1 text-sm text-slate-700">{task}</span>
-                          <button
-                            onClick={() => handleImproveTask(exp.id, taskIndex)}
-                            disabled={isImproving}
-                            title={t('improveBullet')}
-                            className="opacity-0 group-hover:opacity-100 disabled:opacity-100 text-slate-400 hover:text-violet-600 transition-all disabled:text-violet-600"
-                          >
-                            {isImproving ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Wand2 className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleRemoveTask(exp.id, taskIndex)}
-                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <Input
-                    placeholder={t('addTaskPlaceholder')}
-                    className="mt-2"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                        handleAddTask(exp.id, e.currentTarget.value.trim());
-                        e.currentTarget.value = '';
-                      }
-                    }}
-                  />
                 </div>
               </div>
             )}
