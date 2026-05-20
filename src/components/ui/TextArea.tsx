@@ -27,7 +27,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           className={`
             block w-full rounded-lg border bg-white
             px-4 py-3
-            text-slate-900 placeholder-slate-400
+            text-base text-slate-900 placeholder-slate-400
             transition-all duration-200
             focus:outline-none focus:ring-2 focus:ring-offset-0
             resize-none

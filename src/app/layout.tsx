@@ -38,6 +38,7 @@ const GA_MEASUREMENT_ID = 'G-JQG4TLTX3J';
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
   themeColor: '#f1f5f9', // slate-100 - matches app background
 };
 

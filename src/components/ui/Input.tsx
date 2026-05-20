@@ -55,7 +55,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={`
               block w-full rounded-lg border bg-white
               ${icon ? 'pl-10' : 'pl-4'} ${validNow ? 'pr-10' : 'pr-4'} py-3
-              text-slate-900 placeholder-slate-400
+              text-base text-slate-900 placeholder-slate-400
               transition-all duration-200
               focus:outline-none focus:ring-2 focus:ring-offset-0
               ${error
