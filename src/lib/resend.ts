@@ -4,6 +4,11 @@ import { Resend } from 'resend';
 const resendApiKey = process.env.RESEND_API_KEY;
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@resubox.nl';
 
+// Kill-switch: emails are OFF unless explicitly enabled. This gates EVERY send
+// (cron dunning, Stripe/Justus webhooks, manual admin send) at the single
+// chokepoint. Set EMAILS_ENABLED="true" in the env to actually send.
+const emailsEnabled = process.env.EMAILS_ENABLED === 'true';
+
 function getResendClient() {
   if (!resendApiKey) {
     console.warn('Resend API key not configured');
@@ -28,6 +33,20 @@ export interface EmailResult {
 }
 
 export async function sendEmail(params: SendEmailParams): Promise<EmailResult> {
+  if (!emailsEnabled) {
+    // Kill-switch active: do not send. Log and return a stub success so callers
+    // (cron, webhooks) keep advancing state without erroring.
+    console.log('=== EMAIL (not sent - EMAILS_ENABLED is not "true") ===');
+    console.log('To:', params.to);
+    console.log('Subject:', params.subject);
+    console.log('========================================================');
+
+    return {
+      success: true,
+      messageId: `disabled-${Date.now()}`,
+    };
+  }
+
   const resend = getResendClient();
 
   if (!resend) {
