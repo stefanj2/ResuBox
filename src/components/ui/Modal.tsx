@@ -80,7 +80,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', mobileFul
           <div
             className={`
               relative bg-white rounded-2xl shadow-2xl w-full ${sizes[size]}
-              animate-scaleIn max-h-[90vh] flex flex-col
+              animate-scaleIn max-h-[94vh] flex flex-col
             `}
           >
             {/* Header */}

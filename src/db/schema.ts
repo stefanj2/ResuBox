@@ -171,6 +171,78 @@ export const userCvs = pgTable(
   (t) => [index('user_cvs_user_id_idx').on(t.user_id)]
 );
 
+// ───────────────────────────────────────────────────────────────
+// Vacancy match — subscription + applied vacancies
+
+/**
+ * One row per user holding the state of their "Vacaturematch" subscription.
+ * Driven entirely by Stripe webhooks (checkout.session.completed in
+ * subscription mode + customer.subscription.* + invoice.*). Access is granted
+ * while `status` is 'trialing' or 'active' and `current_period_end` is in the
+ * future. Mirrors the relevant Stripe fields so the app never has to call
+ * Stripe on a read path.
+ */
+export const vacancySubscriptions = pgTable(
+  'vacancy_subscriptions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    user_id: uuid('user_id')
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: 'cascade' }),
+
+    stripe_customer_id: text('stripe_customer_id'),
+    stripe_subscription_id: text('stripe_subscription_id'),
+
+    // Mirror of Stripe subscription.status: trialing | active | past_due |
+    // canceled | incomplete | incomplete_expired | unpaid | paused.
+    status: text('status').notNull().default('incomplete'),
+
+    trial_end: timestamp('trial_end', { withTimezone: true, mode: 'string' }),
+    current_period_end: timestamp('current_period_end', { withTimezone: true, mode: 'string' }),
+    cancel_at_period_end: text('cancel_at_period_end'),
+
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+    updated_at: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    index('vacancy_subscriptions_user_id_idx').on(t.user_id),
+    index('vacancy_subscriptions_stripe_customer_id_idx').on(t.stripe_customer_id),
+    index('vacancy_subscriptions_stripe_subscription_id_idx').on(t.stripe_subscription_id),
+  ]
+);
+
+/**
+ * Audit + history of vacancies a user generated a tailored motivatiebrief for.
+ * Doubles as a "what did I already apply to" list in the UI.
+ */
+export const vacancyApplications = pgTable(
+  'vacancy_applications',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    user_id: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+
+    vacancy_external_id: text('vacancy_external_id'),
+    vacancy_title: text('vacancy_title'),
+    vacancy_company: text('vacancy_company'),
+    vacancy_url: text('vacancy_url'),
+
+    // Generated CoverLetterData (or its body parts) so the user can re-open it.
+    cover_letter: jsonb('cover_letter').$type<Record<string, unknown>>(),
+
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [index('vacancy_applications_user_id_idx').on(t.user_id)]
+);
+
 export type CvOrderRow = typeof cvOrders.$inferSelect;
 export type CvOrderInsert = typeof cvOrders.$inferInsert;
 export type OrderActionRow = typeof orderActions.$inferSelect;
@@ -181,3 +253,7 @@ export type UserRow = typeof users.$inferSelect;
 export type UserSessionRow = typeof userSessions.$inferSelect;
 export type UserCvRow = typeof userCvs.$inferSelect;
 export type UserCvInsert = typeof userCvs.$inferInsert;
+export type VacancySubscriptionRow = typeof vacancySubscriptions.$inferSelect;
+export type VacancySubscriptionInsert = typeof vacancySubscriptions.$inferInsert;
+export type VacancyApplicationRow = typeof vacancyApplications.$inferSelect;
+export type VacancyApplicationInsert = typeof vacancyApplications.$inferInsert;

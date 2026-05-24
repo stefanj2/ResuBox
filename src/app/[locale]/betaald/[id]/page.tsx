@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { getOrder } from '@/lib/orders';
 import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
+import { vacanciesEnabled, subscriptionMarketSupported } from '@/lib/vacancies-flag';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -100,6 +101,26 @@ export default async function BetaaldPage({ params }: PageProps) {
                 : t('confirmationEmailGeneric')}
             </p>
           </div>
+
+          {vacanciesEnabled() && subscriptionMarketSupported(orderLocale) && (
+            <div className="bg-white rounded-2xl shadow-lg border border-emerald-200 p-6 sm:p-8 mb-8 text-left">
+              <h2 className="text-lg font-semibold text-slate-900 mb-1">
+                Solliciteer direct op echte vacatures
+              </h2>
+              <p className="text-sm text-slate-600 mb-4">
+                Blader gratis door actuele vacatures die bij jouw CV passen. Wil
+                je solliciteren? Stem je motivatiebrief met één klik af op de
+                vacature — 7 dagen voor €1, daarna €17,25/mnd.
+              </p>
+              <Link
+                href="/vacatures"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-xl hover:bg-emerald-700 transition-colors"
+              >
+                Bekijk vacatures
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

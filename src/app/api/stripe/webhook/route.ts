@@ -4,6 +4,7 @@ import { constructWebhookEvent } from '@/lib/stripe';
 import { sendEmail } from '@/lib/resend';
 import { getPaymentReceivedEmail } from '@/lib/emailTemplates';
 import { withdrawCase } from '@/lib/justusCollect';
+import { upsertSubscription } from '@/lib/vacancy-access';
 import Stripe from 'stripe';
 
 /**
@@ -16,6 +17,12 @@ import Stripe from 'stripe';
  *   • checkout.session.expired                 — abandoned checkout
  *   • charge.refunded                          — operator-issued refund
  *   • charge.dispute.created                   — chargeback from cardholder
+ *   • customer.subscription.created/updated/deleted — Vacaturematch sub state
+ *
+ * Two distinct flows share this endpoint:
+ *   1. CV download (mode: payment) — matched via metadata.orderId.
+ *   2. Vacaturematch (mode: subscription) — matched via subscription
+ *      metadata.userId; subscription.* events drive vacancy_subscriptions.
  *
  * Orders are matched via metadata.orderId on the Checkout Session and via
  * payment_intent_data.metadata.orderId on the Charge.
@@ -41,8 +48,22 @@ export async function POST(request: NextRequest) {
 
     switch (event.type) {
       case 'checkout.session.completed':
-      case 'checkout.session.async_payment_succeeded':
-        return await handlePaymentSuccess(event.data.object as Stripe.Checkout.Session);
+      case 'checkout.session.async_payment_succeeded': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        // Vacaturematch subscriptions run through the same endpoint but in
+        // `subscription` mode — the subscription.* events carry the canonical
+        // state, so just acknowledge the checkout here.
+        if (session.mode === 'subscription' || session.metadata?.kind === 'vacancy_sub') {
+          console.log(`[Stripe Webhook] Subscription checkout completed: ${session.id}`);
+          return NextResponse.json({ message: 'Subscription checkout acknowledged' });
+        }
+        return await handlePaymentSuccess(session);
+      }
+
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted':
+        return await handleSubscriptionChange(event.data.object as Stripe.Subscription);
 
       case 'checkout.session.async_payment_failed':
         return await handleAsyncPaymentFailed(event.data.object as Stripe.Checkout.Session);
@@ -142,6 +163,48 @@ async function handlePaymentSuccess(session: Stripe.Checkout.Session) {
   console.log(`[Stripe Webhook] Successfully processed payment for ${dossierNumber}`);
 
   return NextResponse.json({ success: true, orderId, dossierNumber, amount: amountPaid });
+}
+
+// ───────────────────────────────────────────────────────────────────
+// customer.subscription.* — Vacaturematch subscription state
+
+function unixToIso(value: unknown): string | null {
+  return typeof value === 'number' ? new Date(value * 1000).toISOString() : null;
+}
+
+async function handleSubscriptionChange(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata?.userId;
+  if (!userId) {
+    console.log(`[Stripe Webhook] Subscription ${subscription.id} without userId metadata — skipping`);
+    return NextResponse.json({ message: 'No userId in subscription metadata' });
+  }
+
+  const customerId =
+    typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id ?? null;
+
+  // `current_period_end` lives on the subscription in older API versions and on
+  // the subscription item in newer ones — read defensively across both.
+  const subAny = subscription as unknown as Record<string, unknown>;
+  const itemPeriodEnd = subscription.items?.data?.[0]
+    ? (subscription.items.data[0] as unknown as Record<string, unknown>).current_period_end
+    : undefined;
+  const currentPeriodEnd = unixToIso(subAny.current_period_end ?? itemPeriodEnd);
+  const trialEnd = unixToIso(subAny.trial_end);
+
+  await upsertSubscription({
+    userId,
+    stripeCustomerId: customerId,
+    stripeSubscriptionId: subscription.id,
+    status: subscription.status,
+    trialEnd,
+    currentPeriodEnd,
+    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+  });
+
+  console.log(
+    `[Stripe Webhook] Subscription ${subscription.id} for user ${userId} → status ${subscription.status}`
+  );
+  return NextResponse.json({ message: 'Subscription state updated', status: subscription.status });
 }
 
 // ───────────────────────────────────────────────────────────────────

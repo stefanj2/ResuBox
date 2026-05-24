@@ -96,6 +96,20 @@ export const routing = defineRouting({
       da: '/oversigt',
     },
     '/auth/verify': '/auth/verify',
+    '/vacatures': {
+      nl: '/vacatures',
+      en: '/jobs',
+      de: '/stellen',
+      sv: '/jobb',
+      da: '/job',
+    },
+    '/vacatures/[id]': {
+      nl: '/vacatures/[id]',
+      en: '/jobs/[id]',
+      de: '/stellen/[id]',
+      sv: '/jobb/[id]',
+      da: '/job/[id]',
+    },
     '/betalen/[id]': {
       nl: '/betalen/[id]',
       en: '/pay/[id]',

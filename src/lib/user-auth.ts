@@ -86,6 +86,24 @@ export async function exchangeMagicLink(magicToken: string): Promise<{ user: Use
   return { user: userRows[0], sessionToken };
 }
 
+/**
+ * Issue a long-lived session for a user and set the cookie. Used after a
+ * verified Stripe payment so the buyer is logged in without a magic-link
+ * round-trip. Ownership is established by completing a real (paid) checkout.
+ */
+export async function issueSessionForUser(userId: string): Promise<void> {
+  const sessionToken = randomToken();
+  const sessionExpiry = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  await db.insert(userSessions).values({
+    user_id: userId,
+    token: sessionToken,
+    kind: 'session',
+    expires_at: sessionExpiry,
+  });
+  await db.update(users).set({ last_login_at: new Date().toISOString() }).where(eq(users.id, userId));
+  await setSessionCookie(sessionToken);
+}
+
 export async function getCurrentUser(): Promise<UserRow | null> {
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;

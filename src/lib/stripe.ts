@@ -145,6 +145,227 @@ export async function createCheckoutSession(params: CreateCheckoutParams): Promi
   }
 }
 
+// ───────────────────────────────────────────────────────────────────
+// Vacaturematch subscription — €1 activation now + 7-day trial + €18.95/mo
+//
+// Implemented as a Checkout Session in `subscription` mode:
+//   • line item = the recurring €18.95/mo price (STRIPE_PRICE_VACANCY_SUB)
+//   • line item = a one-time €1 price (STRIPE_PRICE_VACANCY_ACTIVATION)
+//   • subscription_data.trial_period_days = 7
+// The one-time price creates an amount due at checkout, so the card is
+// charged €1 immediately while the recurring price is trialed for 7 days;
+// after the trial the subscription bills €18.95/mo. Verify the immediate €1
+// charge in Stripe test mode before going live.
+
+export interface VacancySubscriptionParams {
+  userId: string;
+  customerEmail: string;
+  successUrl: string;
+  cancelUrl: string;
+  /** Drives Stripe Checkout UI language. */
+  locale?: string;
+}
+
+// Subscription-capable payment methods per EUR market. iDEAL/Bancontact start
+// the subscription by setting up a SEPA Direct Debit mandate for the recurring
+// charges; card and SEPA are native. We list them explicitly because the
+// account's automatic selection skipped iDEAL/Bancontact.
+const RECURRING_PAYMENT_METHODS: Record<string, StripePaymentMethod[]> = {
+  nl: ['card', 'ideal', 'bancontact', 'sepa_debit'],
+  de: ['card', 'sepa_debit', 'paypal'],
+};
+
+function recurringPaymentMethods(locale?: string): StripePaymentMethod[] {
+  return RECURRING_PAYMENT_METHODS[locale ?? 'nl'] ?? RECURRING_PAYMENT_METHODS.nl;
+}
+
+export function isVacancySubscriptionConfigured(): boolean {
+  return Boolean(
+    process.env.STRIPE_SECRET_KEY &&
+      process.env.STRIPE_PRICE_VACANCY_SUB &&
+      process.env.STRIPE_PRICE_VACANCY_ACTIVATION
+  );
+}
+
+export async function createVacancySubscriptionCheckout(
+  params: VacancySubscriptionParams
+): Promise<CheckoutResult> {
+  if (!isVacancySubscriptionConfigured()) {
+    return { success: false, error: 'Vacature-abonnement is niet geconfigureerd' };
+  }
+
+  try {
+    const stripe = getStripe();
+    const stripeLocale = (getMarketConfig(params.locale).stripeLocale) as StripeCheckoutLocale;
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer_email: params.customerEmail,
+      line_items: [
+        { price: process.env.STRIPE_PRICE_VACANCY_SUB!, quantity: 1 },
+        { price: process.env.STRIPE_PRICE_VACANCY_ACTIVATION!, quantity: 1 },
+      ],
+      subscription_data: {
+        trial_period_days: 7,
+        metadata: {
+          userId: params.userId,
+          kind: 'vacancy_sub',
+        },
+      },
+      // Force a payment method up front so the €1 is collected and the
+      // subscription can auto-bill after the trial.
+      payment_method_collection: 'always',
+      metadata: {
+        userId: params.userId,
+        kind: 'vacancy_sub',
+      },
+      success_url: params.successUrl,
+      cancel_url: params.cancelUrl,
+      locale: stripeLocale,
+      allow_promotion_codes: true,
+    });
+
+    console.log(`[Stripe] Created vacancy subscription session ${session.id}`);
+
+    return { success: true, sessionId: session.id, checkoutUrl: session.url ?? undefined };
+  } catch (error) {
+    console.error('[Stripe] Error creating vacancy subscription session:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Onbekende fout bij aanmaken abonnement',
+    };
+  }
+}
+
+/**
+ * Create an EMBEDDED Checkout Session for the vacancy subscription. Returns a
+ * client_secret that the frontend mounts with Stripe's <EmbeddedCheckout/>, so
+ * the payment form lives inside our own modal (no redirect to a Stripe page).
+ * Redirect-based methods (iDEAL) still bounce to the bank and back to returnUrl.
+ */
+export async function createEmbeddedVacancySubscription(params: {
+  userId: string;
+  customerEmail: string;
+  returnUrl: string;
+  locale?: string;
+}): Promise<{ success: boolean; clientSecret?: string; error?: string }> {
+  if (!isVacancySubscriptionConfigured()) {
+    return { success: false, error: 'Vacature-abonnement is niet geconfigureerd' };
+  }
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.create({
+      // 'elements' = custom UI mode (formerly 'custom'): Stripe manages the
+      // subscription/trial/€1 logic while we render our own fully styled form
+      // with <PaymentElement> + checkout.confirm(). Verified against the API.
+      ui_mode: 'elements',
+      mode: 'subscription',
+      customer_email: params.customerEmail,
+      payment_method_types: recurringPaymentMethods(params.locale),
+      line_items: [
+        { price: process.env.STRIPE_PRICE_VACANCY_SUB!, quantity: 1 },
+        { price: process.env.STRIPE_PRICE_VACANCY_ACTIVATION!, quantity: 1 },
+      ],
+      subscription_data: {
+        trial_period_days: 7,
+        metadata: { userId: params.userId, kind: 'vacancy_sub' },
+      },
+      payment_method_collection: 'always',
+      metadata: { userId: params.userId, kind: 'vacancy_sub' },
+      return_url: params.returnUrl,
+      allow_promotion_codes: true,
+    });
+
+    return { success: true, clientSecret: session.client_secret ?? undefined };
+  } catch (error) {
+    console.error('[Stripe] Error creating embedded subscription session:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Onbekende fout bij aanmaken abonnement',
+    };
+  }
+}
+
+/**
+ * Retrieve a completed Checkout Session for the vacancy subscription, returning
+ * the userId (from metadata) and the subscription state so we can grant access
+ * immediately after payment without waiting for the webhook.
+ */
+export async function getVacancyCheckoutResult(sessionId: string): Promise<{
+  complete: boolean;
+  userId: string | null;
+  customerId: string | null;
+  subscriptionId: string | null;
+  status: string | null;
+  trialEnd: string | null;
+  currentPeriodEnd: string | null;
+}> {
+  const empty = {
+    complete: false,
+    userId: null,
+    customerId: null,
+    subscriptionId: null,
+    status: null,
+    trialEnd: null,
+    currentPeriodEnd: null,
+  };
+  if (!isStripeConfigured()) return empty;
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['subscription'],
+    });
+    if (session.status !== 'complete' || session.metadata?.kind !== 'vacancy_sub') return empty;
+
+    const sub = session.subscription as Stripe.Subscription | null;
+    const subAny = sub as unknown as Record<string, unknown> | null;
+    const itemEnd = sub?.items?.data?.[0]
+      ? (sub.items.data[0] as unknown as Record<string, unknown>).current_period_end
+      : undefined;
+    const toIso = (v: unknown) => (typeof v === 'number' ? new Date(v * 1000).toISOString() : null);
+
+    return {
+      complete: true,
+      userId: session.metadata?.userId ?? null,
+      customerId: typeof session.customer === 'string' ? session.customer : session.customer?.id ?? null,
+      subscriptionId: sub?.id ?? null,
+      status: sub?.status ?? 'trialing',
+      trialEnd: toIso(subAny?.trial_end),
+      currentPeriodEnd: toIso(subAny?.current_period_end ?? itemEnd),
+    };
+  } catch (error) {
+    console.error('[Stripe] Error retrieving checkout result:', error);
+    return empty;
+  }
+}
+
+/**
+ * Create a Stripe Billing Portal session so the subscriber can manage or
+ * cancel their subscription. Returns the portal URL to redirect to.
+ */
+export async function createBillingPortalSession(
+  stripeCustomerId: string,
+  returnUrl: string
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  if (!isStripeConfigured()) {
+    return { success: false, error: 'Stripe is niet geconfigureerd' };
+  }
+  try {
+    const stripe = getStripe();
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: stripeCustomerId,
+      return_url: returnUrl,
+    });
+    return { success: true, url: portal.url };
+  } catch (error) {
+    console.error('[Stripe] Error creating billing portal session:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Kon klantportaal niet openen',
+    };
+  }
+}
+
 /**
  * Get payment status by Stripe Checkout Session ID
  */

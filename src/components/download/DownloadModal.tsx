@@ -1,14 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Download, CheckCircle, AlertCircle, FileText, Loader2, FileType } from 'lucide-react';
+import {
+  Download,
+  CheckCircle,
+  AlertCircle,
+  FileText,
+  Loader2,
+  FileType,
+  Building2,
+  MapPin,
+  ArrowRight,
+  Sparkles,
+} from 'lucide-react';
 import { Modal, Button } from '@/components/ui';
 import { useCVData } from '@/context/CVContext';
 import { CVPreview } from '@/components/preview';
 import { createOrder } from '@/lib/api/orders';
+import { Link } from '@/i18n/navigation';
+import { vacanciesEnabled, subscriptionMarketSupported } from '@/lib/vacancies-flag';
 
 type Format = 'pdf' | 'docx';
+
+interface VacancyTeaser {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+}
+
+function teaserSalary(v: VacancyTeaser): string | null {
+  if (!v.salaryMin && !v.salaryMax) return null;
+  const n = v.salaryMax || v.salaryMin || 0;
+  return `€${Math.round(n).toLocaleString('nl-NL')} p/j`;
+}
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -32,7 +60,40 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Live teaser of real matching vacancies, shown on the success screen.
+  const showVacancyTeaser = vacanciesEnabled() && subscriptionMarketSupported(locale);
+  const [matches, setMatches] = useState<VacancyTeaser[]>([]);
+  const [matchCount, setMatchCount] = useState(0);
+  const [matchState, setMatchState] = useState<'idle' | 'loading' | 'done' | 'empty'>('idle');
+
   const price = PRICE_BY_LOCALE[locale] ?? PRICE_BY_LOCALE.nl;
+
+  // When the download succeeds, fetch a few real vacancies derived from the CV
+  // so the user immediately sees what's out there for them.
+  useEffect(() => {
+    if (status !== 'success' || !showVacancyTeaser || matchState !== 'idle') return;
+    setMatchState('loading');
+    (async () => {
+      try {
+        const res = await fetch('/api/vacancies/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cvData, sortBy: 'relevance' }),
+        });
+        const j = await res.json();
+        const list: VacancyTeaser[] = res.ok ? (j.vacancies ?? []) : [];
+        if (list.length > 0) {
+          setMatches(list.slice(0, 3));
+          setMatchCount(j.count ?? list.length);
+          setMatchState('done');
+        } else {
+          setMatchState('empty');
+        }
+      } catch {
+        setMatchState('empty');
+      }
+    })();
+  }, [status, showVacancyTeaser, matchState, cvData]);
 
   const handleDownload = async () => {
     if (!agreed) {
@@ -42,6 +103,8 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
     setStatus('processing');
     setErrorMessage('');
+    setMatchState('idle');
+    setMatches([]);
 
     try {
       const filename = `CV_${cvData.personal.firstName || 'Name'}_${cvData.personal.lastName || 'Surname'}`;
@@ -159,22 +222,86 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
     <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title={t('modalTitle')}>
       <div className="p-4 sm:p-6">
         {status === 'success' ? (
-          <div className="text-center py-6 sm:py-8">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-600" />
+          <div className="text-center py-2 sm:py-3">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <CheckCircle className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2">{t('successTitle')}</h2>
-            <p className="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5">{t('successTitle')}</h2>
+            <p className="text-slate-600 mb-4 text-sm sm:text-base">
               {t('successSubtitle')}
             </p>
-            <div className="bg-emerald-50 rounded-lg p-3 sm:p-4 text-left mb-4 sm:mb-6">
-              <h4 className="font-medium text-emerald-800 mb-2 text-sm sm:text-base">{t('tipsTitle')}</h4>
-              <ul className="text-xs sm:text-sm text-emerald-700 space-y-1 list-disc list-inside">
-                <li>{t('tip1')}</li>
-                <li>{t('tip2')}</li>
-                <li>{t('tip3')}</li>
-              </ul>
-            </div>
+            {(!showVacancyTeaser || matchState === 'empty') && (
+              <div className="bg-emerald-50 rounded-lg p-3 sm:p-4 text-left mb-4 sm:mb-6">
+                <h4 className="font-medium text-emerald-800 mb-2 text-sm sm:text-base">{t('tipsTitle')}</h4>
+                <ul className="text-xs sm:text-sm text-emerald-700 space-y-1 list-disc list-inside">
+                  <li>{t('tip1')}</li>
+                  <li>{t('tip2')}</li>
+                  <li>{t('tip3')}</li>
+                </ul>
+              </div>
+            )}
+            {showVacancyTeaser && matchState !== 'empty' && (
+              <div className="bg-white border border-emerald-200 rounded-xl p-4 text-left mb-4 sm:mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <h4 className="font-semibold text-slate-900 text-sm sm:text-base">
+                    {matchState === 'done' && matchCount > 0
+                      ? `${matchCount.toLocaleString('nl-NL')}+ vacatures die passen bij jouw CV`
+                      : 'Vacatures die passen bij jouw CV'}
+                  </h4>
+                </div>
+
+                {matchState === 'loading' && (
+                  <div className="space-y-2">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="h-12 rounded-lg bg-slate-100 animate-pulse" />
+                    ))}
+                  </div>
+                )}
+
+                {matchState === 'done' && (
+                  <ul className="space-y-2 mb-3">
+                    {matches.map((v) => {
+                      const salary = teaserSalary(v);
+                      return (
+                        <li
+                          key={v.id}
+                          className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-slate-900 truncate">{v.title}</p>
+                            <p className="text-xs text-slate-500 flex items-center gap-2 truncate">
+                              <span className="inline-flex items-center gap-1">
+                                <Building2 className="w-3 h-3" /> {v.company}
+                              </span>
+                              {v.location && (
+                                <span className="inline-flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" /> {v.location}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          {salary && (
+                            <span className="text-xs font-medium text-emerald-700 whitespace-nowrap">{salary}</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                <p className="text-xs text-slate-500 mb-3">
+                  + per vacature een motivatiebrief automatisch afgestemd op jouw CV.
+                </p>
+                <Link
+                  href="/vacatures"
+                  className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700"
+                >
+                  Bekijk alle vacatures
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            )}
             <Button variant="primary" onClick={handleClose}>
               {t('close')}
             </Button>

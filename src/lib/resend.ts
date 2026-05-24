@@ -24,6 +24,7 @@ export interface SendEmailParams {
   text?: string;
   replyTo?: string;
   from?: string;
+  attachments?: { filename: string; content: Buffer | string }[];
 }
 
 export interface EmailResult {
@@ -71,6 +72,7 @@ export async function sendEmail(params: SendEmailParams): Promise<EmailResult> {
       html: params.html,
       text: params.text,
       replyTo: params.replyTo,
+      attachments: params.attachments,
     });
 
     if (error) {

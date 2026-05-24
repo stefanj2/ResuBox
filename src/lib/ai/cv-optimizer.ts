@@ -6,6 +6,7 @@ import {
   PROFILE_GENERATOR_SYSTEM,
   BULLET_IMPROVER_SYSTEM,
   VACANCY_MATCH_SYSTEM,
+  COVER_LETTER_SYSTEM,
   getLanguageInstruction,
 } from './prompts';
 
@@ -263,6 +264,130 @@ Analyseer en geef je gestructureerde JSON-output.`;
     .join('');
 
   let parsed: Omit<VacancyMatchResult, 'usage'>;
+  try {
+    parsed = JSON.parse(text);
+  } catch (err) {
+    throw new Error(
+      `Kon de AI-respons niet als JSON parsen: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  return {
+    ...parsed,
+    usage: {
+      input: response.usage.input_tokens,
+      cached: response.usage.cache_read_input_tokens ?? 0,
+      output: response.usage.output_tokens,
+    },
+  };
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Cover letter (motivatiebrief) generator — tailored to a vacancy
+
+export interface GenerateCoverLetterInput {
+  cvData: CVData;
+  vacancyTitle: string;
+  vacancyCompany: string;
+  vacancyText: string;
+  locale?: string;
+}
+
+export interface CoverLetterDraft {
+  greeting: string;
+  opening: string;
+  body: string;
+  closing: string;
+  signature: string;
+  vacancyTitle: string;
+  contactName: string;
+}
+
+export interface GenerateCoverLetterResult extends CoverLetterDraft {
+  usage: { input: number; cached: number; output: number };
+}
+
+const COVER_LETTER_SCHEMA = {
+  type: 'object',
+  properties: {
+    greeting: { type: 'string' },
+    opening: { type: 'string' },
+    body: { type: 'string' },
+    closing: { type: 'string' },
+    signature: { type: 'string' },
+    vacancyTitle: { type: 'string' },
+    contactName: { type: 'string' },
+  },
+  required: ['greeting', 'opening', 'body', 'closing', 'signature', 'vacancyTitle', 'contactName'],
+  additionalProperties: false,
+} as const;
+
+export async function generateCoverLetter(
+  input: GenerateCoverLetterInput
+): Promise<GenerateCoverLetterResult> {
+  const client = getAnthropic();
+
+  const cvSummary = {
+    name: `${input.cvData.personal?.firstName ?? ''} ${input.cvData.personal?.lastName ?? ''}`.trim(),
+    city: input.cvData.personal?.city ?? '',
+    profile: input.cvData.profile?.summary ?? '',
+    experience: input.cvData.experience.map((e) => ({
+      jobTitle: e.jobTitle,
+      company: e.company,
+      period: `${e.startDate}${e.current ? ' — heden' : e.endDate ? ` — ${e.endDate}` : ''}`,
+      description: e.description,
+      tasks: e.tasks,
+    })),
+    education: input.cvData.education.map((e) => ({
+      degree: e.degree,
+      institution: e.institution,
+    })),
+    skills: input.cvData.skills.map((s) => s.name),
+  };
+
+  const truncatedVacancy = input.vacancyText.slice(0, 8000);
+
+  const userMessage = `# CV
+${JSON.stringify(cvSummary, null, 2)}
+
+# Vacature
+Functietitel: ${input.vacancyTitle}
+Bedrijf: ${input.vacancyCompany}
+
+Vacaturetekst:
+${truncatedVacancy}
+
+Schrijf de motivatiebrief en geef je gestructureerde JSON-output.`;
+
+  // No extended thinking here: a cover letter is straightforward, and reasoning
+  // tokens were eating the output budget and truncating the JSON. Low effort +
+  // a generous token budget keeps it fast and complete.
+  const response = await client.messages.create({
+    model: MODEL.smart,
+    max_tokens: 3000,
+    output_config: {
+      effort: 'low',
+      format: {
+        type: 'json_schema',
+        schema: COVER_LETTER_SCHEMA,
+      },
+    },
+    system: [
+      {
+        type: 'text',
+        text: COVER_LETTER_SYSTEM + getLanguageInstruction(input.locale ?? 'nl'),
+        cache_control: { type: 'ephemeral' },
+      },
+    ],
+    messages: [{ role: 'user', content: userMessage }],
+  });
+
+  const text = response.content
+    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
+    .map((b) => b.text)
+    .join('');
+
+  let parsed: CoverLetterDraft;
   try {
     parsed = JSON.parse(text);
   } catch (err) {
