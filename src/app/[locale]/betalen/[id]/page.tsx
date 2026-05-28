@@ -7,6 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { getOrder } from '@/lib/orders';
 import { LanguageSwitcher } from '@/components/landing/LanguageSwitcher';
 import FaqAccordion from './FaqAccordion';
+import PayButton from './PayButton';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -257,18 +258,13 @@ export default async function BetalenPage({ params }: PageProps) {
                 )}
               </div>
 
-              {order.payment_link ? (
-                <a
-                  href={order.payment_link}
-                  className="mt-3 flex items-center justify-center w-full py-3.5 bg-emerald-600 text-white font-semibold text-[15px] rounded-lg hover:bg-emerald-700 transition-colors"
-                >
-                  {t('payNow', { amount: formatPrice(order.amount) })}
-                </a>
-              ) : (
-                <div className="mt-3 flex items-center justify-center w-full py-3.5 bg-slate-200 text-slate-400 font-semibold text-[15px] rounded-lg cursor-not-allowed">
-                  {t('linkBeingCreated')}
-                </div>
-              )}
+              <PayButton
+                orderId={order.id}
+                locale={orderLocale}
+                payNowLabel={t('payNow', { amount: formatPrice(order.amount) })}
+                creatingLabel={t('linkBeingCreated')}
+                errorLabel={t('payError')}
+              />
 
               <div className="mt-2.5 flex items-center justify-center gap-4 text-[11px] text-slate-400">
                 <span className="flex items-center gap-1">

@@ -660,6 +660,7 @@
     "cardHint": "Visa, Mastercard, Amex",
     "payNow": "{amount} bezahlen",
     "linkBeingCreated": "Zahlungslink wird erstellt…",
+    "payError": "Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut oder schreiben Sie an info@resubox.com.",
     "sslSecure": "SSL-gesichert",
     "cvReadyTitle": "Ihr Lebenslauf ist fertig",
     "cvReadyBody": "ResuBox hat Ihren Lebenslauf professionell formatiert.",

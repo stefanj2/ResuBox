@@ -661,6 +661,7 @@
     "cardHint": "Visa, Mastercard, Amex",
     "payNow": "Pay {amount}",
     "linkBeingCreated": "Payment link is being created…",
+    "payError": "We couldn't start the payment. Please try again or email info@resubox.com.",
     "sslSecure": "SSL secured",
     "cvReadyTitle": "Your CV is ready",
     "cvReadyBody": "ResuBox has professionally formatted your CV.",

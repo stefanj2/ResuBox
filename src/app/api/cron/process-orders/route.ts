@@ -99,11 +99,11 @@ export async function GET(request: NextRequest) {
           );
           return;
         }
-        const link = await ensurePaymentLink();
-        if (!link) return;
+        // Link to the payment page (mints a fresh session on click), not a raw
+        // Stripe session URL that expires after 24h.
         const sms = kind === 'reminder_1'
-          ? await sendSmsReminder1(order, link)
-          : await sendSmsReminder2(order, link);
+          ? await sendSmsReminder1(order, paymentUrl)
+          : await sendSmsReminder2(order, paymentUrl);
         await updateOrder(order.id, { [timestampField]: new Date().toISOString() });
         if (sms.success) {
           await addOrderAction(order.id, 'sms_sent', `SMS ${kind} verstuurd (${sms.messageId ?? 'no-id'})`, 'cron');
