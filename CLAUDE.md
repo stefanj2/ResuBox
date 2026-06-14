@@ -22,13 +22,19 @@ This is a Next.js 16 CV builder application (ResuBox) written in Dutch (nl_NL lo
 ### External Services
 
 - **Neon (Postgres via Vercel)**: Database for orders, actions, and analytics. Schema managed via Drizzle ORM (`src/db/schema.ts`) and drizzle-kit migrations (`src/db/migrations/`).
-- **Stripe**: Payment processing via Stripe Checkout (iDEAL, creditcard, Bancontact) - €42 per CV download, €82 na incasso
+- **Stripe**: Payment processing via Stripe Checkout (iDEAL, creditcard, Bancontact). Two flows live on the same account:
+  - Legacy €42 one-time CV-download (in payment mode) — kept for existing orders; €82 na incasso
+  - CV-download subscription (NEW, gated by `NEXT_PUBLIC_CV_SUB_ENABLED`): €0,50 verification + 14-day trial + €39/month, embedded checkout
+  - Vacaturematch subscription: €1 verification + 7-day trial + €18,95/month, embedded checkout
 - **Resend**: Transactional emails (confirmation, invoices, reminders, incasso)
 - **Justus Collect**: Incassobureau integratie voor onbetaalde dossiers na WIK-brief
 
 Required environment variables:
 - `DATABASE_URL` (Neon Postgres connection string — set automatically by the Vercel ↔ Neon integration; pull locally via `vercel env pull .env.local`)
 - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_PRICE_CV_SUB` (€39/maand recurring), `STRIPE_PRICE_CV_ACTIVATION` (€0,50 eenmalig) — required when `NEXT_PUBLIC_CV_SUB_ENABLED=true`
+- `STRIPE_PRICE_VACANCY_SUB`, `STRIPE_PRICE_VACANCY_ACTIVATION` — vacaturematch subscription
+- `NEXT_PUBLIC_CV_SUB_ENABLED=true` to route new downloads through €0,50 verification + 14d trial + €39/mo; default OFF leaves the legacy €42 flow in place
 - `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `FROM_EMAIL_INCASSO`
 - `JUSTUS_API_KEY` (Justus Collect incasso integratie)
 - `ADMIN_USERNAME`, `ADMIN_PASSWORD` (simple admin auth)
@@ -88,10 +94,15 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 - `POST /api/admin/orders/[id]/actions` - Append an action entry to an order's history
 - `POST /api/email/send` - Send transactional emails via Resend (10 req/min)
 - `POST /api/stripe/create-checkout` - Create Stripe Checkout Session (iDEAL, card, Bancontact)
-- `POST /api/stripe/webhook` - Stripe payment webhook (signature verified, no rate limit)
+- `POST /api/stripe/webhook` - Stripe payment webhook (signature verified, no rate limit). Routes subscription events to `cv_subscriptions` or `vacancy_subscriptions` by `subscription.metadata.kind` (`cv_sub` | `vacancy_sub`)
+- `POST /api/cv/subscribe` - Create embedded Stripe session for €0,50 verification + 14d trial + €39/mo CV-download subscription (gated by `NEXT_PUBLIC_CV_SUB_ENABLED`)
+- `POST /api/cv/subscribe/complete` - Verify the embedded session, upsert subscription row, log buyer in
+- `GET /api/cv/status` - Return CV-subscription access state for the current session
+- `POST /api/cv/portal` - Open Stripe Billing Portal to manage or cancel the CV subscription
 - `POST /api/justus/webhook` - Justus Collect incasso webhook (API key auth, no rate limit)
 - `POST /api/admin/login` - Admin authentication (5 req/15min)
 - `GET /api/cron/process-orders` - Scheduled order processing (no rate limit, CRON_SECRET auth)
+- `GET /api/cron/cv-trial-reminders` - Daily cron sending the "trial ends in 2 days" reminder for CV-subscription trialists (CRON_SECRET auth)
 - `POST /api/analytics/track` - Track analytics events (100 req/min)
 - `GET /api/analytics/stats` - Fetch analytics statistics (30 req/min)
 - `GET /api/postcode/lookup` - Dutch postal code address lookup via PDOK (30 req/min)
@@ -100,7 +111,21 @@ Color schemes defined in `src/lib/colorSchemes.ts`: emerald, blue, violet, rose,
 
 In-memory sliding-window rate limiter per IP (`src/lib/rate-limit.ts`). Returns 429 when exceeded. Not applied to trusted/authenticated routes (Stripe webhook, cron).
 
-### Order Flow
+### CV-download subscription (new model)
+
+Replacement for the €42-per-download model for new orders, gated by
+`NEXT_PUBLIC_CV_SUB_ENABLED`. The buyer pays €0,50 in an embedded Stripe
+Checkout, gets 14 days of free access, then €39/month recurring. After
+payment Stripe redirects to `/builder?cv_checkout={SESSION_ID}` — the builder's
+mount effect verifies the session, opens the download modal, and the PDF/DOCX
+is generated client-side. Cancellation runs through `/account` → Stripe
+Billing Portal.
+
+State lives in `cv_subscriptions` (mirrored from Stripe via the webhook).
+Access logic in `src/lib/cv-access.ts`. Existing €42 orders keep running on
+the legacy pipeline below — the two flows coexist.
+
+### Order Flow (legacy €42 model)
 
 Orders use status pipeline defined in `src/lib/orderStatusConfig.ts`:
 `nieuw` → `bevestigd` → `factuur_verstuurd` → `herinnering_1` → `herinnering_2` → `incasso_overgedragen` → `betaald` (or `afgeboekt`)

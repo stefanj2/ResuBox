@@ -103,6 +103,34 @@ export function EditorLayout() {
     }
   }, [currentSection, cvData.personal.firstName, showPreviewTooltip]);
 
+  // Return from CV-subscription checkout: ?cv_checkout={SESSION_ID} means
+  // Stripe just sent the visitor back. Verify the session server-side (which
+  // also logs the buyer in), then re-open the download modal — access is now
+  // unlocked and the modal will skip the paywall.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    const sessionId = url.searchParams.get('cv_checkout');
+    if (!sessionId) return;
+    url.searchParams.delete('cv_checkout');
+    window.history.replaceState({}, '', url.toString());
+
+    (async () => {
+      try {
+        await fetch('/api/cv/subscribe/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId }),
+        });
+      } catch {
+        // Even if verification fails the webhook will still sync the
+        // subscription state; the next status check picks it up.
+      } finally {
+        setShowDownloadModal(true);
+      }
+    })();
+  }, []);
+
   const goToNextSection = () => {
     // Always advance — fields stay informational (* + green check) but never
     // block the funnel. Per UX principle: users should be able to skip and

@@ -95,6 +95,13 @@ export const routing = defineRouting({
       sv: '/dashboard',
       da: '/oversigt',
     },
+    '/account': {
+      nl: '/account',
+      en: '/account',
+      de: '/konto',
+      sv: '/konto',
+      da: '/konto',
+    },
     '/auth/verify': '/auth/verify',
     '/vacatures': {
       nl: '/vacatures',

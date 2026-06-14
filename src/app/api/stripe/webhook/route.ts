@@ -5,6 +5,7 @@ import { sendEmail } from '@/lib/resend';
 import { getPaymentReceivedEmail } from '@/lib/emailTemplates';
 import { withdrawCase } from '@/lib/justusCollect';
 import { upsertSubscription } from '@/lib/vacancy-access';
+import { upsertCVSubscription } from '@/lib/cv-access';
 import Stripe from 'stripe';
 
 /**
@@ -50,10 +51,14 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.completed':
       case 'checkout.session.async_payment_succeeded': {
         const session = event.data.object as Stripe.Checkout.Session;
-        // Vacaturematch subscriptions run through the same endpoint but in
-        // `subscription` mode — the subscription.* events carry the canonical
-        // state, so just acknowledge the checkout here.
-        if (session.mode === 'subscription' || session.metadata?.kind === 'vacancy_sub') {
+        // Subscription checkouts (Vacaturematch + CV-download) run through the
+        // same endpoint but in `subscription` mode — the subscription.* events
+        // carry the canonical state, so just acknowledge the checkout here.
+        if (
+          session.mode === 'subscription' ||
+          session.metadata?.kind === 'vacancy_sub' ||
+          session.metadata?.kind === 'cv_sub'
+        ) {
           console.log(`[Stripe Webhook] Subscription checkout completed: ${session.id}`);
           return NextResponse.json({ message: 'Subscription checkout acknowledged' });
         }
@@ -174,6 +179,7 @@ function unixToIso(value: unknown): string | null {
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
+  const kind = subscription.metadata?.kind;
   if (!userId) {
     console.log(`[Stripe Webhook] Subscription ${subscription.id} without userId metadata — skipping`);
     return NextResponse.json({ message: 'No userId in subscription metadata' });
@@ -191,7 +197,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const currentPeriodEnd = unixToIso(subAny.current_period_end ?? itemPeriodEnd);
   const trialEnd = unixToIso(subAny.trial_end);
 
-  await upsertSubscription({
+  const patch = {
     userId,
     stripeCustomerId: customerId,
     stripeSubscriptionId: subscription.id,
@@ -199,10 +205,19 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     trialEnd,
     currentPeriodEnd,
     cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
-  });
+  };
+
+  // Route the subscription event to the correct table based on metadata.kind.
+  // Default to vacancy_sub to keep older subscriptions (created before the
+  // kind tag existed) flowing into their original table.
+  if (kind === 'cv_sub') {
+    await upsertCVSubscription(patch);
+  } else {
+    await upsertSubscription(patch);
+  }
 
   console.log(
-    `[Stripe Webhook] Subscription ${subscription.id} for user ${userId} → status ${subscription.status}`
+    `[Stripe Webhook] Subscription ${subscription.id} (kind=${kind ?? 'vacancy_sub'}) for user ${userId} → status ${subscription.status}`
   );
   return NextResponse.json({ message: 'Subscription state updated', status: subscription.status });
 }

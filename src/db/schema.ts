@@ -257,3 +257,51 @@ export type VacancySubscriptionRow = typeof vacancySubscriptions.$inferSelect;
 export type VacancySubscriptionInsert = typeof vacancySubscriptions.$inferInsert;
 export type VacancyApplicationRow = typeof vacancyApplications.$inferSelect;
 export type VacancyApplicationInsert = typeof vacancyApplications.$inferInsert;
+
+// ───────────────────────────────────────────────────────────────
+// CV download — €0,50 verification + 14-day trial + €39/mo
+
+/**
+ * One row per user holding the state of their CV-download subscription
+ * (the replacement for the one-time €42 model for new orders). Driven by
+ * Stripe webhooks just like `vacancy_subscriptions`; access to download the
+ * PDF/DOCX is granted while status is 'trialing' or 'active' and
+ * current_period_end is in the future.
+ */
+export const cvSubscriptions = pgTable(
+  'cv_subscriptions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    user_id: uuid('user_id')
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: 'cascade' }),
+
+    stripe_customer_id: text('stripe_customer_id'),
+    stripe_subscription_id: text('stripe_subscription_id'),
+
+    status: text('status').notNull().default('incomplete'),
+
+    trial_end: timestamp('trial_end', { withTimezone: true, mode: 'string' }),
+    current_period_end: timestamp('current_period_end', { withTimezone: true, mode: 'string' }),
+    cancel_at_period_end: text('cancel_at_period_end'),
+
+    trial_reminder_sent_at: timestamp('trial_reminder_sent_at', { withTimezone: true, mode: 'string' }),
+
+    created_at: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+    updated_at: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .default(sql`now()`),
+  },
+  (t) => [
+    index('cv_subscriptions_user_id_idx').on(t.user_id),
+    index('cv_subscriptions_stripe_customer_id_idx').on(t.stripe_customer_id),
+    index('cv_subscriptions_stripe_subscription_id_idx').on(t.stripe_subscription_id),
+    index('cv_subscriptions_trial_end_idx').on(t.trial_end),
+  ]
+);
+
+export type CvSubscriptionRow = typeof cvSubscriptions.$inferSelect;
+export type CvSubscriptionInsert = typeof cvSubscriptions.$inferInsert;

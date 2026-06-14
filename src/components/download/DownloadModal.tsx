@@ -20,6 +20,8 @@ import { CVPreview } from '@/components/preview';
 import { createOrder } from '@/lib/api/orders';
 import { Link } from '@/i18n/navigation';
 import { vacanciesEnabled, subscriptionMarketSupported } from '@/lib/vacancies-flag';
+import { cvSubscriptionEnabled, cvSubscriptionMarketSupported } from '@/lib/cv-subscription-flag';
+import { CVPaywall } from './CVPaywall';
 
 type Format = 'pdf' | 'docx';
 
@@ -59,6 +61,41 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   const [format, setFormat] = useState<Format>('pdf');
   const [status, setStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // CV-download subscription gating. When the kill-switch is on AND the
+  // visitor's market supports it (NL/DE), the modal routes to a paywall step
+  // unless they already have an active subscription. The legacy €42 flow
+  // remains the fallback when the flag is off or when the market isn't
+  // supported yet.
+  const subModelActive = cvSubscriptionEnabled() && cvSubscriptionMarketSupported(locale);
+  const [accessLoaded, setAccessLoaded] = useState(false);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!subModelActive) {
+      setAccessLoaded(true);
+      return;
+    }
+    setAccessLoaded(false);
+    (async () => {
+      try {
+        const res = await fetch('/api/cv/status', { cache: 'no-store' });
+        const j = await res.json();
+        setHasAccess(Boolean(j?.access?.hasAccess));
+        setLoggedIn(Boolean(j?.loggedIn));
+      } catch {
+        // If status check fails, fail closed: show paywall, don't grant access.
+        setHasAccess(false);
+        setLoggedIn(false);
+      } finally {
+        setAccessLoaded(true);
+      }
+    })();
+  }, [isOpen, subModelActive]);
+
+  const showPaywall = subModelActive && accessLoaded && !hasAccess && status !== 'success';
 
   // Live teaser of real matching vacancies, shown on the success screen.
   const showVacancyTeaser = vacanciesEnabled() && subscriptionMarketSupported(locale);
@@ -162,21 +199,26 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
         meta: { ...cvData.meta, locale },
       };
 
-      try {
-        await createOrder({
-          customer_name: customerName,
-          customer_email: customerEmail,
-          customer_phone: cvData.personal.phone,
-          customer_address: cvData.personal.address,
-          customer_house_number: cvData.personal.houseNumber,
-          customer_postal_code: cvData.personal.postalCode,
-          customer_city: cvData.personal.city,
-          cv_id: cvData.id,
-          template_used: cvData.meta.selectedTemplate,
-          cv_data: cvDataForOrder,
-        });
-      } catch (orderError) {
-        console.error('Order creation error:', orderError);
+      // Only create a legacy €42 order when the subscription model is NOT in
+      // play. Subscribers pay via the recurring €39/mo, so no per-download
+      // invoice/WIK/incasso pipeline is started for them.
+      if (!subModelActive) {
+        try {
+          await createOrder({
+            customer_name: customerName,
+            customer_email: customerEmail,
+            customer_phone: cvData.personal.phone,
+            customer_address: cvData.personal.address,
+            customer_house_number: cvData.personal.houseNumber,
+            customer_postal_code: cvData.personal.postalCode,
+            customer_city: cvData.personal.city,
+            cv_id: cvData.id,
+            template_used: cvData.meta.selectedTemplate,
+            cv_data: cvDataForOrder,
+          });
+        } catch (orderError) {
+          console.error('Order creation error:', orderError);
+        }
       }
 
       // Conversion tracking
@@ -221,7 +263,16 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="lg" mobileFullScreen title={t('modalTitle')}>
       <div className="p-4 sm:p-6">
-        {status === 'success' ? (
+        {subModelActive && !accessLoaded ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+          </div>
+        ) : showPaywall ? (
+          <CVPaywall
+            initialEmail={cvData.personal.email || ''}
+            loggedIn={loggedIn}
+          />
+        ) : status === 'success' ? (
           <div className="text-center py-2 sm:py-3">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
               <CheckCircle className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600" />
@@ -386,45 +437,47 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
               </div>
             </div>
 
-            <div className="mb-3 sm:mb-4">
-              <label className="flex items-start gap-2.5 cursor-pointer group">
-                <div className="relative flex-shrink-0 mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={agreed}
-                    onChange={(e) => {
-                      setAgreed(e.target.checked);
-                      setErrorMessage('');
-                    }}
-                    className="sr-only"
-                  />
-                  <div
-                    className={`w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
-                      agreed
-                        ? 'bg-emerald-600 border-emerald-600'
-                        : 'border-slate-300 group-hover:border-slate-400'
-                    }`}
-                  >
-                    {agreed && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
+            {!subModelActive && (
+              <div className="mb-3 sm:mb-4">
+                <label className="flex items-start gap-2.5 cursor-pointer group">
+                  <div className="relative flex-shrink-0 mt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={agreed}
+                      onChange={(e) => {
+                        setAgreed(e.target.checked);
+                        setErrorMessage('');
+                      }}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-5 h-5 rounded border-2 transition-colors flex items-center justify-center ${
+                        agreed
+                          ? 'bg-emerald-600 border-emerald-600'
+                          : 'border-slate-300 group-hover:border-slate-400'
+                      }`}
+                    >
+                      {agreed && (
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <span className="text-xs sm:text-sm text-slate-700 leading-snug">
-                  <strong>{t('agreementPrefix')}</strong>.{' '}
-                  <a href="/voorwaarden" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
-                    {t('termsLink')}
-                  </a>{' '}
-                  &amp;{' '}
-                  <a href="/privacy" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
-                    {t('privacyLink')}
-                  </a>
-                  . {t('agreementSuffix', { price: price.display })}
-                </span>
-              </label>
-            </div>
+                  <span className="text-xs sm:text-sm text-slate-700 leading-snug">
+                    <strong>{t('agreementPrefix')}</strong>.{' '}
+                    <a href="/voorwaarden" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
+                      {t('termsLink')}
+                    </a>{' '}
+                    &amp;{' '}
+                    <a href="/privacy" target="_blank" className="text-emerald-600 underline hover:text-emerald-700">
+                      {t('privacyLink')}
+                    </a>
+                    . {t('agreementSuffix', { price: price.display })}
+                  </span>
+                </label>
+              </div>
+            )}
 
             {errorMessage && (
               <div className="flex items-center gap-2 text-red-600 text-xs sm:text-sm mb-3 p-2.5 bg-red-50 rounded-lg">
@@ -435,9 +488,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
 
             <button
               onClick={handleDownload}
-              disabled={!agreed || status === 'processing'}
+              disabled={(!subModelActive && !agreed) || status === 'processing'}
               className={`w-full flex flex-col items-center justify-center gap-0.5 px-6 py-2.5 sm:py-3 rounded-xl font-semibold transition-all duration-200 ${
-                !agreed || status === 'processing'
+                (!subModelActive && !agreed) || status === 'processing'
                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                   : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/25'
               }`}
@@ -446,7 +499,9 @@ export function DownloadModal({ isOpen, onClose }: DownloadModalProps) {
                 {status === 'processing' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
                 {status === 'processing' ? t('downloading') : t('downloadButton')}
               </span>
-              <span className="text-[10px] font-normal opacity-40">{t('paymentObligation')}</span>
+              {!subModelActive && (
+                <span className="text-[10px] font-normal opacity-40">{t('paymentObligation')}</span>
+              )}
             </button>
 
             <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 mt-3 text-[11px] sm:text-xs text-slate-500">

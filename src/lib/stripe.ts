@@ -59,9 +59,9 @@ interface MarketConfig {
 
 const MARKET_BY_LOCALE: Record<string, MarketConfig> = {
   nl: { currency: 'eur', amount: 42, paymentMethods: ['ideal', 'card', 'bancontact'], stripeLocale: 'nl' },
-  de: { currency: 'eur', amount: 42, paymentMethods: ['card', 'klarna', 'sepa_debit', 'sofort'], stripeLocale: 'de' },
+  de: { currency: 'eur', amount: 42, paymentMethods: ['card', 'sepa_debit', 'sofort'], stripeLocale: 'de' },
   en: { currency: 'gbp', amount: 42, paymentMethods: ['card'], stripeLocale: 'en-GB' },
-  sv: { currency: 'sek', amount: 449, paymentMethods: ['card', 'klarna'], stripeLocale: 'sv' },
+  sv: { currency: 'sek', amount: 449, paymentMethods: ['card'], stripeLocale: 'sv' },
   da: { currency: 'dkk', amount: 315, paymentMethods: ['card', 'mobilepay'], stripeLocale: 'da' },
 };
 
@@ -335,6 +335,110 @@ export async function getVacancyCheckoutResult(sessionId: string): Promise<{
     };
   } catch (error) {
     console.error('[Stripe] Error retrieving checkout result:', error);
+    return empty;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────
+// CV-download subscription — €0,50 verification + 14-day trial + €39/mo
+//
+// Same shape as the Vacaturematch subscription helpers above, separate
+// Stripe price IDs and a 14-day trial (vs. 7 for Vacaturematch). The
+// metadata.kind = 'cv_sub' lets the webhook + complete-route route to the
+// cv_subscriptions table instead of vacancy_subscriptions.
+
+export function isCVSubscriptionConfigured(): boolean {
+  return Boolean(
+    process.env.STRIPE_SECRET_KEY &&
+      process.env.STRIPE_PRICE_CV_SUB &&
+      process.env.STRIPE_PRICE_CV_ACTIVATION
+  );
+}
+
+export async function createEmbeddedCVSubscription(params: {
+  userId: string;
+  customerEmail: string;
+  returnUrl: string;
+  locale?: string;
+}): Promise<{ success: boolean; clientSecret?: string; error?: string }> {
+  if (!isCVSubscriptionConfigured()) {
+    return { success: false, error: 'CV-abonnement is niet geconfigureerd' };
+  }
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: 'elements',
+      mode: 'subscription',
+      customer_email: params.customerEmail,
+      payment_method_types: recurringPaymentMethods(params.locale),
+      line_items: [
+        { price: process.env.STRIPE_PRICE_CV_SUB!, quantity: 1 },
+        { price: process.env.STRIPE_PRICE_CV_ACTIVATION!, quantity: 1 },
+      ],
+      subscription_data: {
+        trial_period_days: 14,
+        metadata: { userId: params.userId, kind: 'cv_sub' },
+      },
+      payment_method_collection: 'always',
+      metadata: { userId: params.userId, kind: 'cv_sub' },
+      return_url: params.returnUrl,
+      allow_promotion_codes: true,
+    });
+
+    return { success: true, clientSecret: session.client_secret ?? undefined };
+  } catch (error) {
+    console.error('[Stripe] Error creating embedded CV subscription session:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Onbekende fout bij aanmaken abonnement',
+    };
+  }
+}
+
+export async function getCVCheckoutResult(sessionId: string): Promise<{
+  complete: boolean;
+  userId: string | null;
+  customerId: string | null;
+  subscriptionId: string | null;
+  status: string | null;
+  trialEnd: string | null;
+  currentPeriodEnd: string | null;
+}> {
+  const empty = {
+    complete: false,
+    userId: null,
+    customerId: null,
+    subscriptionId: null,
+    status: null,
+    trialEnd: null,
+    currentPeriodEnd: null,
+  };
+  if (!isStripeConfigured()) return empty;
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['subscription'],
+    });
+    if (session.status !== 'complete' || session.metadata?.kind !== 'cv_sub') return empty;
+
+    const sub = session.subscription as Stripe.Subscription | null;
+    const subAny = sub as unknown as Record<string, unknown> | null;
+    const itemEnd = sub?.items?.data?.[0]
+      ? (sub.items.data[0] as unknown as Record<string, unknown>).current_period_end
+      : undefined;
+    const toIso = (v: unknown) => (typeof v === 'number' ? new Date(v * 1000).toISOString() : null);
+
+    return {
+      complete: true,
+      userId: session.metadata?.userId ?? null,
+      customerId: typeof session.customer === 'string' ? session.customer : session.customer?.id ?? null,
+      subscriptionId: sub?.id ?? null,
+      status: sub?.status ?? 'trialing',
+      trialEnd: toIso(subAny?.trial_end),
+      currentPeriodEnd: toIso(subAny?.current_period_end ?? itemEnd),
+    };
+  } catch (error) {
+    console.error('[Stripe] Error retrieving CV checkout result:', error);
     return empty;
   }
 }
