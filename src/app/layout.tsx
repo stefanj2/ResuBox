@@ -127,6 +127,12 @@ export default async function RootLayout({
       <head>
         <OrganizationSchema />
         <WebApplicationSchema />
+        {/* Stripe Checkout: warm de DNS+TLS-handshakes op zodat Elements sneller laden */}
+        <link rel="preconnect" href="https://js.stripe.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://api.stripe.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://m.stripe.com" />
+        <link rel="dns-prefetch" href="https://q.stripe.com" />
+        <link rel="dns-prefetch" href="https://r.stripe.com" />
       </head>
       <body className={`${dmSans.variable} ${newsreader.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         {children}

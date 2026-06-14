@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { ArrowLeft, Check, Loader2, ShieldCheck } from 'lucide-react';
@@ -131,15 +131,45 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState('');
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [showElements, setShowElements] = useState(false);
 
   const knownEmail = Boolean(initialEmail);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // Speculatief vast een Stripe Checkout-sessie aanmaken zodra paywall opent
+  // met een bekend e-mailadres, zodat de iDEAL/Bancontact/Card/SEPA tabs
+  // meteen verschijnen bij klik i.p.v. ~500-1000ms wachten op de POST.
+  // Voor handmatig getypte e-mails valt 'ie terug op de oude flow.
+  useEffect(() => {
+    const eligible = (loggedIn || (knownEmail && !editingEmail)) && emailValid;
+    if (!eligible || clientSecret) return;
+    let cancelled = false;
+    fetch('/api/cv/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, locale }),
+    })
+      .then((res) => res.json())
+      .then((j) => {
+        if (!cancelled && j?.clientSecret) setClientSecret(j.clientSecret);
+      })
+      .catch(() => {
+        /* stil: klik op de knop probeert het opnieuw */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loggedIn, knownEmail, editingEmail, email, locale, emailValid, clientSecret]);
 
   const startSubscription = async () => {
     setError('');
-    if (!loggedIn && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!loggedIn && !emailValid) {
       setError('Vul een geldig e-mailadres in.');
       return;
     }
+    setShowElements(true);
+    if (clientSecret) return;
+
     setStarting(true);
     try {
       const res = await fetch('/api/cv/subscribe', {
@@ -154,16 +184,22 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
       setClientSecret(j.clientSecret);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Er ging iets mis.');
+      setShowElements(false);
     } finally {
       setStarting(false);
     }
   };
 
-  if (clientSecret) {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (clientSecret) setClientSecret(null);
+  };
+
+  if (showElements) {
     return (
       <div>
         <button
-          onClick={() => setClientSecret(null)}
+          onClick={() => setShowElements(false)}
           className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-800 mb-4"
         >
           <ArrowLeft className="w-4 h-4" /> Terug
@@ -179,7 +215,9 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
           </div>
         </div>
 
-        {stripePromise ? (
+        {!stripePromise ? (
+          <p className="text-sm text-rose-600">Betalingen zijn nog niet geconfigureerd.</p>
+        ) : clientSecret ? (
           <CheckoutElementsProvider
             stripe={stripePromise}
             options={{ clientSecret, elementsOptions: { appearance: STRIPE_APPEARANCE } }}
@@ -187,7 +225,9 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
             <CheckoutForm />
           </CheckoutElementsProvider>
         ) : (
-          <p className="text-sm text-rose-600">Betalingen zijn nog niet geconfigureerd.</p>
+          <div className="flex items-center justify-center py-10 text-slate-400">
+            <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
         )}
       </div>
     );
@@ -234,7 +274,10 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
               {' · '}
               <button
                 type="button"
-                onClick={() => setEditingEmail(true)}
+                onClick={() => {
+                  setEditingEmail(true);
+                  if (clientSecret) setClientSecret(null);
+                }}
                 className="text-emerald-700 hover:underline"
               >
                 wijzig
@@ -246,7 +289,7 @@ export function CVPaywall({ initialEmail, loggedIn }: CVPaywallProps) {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 placeholder="jij@voorbeeld.nl"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
